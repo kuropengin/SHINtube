@@ -1,3 +1,16 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<!DOCTYPE html>
+<html lang="jp">
+  <head>
+    <%- include('./common/head') %>
+    <%- include('./common/header') %>
+    <link rel='stylesheet' href='/stylesheets/error.css'/>
+  </head>
+  <body>
+    <div id="contents">
+      <div class="error-img"></div>
+      <div class="error-msg"><%= error %></div>
+      <div class="error-msg-sub">再度ログインし直してください</div>
+    </div>
+    
+  </body>
+</html>

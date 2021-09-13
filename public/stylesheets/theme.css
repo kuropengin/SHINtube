@@ -1,0 +1,188 @@
+.dark-theme-body{
+    background-color: #181818;
+    color: #FFF;
+}
+
+.light-theme-body{
+    background-color: #FFF;
+    color: #181818;
+}
+
+.light-theme-logo{
+    background-image: url(../images/SHINtube-light.png);
+}
+
+.dark-theme-logo{
+    background-image: url(../images/SHINtube-dark.png);
+}
+
+.light-theme-header{
+    background: #FFF;
+    box-shadow: 0px 1px 4px 1px rgb(183 183 183 / 60%);
+}
+
+.dark-theme-header{
+    background: #202020;
+    box-shadow: 0px 1px 4px 1px rgb(0 0 0 / 60%);
+}
+
+.light-theme-munu-btn{
+    background: #444;
+}
+
+.dark-theme-munu-btn{
+    background: #FFF;
+}
+
+.light-theme-munu{
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.dark-theme-munu{
+    background: rgba(32, 32, 32, 0.95);
+}
+
+.dark-theme-munu-icon{
+    filter: invert(88%) sepia(61%) saturate(0%) hue-rotate(229deg) brightness(107%) contrast(101%);
+}
+
+.light-theme-overlay{
+    background: rgba(68, 68, 68, 0.2);
+}
+
+.dark-theme-overlay{
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.dark-theme-memo button{
+    color: #FFF;
+}
+
+.dark-theme-memo .CodeMirror{
+    background: #313131;
+    color: #FFF;
+}
+
+.dark-theme-memo .CodeMirror-cursor{
+    border-left: 1px solid #fff;
+}
+
+.dark-theme-memo button.active, .dark-theme-memo button:hover{
+    background: #020202;
+    border-color: #ffffff;
+}
+
+.dark-theme-memo .editor-preview-full,
+.dark-theme-memo .editor-preview,
+.dark-theme-memo .editor-preview-active{
+    color: #181818;
+}
+
+.dark-theme-memo .editor-toolbar.fullscreen{
+    background: #313131;
+}
+
+.light-theme-download-btn{
+    background: #FFF;
+}
+
+.dark-theme-download-btn{
+    background: #202020;
+    border: solid 2px;
+}
+
+.light-theme-download-list{
+    background: #FFF;
+}
+
+.dark-theme-download-list{
+    background: #202020;
+}
+
+.dark-theme-download-list .type-icon{
+    filter: invert(88%) sepia(61%) saturate(0%) hue-rotate(229deg) brightness(107%) contrast(101%);
+}
+
+.dark-theme-download-list .memo-download-type:hover,
+.dark-theme-download-list .filter-type:hover {
+    background: #3a3a3a;
+}
+
+.light-theme-filter-word{
+    color: #444;
+}
+
+.dark-theme-filter-word{
+    color: #FFF;
+}
+
+.light-theme-delete-area{
+    background: #FFF;
+    color: #444;
+}
+
+.dark-theme-delete-area{
+    background: #202020;
+    color: #FFF;
+}
+
+.light-theme-delete-area .delete-info{
+    background: #ececec;
+}
+
+.dark-theme-delete-area .delete-info{
+    background: #353535;
+}
+
+.light-theme-delete-area .delete-btn{
+    color: #0000ff;
+}
+
+.dark-theme-delete-area .delete-btn{
+    color: #87b7ff;
+}
+
+.light-theme-video-input .input_text_title{
+    color: #4e4e4e;
+}
+.dark-theme-video-input .input_text_title{
+    color: #bbb;
+}
+
+.light-theme-video-input .input_text_init{
+
+}
+.dark-theme-video-input .input_text_init{
+    color: #FFF;
+}
+
+.light-theme-overlay #upload-progress-area{
+    background: #FFF;
+}
+
+.dark-theme-overlay #upload-progress-area{
+    background: #202020;
+}
+
+.light-theme-deeplink-area{
+    background: #FFF;
+}
+
+.dark-theme-deeplink-area{
+    background: #202020;
+}
+
+.light-theme-deeplink-select .one-video input[type="radio"]:checked + .label{
+    background: #dfffec;
+    box-shadow: 0px -1px 4px 1px rgb(183 183 183 / 60%);
+}
+
+.dark-theme-deeplink-select .one-video input[type="radio"]:checked + .label{
+    background: #636363;
+    box-shadow: 0px -1px 4px 1px rgb(0 0 0 / 60%);
+}
+
+
+
+
+

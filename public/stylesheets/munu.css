@@ -1,0 +1,246 @@
+a {
+    text-decoration: none;
+    color: #000;
+}
+
+ul {
+    list-style: none;
+}
+
+.menu {
+    -webkit-transform: translateX(100%);
+    transform: translateX(100%);
+    -webkit-transition: ease .5s;
+    transition: ease .5s;
+    z-index: 100;
+    position: relative;
+    top: -48px;
+    right: 240px;
+
+    background: rgba(255, 255, 255, 0.95);
+    height: 100vh;
+    width: 300px;
+
+    display: flex;
+    justify-content: center;
+    align-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.off-overlay{
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    visibility: hidden;
+    transition: ease .5s;
+    z-index: 50;
+}
+
+.on-overlay{
+    visibility: visible;
+    opacity: 1;
+}
+
+
+.menu ul li {
+    padding: 2em 5em;
+    border-bottom: 1px solid #8B8B8B;
+}
+
+.menu.open {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.openbtn{
+	position: relative;
+	cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    z-index: 200;
+}
+
+
+.openbtn span{
+    display: inline-block;
+    transition: all .4s;
+    position: absolute;
+    left: 11px;
+    height: 3px;
+    border-radius: 2px;
+  	width: 45%;
+  }
+
+.openbtn span:nth-of-type(1) {
+	top:11px;	
+}
+
+.openbtn span:nth-of-type(2) {
+	top:19px;
+}
+
+.openbtn span:nth-of-type(3) {
+	top:27px;
+}
+
+.openbtn.active span:nth-of-type(1) {
+    top: 14px;
+    left: 14px;
+    transform: translateY(6px) rotate(-45deg);
+    width: 30%;
+}
+
+.openbtn.active span:nth-of-type(2) {
+	opacity: 0;
+}
+
+.openbtn.active span:nth-of-type(3){
+    top: 26px;
+    left: 14px;
+    transform: translateY(-6px) rotate(45deg);
+    width: 30%;
+}
+
+
+.user-icon{
+    margin-top: 50px;
+    width: 100px;
+    height: 100px;
+    background: #444;
+    border: solid 5px #ffffff;
+    border-radius: 55px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#user-name{
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 0 10px;
+}
+
+.menu-boder{
+    width: 100%;
+    margin: 10px 0;
+    border-bottom: 1px solid #cacaca;
+}
+
+.menu-contents{
+    width: 100%;
+    padding: 5px 20px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.info-icon{
+    background-image: url(../images/info.png);
+}
+
+.return-icon{
+    background-image: url(../images/return.png);
+}
+
+.logout-icon{
+    background-image: url(../images/logout.png);
+}
+
+.theme-icon{
+    background-image: url(../images/theme.png);
+}
+
+.memo-icon{
+    background-image: url(../images/memo.png);
+}
+
+.config-icon{
+    background-image: url(../images/config.png);
+}
+
+
+.menu-contents-icon{
+    width: 32px;
+    height: 32px;
+} 
+
+.menu-contents-span{
+    padding-left: 15px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.class-info{
+    width: 100%;
+    padding: 5px 20px;
+}
+
+.class-info p{
+    text-align: center;
+    font-size: 14px;
+    margin: 0;
+    margin-top: 5px;
+}
+
+.class-info span{ 
+    font-weight: bold;  
+}
+
+
+.toggle-input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    opacity: 0;
+    cursor: pointer;
+}
+  
+.toggle-label {
+    width: 60px;
+    height: 30px;
+    background: #ccc;
+    position: relative;
+    display: inline-block;
+    border-radius: 46px;
+    transition: 0.4s;
+    box-sizing: border-box;
+}
+.toggle-label:after {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    background: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    transition: 0.4s;
+}
+  
+.toggle-input:checked + .toggle-label {
+    background-color: #4BD865;
+}
+.toggle-input:checked + .toggle-label:after {
+    left: 32px;
+}
+  
+.toggle-switch {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    margin: auto;
+}

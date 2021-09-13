@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<head>
+  <%- include('./common/head') %>
+  <!--pdf化関連OSS適応待ち
+    <%- include('./common/pdf') %>
+  -->
+  <link href="https://vjs.zencdn.net/7.4.1/video-js.min.css" rel="stylesheet">
+  <script src="https://vjs.zencdn.net/7.4.1/video.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@2.1.0/dist/videojs-contrib-quality-levels.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@1.1.4/dist/videojs-hls-quality-selector.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@1.1.4/dist/videojs-hls-quality-selector.min.js"></script>
+
+  <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+  <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+
+  <script type="text/javascript" src="/javascripts/watch.js"></script>
+
+  <link rel='stylesheet' href='/stylesheets/watch.css'/>
+  <link rel='stylesheet' href='/stylesheets/player.css'/>
+  <link rel='stylesheet' href='/stylesheets/memo.css'/>
+
+</head>
+
+
+<body>
+  <%- include('./common/header') %>
+  <div id="contents">
+    <div id="main-area">
+      <div id="video-area">
+        <video id="video-player" class="video-js">
+          <p class="vjs-no-js">
+          To view this video please enable JavaScript, and consider upgrading to a web browser that
+          <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+          </p>
+        </video>
+      </div>
+      <div id="info-area">
+        <div id="video-title"></div>
+        <div id="video-update">更新日：</div>
+        <div id="video-explanation"></div>
+      </div>
+    </div>
+    <div id="side-area" class="theme-memo">
+      <textarea id="memo-editor"></textarea>
+      <div id="memo-controller">
+        <div id="memo-download-btn" class="theme-download-btn">
+          <div class="memo-download-icon save-icon"></div>
+          <div class="memo-download-title">メモデータの保存</div>
+        </div>
+        <div id="memo-download-list" class="memo-download-list-hidden theme-download-list">
+          <div id="download-type-txt" class="memo-download-type">
+            <div class="type-icon type-icon-txt"></div>
+            <p>TXT形式</p>
+          </div>
+          <div id="download-type-html" class="memo-download-type">
+            <div class="type-icon type-icon-html"></div>
+            <p>HTML形式</p>
+          </div>
+          <!--OSS対応待ち
+          <div id="download-type-pdf" class="memo-download-type">
+            <div class="type-icon type-icon-pdf"></div>
+            <p>HTML形式</p>
+          </div>
+          -->
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

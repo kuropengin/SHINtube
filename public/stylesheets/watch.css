@@ -1,0 +1,248 @@
+#video-player{
+    width: 100%;
+    height: 100%;
+}
+
+#main-area{
+    /*width: 100%;*/
+}
+
+#video-area{
+    max-width: 1280px;
+    max-height: calc(1280px*0.5625);
+}
+
+#side-area{
+    margin-left: 0px;
+    margin-top: 20px;
+    max-height: calc(1280px*0.5625);
+}
+
+html,body {
+    background-color: #f9f9f9;
+}
+
+#info-area{
+    margin: 10px 0;
+}
+
+#video-title{
+    font-size: 24px;
+    font-weight: bold;
+    padding: 10px;
+}
+
+#video-update{
+    padding: 10px;
+    padding-top: 0;
+    font-size: 16px;
+    border-bottom: 1px solid #cacaca;
+}
+
+#video-explanation{
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#memo-editor{
+    height: 100%;
+}
+
+#memo-controller{
+    width: 100%;
+    margin: 15px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;;
+    align-items: center;
+    position: relative;
+}
+
+#memo-download-btn{
+    width: 230px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0px 4px 10px -5px rgba(0,0,0,0.4);
+    border-radius: 30px;
+    cursor: pointer;
+    user-select:none
+}
+
+.memo-download-icon{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #065e3c;
+    background-repeat  : no-repeat;
+    background-position: center;
+    background-size:60%;
+}
+
+.memo-download-title{
+    width: 160px;
+    padding-left: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.save-icon{
+    background-image: url(../images/save.png);
+}
+
+#memo-download-list{
+    width: 180px;
+    padding: 10px 0;
+    position: absolute;
+    bottom: 60px;
+    right: 20px;
+    box-shadow: 0px 0px 15px -5px rgba(0,0,0,0.4);
+
+}
+
+.memo-download-list-hidden{
+    display: none;
+}
+
+.memo-download-type{
+    height: 30px;
+    padding: 0 20px;
+    font-size: 16px;
+    line-height: 30px;
+    font-weight: bold;
+    user-select:none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.memo-download-type p{
+    line-height: 30px;
+    padding: 0 10px;
+    margin: 0;
+}
+
+.memo-download-type:hover{
+    background: #e0e0e0;
+}
+
+.type-icon{
+    width: 20px;
+    height: 20px;
+    background-size:cover;
+}
+
+.type-icon-txt{
+    background-image: url(../images/type-txt.png);
+}
+
+.type-icon-html{
+    background-image: url(../images/type-html.png);
+}
+
+.type-icon-pdf{
+    background-image: url(../images/type-pdf.png);
+}
+
+.EasyMDEContainer{
+    height: 100%;
+}
+
+.EasyMDEContainer .CodeMirror {
+	height: calc(100% - 79px);
+}
+
+.editor-statusbar{
+    display: none;
+}
+
+/* 〜479px */
+@media screen and (max-width:479px) { 
+    #video-area{
+        width: calc(100vw - 60px);
+        height: calc((100vw - 60px)*0.5625);
+    }
+
+    #side-area{
+        width: calc(100vw - 60px);
+         /*height: calc((100vw - 60px)*0.5625);*/
+    }
+    .EasyMDEContainer{
+        height: 400px;
+    }
+    .EasyMDEContainer .CodeMirror {
+        height: calc(100% - 79px);
+    }
+}
+
+/* 480px〜599px */
+@media screen and (min-width:480px) and (max-width:599px) { 
+    #video-area{
+        width: calc(100vw - 60px);
+        height: calc((100vw - 60px)*0.5625);
+    }
+
+    #side-area{
+        width: calc(100vw - 60px);
+         /*height: calc((100vw - 60px)*0.5625);*/
+    }
+    .EasyMDEContainer{
+        height: 400px;
+    }
+    .EasyMDEContainer .CodeMirror {
+        height: calc(100% - 79px);
+    }
+}
+
+/* 600px〜959px */
+@media screen and (min-width:600px) and (max-width:959px) {
+    #video-area{
+        width: calc(100vw - 60px);
+        height: calc((100vw - 60px)*0.5625);
+    }
+
+    #side-area{
+        width: calc(100vw - 60px);
+        /*height: calc((100vw - 60px)*0.5625);*/
+    }
+    .EasyMDEContainer{
+        height: 400px;
+    }
+    .EasyMDEContainer .CodeMirror {
+        height: calc(100% - 79px);
+    }
+}
+
+/* 960px〜1280px：*/
+@media screen and (min-width:960px) and (max-width:1280px) {
+    #video-area{
+        width: calc(100vw - 380px);
+        height: calc((100vw - 380px)*0.5625);
+    }
+
+    #side-area{
+        margin-left: 10px;
+        margin-top: 0px;
+        width: 300px;
+        height: calc((100vw - 380px)*0.5625);
+    }
+
+    .EasyMDEContainer .CodeMirror {
+        height: calc(100% - 79px);
+    }
+}
+
+/* 1281px〜 */
+@media screen and (min-width:1281px) {
+    #video-area{
+        width: calc(100vw - 580px);
+        height: calc((100vw - 580px)*0.5625);
+    }
+
+    #side-area{
+        margin-left: 10px;
+        margin-top: 0px;
+        width: 500px;
+        height: calc((100vw - 580px)*0.5625);
+    } 
+}

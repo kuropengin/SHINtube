@@ -1,0 +1,26 @@
+#contents{
+    align-content: center;
+}
+
+.error-img{
+    width: 64px;
+    height: 64px;
+    background-image: url(../images/error.png);
+    background-repeat: no-repeat;
+}
+
+.error-msg{
+    width: 100%;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.error-msg-sub{
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 5px;
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="jp">
+  <head>
+    <title>SHINtube</title>
+    <link rel='stylesheet' href='/stylesheets/common.css'/>
+    <link rel="icon" href="/images/favicon.ico">
+
+    <link rel='stylesheet' href='/stylesheets/videolist.css'/>
+
+    <script type="text/javascript" src="/javascripts/videolist.js"></script>
+  </head>
+  <body class="theme-body">
+    <%- include('./common/header') %>
+    <div id="contents">
+      <div id="class-name" class="video-h1"></div>
+      <%- include('./common/filter') %>
+      <div id="videolist-head">
+        <div class="videolist-head-title head-thumbnail">サムネイル</div>
+        <div class="videolist-head-title head-title">タイトル</div>
+        <div class="videolist-head-title head-explanation">説明</div>
+        <div class="videolist-head-title head-status">状態</div>
+        <div class="videolist-head-title head-operation">操作</div>
+      </div>
+      <div id="videolist-area">
+        <div id="videolist"></div>
+        <div class="upload-area">
+          <div id="upload-btn">アップロード</div>
+        </div>
+        <div id="delete-overlay" class="overlay theme-overlay">
+          <div class="delete-area theme-delete-area">
+            <p>この動画を削除しますか</p>
+            <div class="delete-info">
+              <img id="delete-thumbnail"></img>
+              <div id="delete-title"></div>
+            </div>
+            <div class="delete-btn-area">
+              <div id="delete-cancel-btn" class="delete-btn">キャンセル</div>
+              <div id="delete-run-btn" class="delete-btn">削除</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+</html>

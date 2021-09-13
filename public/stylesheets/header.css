@@ -1,0 +1,36 @@
+#header{
+  height: 56px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#header .logo{
+  width: 250px;
+  height: 45px;
+  background-repeat: no-repeat;
+}
+
+
+#config-area{
+  width: 40px;
+  height: 40px;
+}
+
+#config-btn{
+  background-image: url(../images/menu-icon.png);
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+#config-area .nav{
+  position: absolute;
+  top: 0;
+  width: 320px;
+  height: 100vh;
+  transition: 0.5s;
+  transform: translateX(-100%);
+}

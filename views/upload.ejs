@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="jp">
+  <head>
+    <%- include('./common/head') %>
+    <link rel='stylesheet' href='/stylesheets/upload.css'/>
+    <script type="text/javascript" src="/javascripts/progressbar.js"></script>
+  </head>
+  <body>
+    <%- include('./common/header') %>
+    <div id="contents">
+      <div class="upload-left-contents">
+        <div class="video-area">
+            <video id="upload-video-preview" controls="false" muted=""></video>
+        </div>
+      </div>
+      <div class="upload-right-contents theme-video-input">
+        <form id="upload-form" action="/upload" method="post" encType="multipart/form-data">
+          <div class="step">
+            <div class="step-contents">
+              <div id="drag-area" class="drag-area-init">
+                <div class="drop-info">ファイルをドロップ</div>
+                <div class="drop-or">または</div>
+                <input id="uploader" type="file" name="in_file" required>
+              </div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-contents">
+              <div class="input_text_title">タイトル(必須)</div>
+              <textarea id="upload-title" class="input_text_init" cols="50" rows="4" name="title" required ></textarea>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-contents">
+              <div class="input_text_title">説明</div>
+              <textarea id="upload-explanation" class="input_text_init" cols="50" rows="4" name="explanation"></textarea>
+            </div>
+          </div>
+          <div class="submit-area">
+            <div id="upload-btn" class="submit-btn">アップロード</div>
+          </div>
+        </form>
+      </div>
+      <div id="upload-overlay" class="off-overlay theme-overlay">
+        <div id="upload-now">
+          <div id="upload-progress-area">
+            <div class="upload-msg">アップロード中</div>
+            <div id="uploadbar"></div>
+            <div id="upload-percent">0</div>
+            <div id="result-area">
+              <div id="upload-info"></div>
+              <div id="back-btn" class="unlock-btn lock-btn">一覧に戻る</div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="/javascripts/progressbar-control.js"></script>
+        <script type="text/javascript" src="/javascripts/upload.js"></script>
+      </div>
+    </div>
+  </body>
+</html>

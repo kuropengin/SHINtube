@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="jp">
+  <head>
+    <%- include('./common/head') %>
+
+    <link href="https://vjs.zencdn.net/7.4.1/video-js.min.css" rel="stylesheet">
+    <script src="https://vjs.zencdn.net/7.4.1/video.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@2.1.0/dist/videojs-contrib-quality-levels.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@1.1.4/dist/videojs-hls-quality-selector.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@1.1.4/dist/videojs-hls-quality-selector.min.js"></script>
+
+    <link rel='stylesheet' href='/stylesheets/player.css'/>
+
+    <link rel='stylesheet' href='/stylesheets/edit.css'/>
+
+    <script type="text/javascript" src="/javascripts/progressbar.js"></script>
+  </head>
+  <body>
+    <%- include('./common/header') %>
+    <div id="contents">
+      <div class="upload-left-contents">
+        <div class="video-area">
+          <video id="upload-video-preview" class="display-on display-off"></video>
+          <video id="now-video-preview" class="video-js display-on"></video>
+        </div>
+      </div>
+      <div class="upload-right-contents theme-video-input">
+        <form id="upload-form" action="/edit" method="post" encType="multipart/form-data">
+          <div class="step">
+            <div class="step-contents">
+              <div id="drag-area" class="drag-area-init">
+                <div class="drop-info">ファイルをドロップ</div>
+                <div class="drop-or">または</div>
+                <input id="uploader" type="file" name="in_file">
+              </div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-contents">
+              <div class="input_text_title">タイトル(必須)</div>
+              <textarea id="upload-title" class="input_text_init" cols="50" rows="4" name="title" required ></textarea>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-contents">
+              <div class="input_text_title">説明</div>
+              <textarea id="upload-explanation" class="input_text_init" cols="50" rows="4" name="explanation"></textarea>
+            </div>
+          </div>
+          <div class="submit-area">
+            <input id="input_hidden_vid" type="hidden" name="vid">
+            <div id="upload-btn" class="submit-btn">編集</div>
+          </div>
+        </form>
+      </div>
+      <div id="upload-overlay" class="off-overlay theme-overlay">
+        <div id="upload-now">
+          <div id="upload-progress-area">
+            <div class="upload-msg">編集内容の反映中</div>
+            <div id="uploadbar"></div>
+            <div id="upload-percent">0</div>
+            <div id="result-area">
+              <div id="upload-info"></div>
+              <div id="back-btn" class="unlock-btn lock-btn">一覧に戻る</div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="/javascripts/progressbar-control.js"></script>
+        <script type="text/javascript" src="/javascripts/edit.js"></script>
+      </div>
+    </div>
+
+    <script>
+
+    </script>
+  </body>
+</html>
