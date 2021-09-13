@@ -1,0 +1,11 @@
+{
+    "my_domain" : "",
+    "reg_key" : "",
+    "platform" : [
+        {
+            "name" : "",
+            "url" : "", 
+            "key" : ""
+        }
+    ]
+}
