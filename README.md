@@ -1,1 +1,2 @@
-# eALPS-LTI-Video
+# SHINtube
+Video sharing platform for Shinshu University.
