@@ -76,6 +76,14 @@ lti.onSessionTimeout(async (req, res, next) => {
   return res.status(401).render('error', {"error":"002 : タイムアウト"})
 })
 
+lti.onUnregisteredPlatform(async (req, res, next) => { 
+  return res.status(401).render('error', {"error":"006 : 未登録のプラットフォーム"})
+})
+
+lti.onInactivePlatform(async (req, res, next) => { 
+  return res.status(401).render('error', {"error":"007 : プラットフォームが有効化されていません"})
+})
+
 lti.onDynamicRegistration(async (req, res, next) => {
   try {
     if (!req.query.openid_configuration) return res.status(400).send({ status: 400, error: 'Bad Request', details: { message: 'Missing parameter: "openid_configuration".' } })
