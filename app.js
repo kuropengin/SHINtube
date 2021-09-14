@@ -57,7 +57,13 @@ lti.app.use(fileUpload({
 
 lti.onConnect((token, req, res) => {
   //return res.render('index', { title: 'Express' })
-  return lti.redirect(res, '/videolist', { newResource: true })
+  if(res.locals.context.roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor') != -1){
+    return lti.redirect(res, '/videolist', { newResource: true })
+  }
+  else{
+    return lti.redirect(res, '/about', { newResource: true })
+  }
+  
 })
 
 lti.onDeepLinking(async (token, req, res) => {
@@ -103,7 +109,7 @@ lti.onDynamicRegistration(async (req, res, next) => {
 })
 
 
-lti.whitelist(lti.appRoute(), { route: '/error', method: 'get' })
+lti.whitelist(lti.appRoute(), { route: '/error', method: 'get' },{ route: '/about', method: 'get' },{ route: '/TOS', method: 'get' })
 
 lti.app.use(ltiRoutes)
 lti.app.use(videoRoutes)

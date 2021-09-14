@@ -17,6 +17,14 @@ function roleguard(req, res, next){
     }
 }
 
+router.get('/about', async (req, res) => {
+    res.render('about')
+})
+
+router.get('/TOS', async (req, res) => {
+    res.sendFile(path.resolve('docs/TOS.md'));
+})
+
 router.get('/videolist',roleguard, async (req, res) => {
     res.render('videolist');
 })
