@@ -13,7 +13,7 @@ function roleguard(req, res, next){
         next()
     }
     else{
-        res.render('error', {"error":"002 : アクセス権限エラー"})
+        res.render('error', {"error":"003 : アクセス権限エラー"})
     }
 }
 
@@ -141,11 +141,11 @@ router.get('/error', async (req, res) => {
 })
 
 router.get('/upload-error', async (req, res) => {
-    res.render('error', {"error":"003 : アップロードに失敗しました"})
+    res.render('error', {"error":"004 : アップロードに失敗しました"})
 })
 
 router.get('/edit-error', async (req, res) => {
-    res.render('error', {"error":"004 : 更新に失敗しました"})
+    res.render('error', {"error":"005 : 更新に失敗しました"})
 })
 
 router.get('/view-progress', async (req, res) => {
@@ -197,8 +197,24 @@ router.post('/view-progress', async (req, res) => {
       console.log(err.message)
       return res.status(500).send({ err: err.message })
     }
-  })
+})
 
+router.get("/return", async (req, res) => {
+    var redirect_url = req.res.locals.token.iss + "/course/view.php?id=" + req.res.locals.context.context.id
+    res.redirect(redirect_url)
+});
+
+router.get('/logout', async (req, res) => {
+    var cookie_list = req.headers.cookie.split(";")
+    var redirect_url = req.res.locals.token.iss + "/course/view.php?id=" + req.res.locals.context.context.id
+    for(var cookie of cookie_list){
+        var target_cookie = cookie.split("=")[0]
+        if(target_cookie.indexOf( 'lti' ) !== -1){
+            res.clearCookie(target_cookie);
+        }
+    }
+    res.redirect(redirect_url)
+})
 
 
 const { createProxyMiddleware , responseInterceptor } = require('http-proxy-middleware')
@@ -209,7 +225,7 @@ const m3u8_proxy = createProxyMiddleware({
   selfHandleResponse: true, 
   pathRewrite: function (path, req) {
     var par = req.url.slice(1).split('/');
-    var year = req.res.locals.token.iss.slice(-4)
+    var year = req.res.locals.token.iss.split("/")[3]
     var cid = req.res.locals.context.lis.course_section_sourcedid
     return "/" + par[0] + "/" + year + "/" + cid + "/" + par[1] + "/" + par[2]
   },
@@ -226,7 +242,7 @@ const normal_proxy = createProxyMiddleware({
     changeOrigin: true ,
     pathRewrite: function (path, req) {
         var par = req.url.slice(1).split('/');
-        var year = req.res.locals.token.iss.slice(-4)
+        var year = req.res.locals.token.iss.split("/")[3]
         var cid = req.res.locals.context.lis.course_section_sourcedid
         return "/" + par[0] + "/" + year + "/" + cid + "/" + par[1] + "/" + par[2]
     }

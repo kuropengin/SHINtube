@@ -10,7 +10,7 @@ function roleguard(req, res, next){
       next()
   }
   else{
-      res.render('error', {"error":"002 : アクセス権限エラー"})
+      res.render('error', {"error":"003 : アクセス権限エラー"})
   }
 }
 

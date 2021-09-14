@@ -141,6 +141,11 @@ ul {
     height: 40px;
     display: flex;
     align-items: center;
+    cursor: pointer;
+}
+
+.menu-contents:hover{
+    opacity: 0.8;
 }
 
 .info-icon{

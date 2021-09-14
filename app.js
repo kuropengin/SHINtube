@@ -72,6 +72,10 @@ lti.onInvalidToken(async (req, res, next) => {
   return res.status(401).render('error', {"error":"001 : LTI認証エラー"})
 })
 
+lti.onSessionTimeout(async (req, res, next) => { 
+  return res.status(401).render('error', {"error":"002 : タイムアウト"})
+})
+
 lti.onDynamicRegistration(async (req, res, next) => {
   try {
     if (!req.query.openid_configuration) return res.status(400).send({ status: 400, error: 'Bad Request', details: { message: 'Missing parameter: "openid_configuration".' } })

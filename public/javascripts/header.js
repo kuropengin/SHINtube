@@ -23,6 +23,7 @@ function butotnClick() {
 }
 
 function hederInit(InitData) {
+    var params = (new URL(document.location)).searchParams
     if(InitData){
         document.getElementById("user-name").innerHTML = InitData.name
         document.getElementById("class-title").innerHTML = InitData.context.label
@@ -31,13 +32,21 @@ function hederInit(InitData) {
         document.getElementById("user-name").innerHTML = "LTI認証エラー"
         document.getElementById("class-title").innerHTML = "LTI認証エラー"
     }
+    document.getElementById("about-page").addEventListener('click', function(){
+        window.location.href = ""
+    })
+    document.getElementById("return-page").addEventListener('click', function(){
+        window.location.href = "/return?ltik=" + params.get("ltik")
+    })
+    document.getElementById("logout-page").addEventListener('click', function(){
+        window.location.href = "/logout?ltik=" + params.get("ltik")
+    })
 }
 
 
 function ThemeModeInit() {
     var local_theme = localStorage.getItem("theme-mode") || false
 
-    console.log(local_theme)
     if(local_theme == "dark"){
         document.getElementById("toggle").checked = false
         ThemeModeChange("dark-theme")
@@ -105,6 +114,23 @@ window.addEventListener("load", function() {
     document.getElementById("munu-btn").addEventListener('click', butotnClick)
     document.getElementById("menu-overlay").addEventListener('click', butotnClick)
     document.getElementById("toggle").addEventListener('click', ThemeToggle)
+
+    document.getElementById("memo-delete").addEventListener('click', function(){
+        var _volume = localStorage.getItem("volume") || 1
+        var _theme = localStorage.getItem("theme-mode") || false
+
+        localStorage.clear()
+
+        localStorage.setItem('volume', _volume)
+        if(_theme){
+            localStorage.setItem('theme-mode', _theme)
+        }
+    })
+    document.getElementById("config-delete").addEventListener('click', function(){
+        localStorage.removeItem("theme-mode")
+        localStorage.removeItem("volume")
+    })
+    
 })
 
 
