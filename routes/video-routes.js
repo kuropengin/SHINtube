@@ -226,9 +226,11 @@ router.get('/logout', async (req, res) => {
 
 
 const { createProxyMiddleware , responseInterceptor } = require('http-proxy-middleware')
+const backend_config = require('../config/backend_config.json')
+const BACK_DOMAIN = backend_config.backend_url || process.env.BACK_DOMAIN
 
 const m3u8_proxy = createProxyMiddleware({ 
-  target: 'http://video-api.yukkuriikouze.com', 
+  target: BACK_DOMAIN, 
   changeOrigin: true ,
   selfHandleResponse: true, 
   pathRewrite: function (path, req) {
@@ -246,7 +248,7 @@ const m3u8_proxy = createProxyMiddleware({
 });
 
 const normal_proxy = createProxyMiddleware({ 
-    target: 'http://video-api.yukkuriikouze.com', 
+    target: BACK_DOMAIN, 
     changeOrigin: true ,
     pathRewrite: function (path, req) {
         var par = req.url.slice(1).split('/');
