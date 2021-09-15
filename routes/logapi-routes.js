@@ -16,13 +16,13 @@ router.post('/log', async (req, res) => {
             var _sid = req.res.locals.token.userInfo.email.split("@")[0]
     
             logger.log(_cid, _sid, req.body.obj, req.body.verb)
-            res.status(200)
+            res.status(200).send()
         }
         else{
-            res.status(201)
+            res.status(201).send()
         }   
     }catch(err){
-        res.status(201)
+        res.status(201).send()
     }
 })
 
