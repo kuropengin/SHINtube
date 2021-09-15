@@ -1,5 +1,5 @@
 
-var params = (new URL(document.location)).searchParams;
+var params = (new URL(document.location)).searchParams
 
 
 var lmsProgressScore = 0
@@ -32,25 +32,10 @@ function postVideoProgressInit(){
                     lmsProgressList = _comment.split(',').map(ele => [parseFloat(ele.split('-')[0]), parseFloat(ele.split('-')[1])]);
                 }
 
-                console.log(lmsProgressScore)
 
                 window.addEventListener('beforeunload', (event) => {
                     postVideoProgress()
                 })
-
-                lastcheck = document.hasFocus();
-                setInterval( function () {
-                    var check = document.hasFocus() ;
-                    if ( lastcheck !== check ) {
-                        lastcheck = check;
-                        if(check){
-
-                        }
-                        else{
-                            postVideoProgress()
-                        }
-                    }
-                }, 300 );
 
                 video.addEventListener('pause', (event) => {
                     postVideoProgress()
@@ -123,9 +108,7 @@ function postVideoProgress(){
             progress_list.push([_start,_end])
         }
     }
-    //console.log(lmsProgressList)
-    //console.log(not_using_list)
-    console.log(progress_list)
+
     for(progress_one of progress_list){
         view_sum += progress_one[1] - progress_one[0]
         send_list.push(progress_one[0] + "-" + progress_one[1])
@@ -229,8 +212,16 @@ function memoInit(){
             delay: 1000,
         },
         spellChecker: false
-    });
-
+    })
+    
+    last_input_time = 0
+    easyMDE.codemirror.on('change', () => {
+        if(Date.now() - last_input_time >= (1000 * 60 * 0.25)){
+            postLog("edit", params.get("video") + "/memo")
+            last_input_time = Date.now()
+        }
+    })
+    
     function download_list_display(){
         document.getElementById("memo-download-list").classList.toggle("memo-download-list-hidden")
     }

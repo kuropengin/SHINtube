@@ -3,6 +3,7 @@ const path = require('path')
 const fileUpload = require('express-fileupload');
 const ltiRoutes = require('./routes/lti-routes')
 const videoRoutes = require('./routes/video-routes')
+const logapiRoutes = require('./routes/logapi-routes')
 
 const db_config = require('./config/db_config.json')
 const lti_config = require('./config/lti_config.json')
@@ -17,7 +18,6 @@ const REG_KEY = lti_config.reg_key || process.env.REG_KEY || "pass1234"
 
 const PORT = process.env.PORT || 3000
 
-console.log("domain:" + MY_DOMAIN)
 const lti = require('ltijs').Provider
 lti.setup('LTIKEY',
   {
@@ -56,11 +56,14 @@ lti.app.use(fileUpload({
 }));
 
 lti.onConnect((token, req, res) => {
-  //return res.render('index', { title: 'Express' })
-  if(res.locals.context.roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor') != -1){
-    return lti.redirect(res, '/videolist', { newResource: true })
-  }
-  else{
+  try{
+    if(res.locals.context.roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor') != -1){
+      return lti.redirect(res, '/videolist', { newResource: true })
+    }
+    else{
+      return lti.redirect(res, '/about', { newResource: true })
+    }
+  }catch(err){
     return lti.redirect(res, '/about', { newResource: true })
   }
   
@@ -113,6 +116,7 @@ lti.whitelist(lti.appRoute(), { route: '/error', method: 'get' },{ route: '/abou
 
 lti.app.use(ltiRoutes)
 lti.app.use(videoRoutes)
+lti.app.use(logapiRoutes)
 
 
 const setup = async () => {

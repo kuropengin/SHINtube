@@ -3,7 +3,8 @@
   "version": "1.1.0",
   "private": true,
   "scripts": {
-    "start": "env DEBUG=provider:* node app.js"
+    "dev": "env DEBUG=provider:* node app.js",
+    "start": "node app.js"
   },
   "dependencies": {
     "axios": "^0.21.1",
