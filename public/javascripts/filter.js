@@ -17,8 +17,7 @@ class VideoFilter {
         }
         this.filter_by = function(word,target){
             return (a) => {
-                const regex = new RegExp(word, "gi");
-                const comparison = regex.test()
+                const regex = new RegExp(word, "gi")
                 for (let i=0; i<target.length; i++) {
                     if ( regex.test(a[target[i]]) ) return 1
                 }
