@@ -6,7 +6,8 @@ const request = require('request');
 // Requiring Ltijs
 const lti = require('ltijs').Provider
 
-
+const backend_config = require('../config/backend_config.json')
+const BACK_DOMAIN = backend_config.backend_url || process.env.BACK_DOMAIN
 
 function roleguard(req, res, next){
     if(res.locals.context.roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor') != -1){
@@ -33,7 +34,7 @@ router.post('/videolist',roleguard, async (req, res) => {
     var year = res.locals.token.iss.slice(-4)
     var cid = res.locals.context.lis.course_section_sourcedid
     var options = {
-        url: 'http://video-api.yukkuriikouze.com/linklist?year=' + year + '&cid=' + cid,
+        url: BACK_DOMAIN + '/linklist?year=' + year + '&cid=' + cid,
         method: 'GET'
     }
     
@@ -47,7 +48,7 @@ router.post('/videodelete',roleguard, async (req, res) => {
     var cid = res.locals.context.lis.course_section_sourcedid
     var vid = req.body.vid
     var options = {
-        url: 'http://video-api.yukkuriikouze.com/delete?year=' + year + '&cid=' + cid + '&vid=' + vid,
+        url: BACK_DOMAIN + '/delete?year=' + year + '&cid=' + cid + '&vid=' + vid,
         method: 'POST'
     }
     
@@ -71,7 +72,7 @@ router.post('/upload',roleguard, async (req, res) => {
     var cid = res.locals.context.lis.course_section_sourcedid
     
     var options = {
-        url: 'http://video-api.yukkuriikouze.com/upload?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation),
+        url: BACK_DOMAIN + '/upload?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation),
         method: 'POST',
         headers: {
             "Content-Type": "multipart/form-data"
@@ -108,7 +109,7 @@ router.post('/edit',roleguard, async (req, res) => {
     var options
     if(req.files){
         options = {
-            url: 'http://video-api.yukkuriikouze.com/updatevideo?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation),
+            url: BACK_DOMAIN + '/updatevideo?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -120,7 +121,7 @@ router.post('/edit',roleguard, async (req, res) => {
     }
     else{
         options = {
-            url: 'http://video-api.yukkuriikouze.com/updateinfo?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation),
+            url: BACK_DOMAIN + '/updateinfo?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -226,8 +227,7 @@ router.get('/logout', async (req, res) => {
 
 
 const { createProxyMiddleware , responseInterceptor } = require('http-proxy-middleware')
-const backend_config = require('../config/backend_config.json')
-const BACK_DOMAIN = backend_config.backend_url || process.env.BACK_DOMAIN
+
 
 const m3u8_proxy = createProxyMiddleware({ 
   target: BACK_DOMAIN, 
