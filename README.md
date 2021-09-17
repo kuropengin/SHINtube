@@ -54,7 +54,7 @@ npm start
 ### MongoDB
 SHINtubeは、デフォルトでmongoDBをネイティブに使用してLTIの情報を保存および管理を行う為、インストールする必要があります。詳細な手順については、以下のリンクを参照してください。
  - [mongoDBのインストール](https://docs.mongodb.com/manual/administration/install-community/)
-### eALPluS-video-api
+### SHINtube-video-api
 SHINtubeは、デフォルトでeALPluS-video-apiをネイティブに使用して動画のエンコード・保存および管理を行う為、インストールする必要があります。詳細な手順については、以下のリンクを参照してください。
  - [SHINtube-video-apiのインストール](https://github.com/penM000/SHINtube-video-api)
 
