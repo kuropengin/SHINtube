@@ -2,7 +2,7 @@
 Video sharing platform for Shinshu University.
 
 SHINtubeはLTIを利用して認証認可を行う動画配信プラットフォームのフロントエンドです。
-利用の際はバックエンドの[penM000/eALPluS-video-api](https://github.com/penM000/eALPluS-video-api)及び、LTIが利用可能なLMSが必要になります。
+利用の際はバックエンドの[penM000/SHINtube-video-api](https://github.com/penM000/SHINtube-video-api)及び、LTIが利用可能なLMSが必要になります。
 
 ![SHINtubePreview](./docs/img/SHINtubeDemo.png "SHINtube")
 
@@ -56,7 +56,7 @@ SHINtubeは、デフォルトでmongoDBをネイティブに使用してLTIの�
  - [mongoDBのインストール](https://docs.mongodb.com/manual/administration/install-community/)
 ### eALPluS-video-api
 SHINtubeは、デフォルトでeALPluS-video-apiをネイティブに使用して動画のエンコード・保存および管理を行う為、インストールする必要があります。詳細な手順については、以下のリンクを参照してください。
- - [eALPluS-video-apiのインストール](https://github.com/penM000/eALPluS-video-api)
+ - [SHINtube-video-apiのインストール](https://github.com/penM000/SHINtube-video-api)
 
 ## ドキュメンテーション
  - [LMSへの登録について](./docs/RegistrationLMS.md)
