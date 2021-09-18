@@ -9,7 +9,7 @@ SHINtubeはLTIを利用できるLMSとの連携を想定して作成されてい
 
 ![SHINtubeLMS01](./img/SHINtubeLMS01.png "SHINtubeLMS01")
 
-### Step.2 : Add Tool内のURL入力欄に`https://<your domain>/register?regkey=<your setting regkey>`を入力して"Add LTI Advantage"ボタンをクリック
+### Step.2 : Add Tool内のURL入力欄に`https://<your domain>/register?regkey=<`[your setting regkey](./ConfigSetting.md#reg_key)`>` を入力して"Add LTI Advantage"ボタンをクリック
 
 ![SHINtubeLMS02](./img/SHINtubeLMS02.png "SHINtubeLMS02")
 
