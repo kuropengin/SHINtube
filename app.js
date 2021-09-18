@@ -9,7 +9,7 @@ const db_config = require('./config/db_config.json')
 const lti_config = require('./config/lti_config.json')
 
 const DB_URL = db_config.mongo_url || process.env.DB_URL || "mongo"
-const DB_NAME = db_config.db_name || process.env.DB_NAME || "eALPluS-video"
+const DB_NAME = db_config.db_name || process.env.DB_NAME || "SHINtube"
 const DB_USER = db_config.user || process.env.DB_USER || "root"
 const DB_PASS = db_config.pass || process.env.DB_PASS || "pass"
 
