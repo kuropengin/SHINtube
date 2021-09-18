@@ -31,7 +31,13 @@ router.get('/videolist',roleguard, async (req, res) => {
 })
 
 router.post('/videolist',roleguard, async (req, res) => {
-    var year = res.locals.token.iss.slice(-4)
+    try{
+        var year = res.locals.token.iss.split("/")[3]
+    }
+    catch(err){
+        var year = "0000"
+    }
+    
     var cid = res.locals.context.lis.course_section_sourcedid
     var options = {
         url: BACK_DOMAIN + '/linklist?year=' + year + '&cid=' + cid,
@@ -44,7 +50,12 @@ router.post('/videolist',roleguard, async (req, res) => {
 })
 
 router.post('/videodelete',roleguard, async (req, res) => {
-    var year = res.locals.token.iss.slice(-4)
+    try{
+        var year = res.locals.token.iss.split("/")[3]
+    }
+    catch(err){
+        var year = "0000"
+    }
     var cid = res.locals.context.lis.course_section_sourcedid
     var vid = req.body.vid
     var options = {
@@ -68,7 +79,12 @@ router.get('/upload',roleguard, async (req, res) => {
 
 router.post('/upload',roleguard, async (req, res) => {
 
-    var year = res.locals.token.iss.slice(-4)
+    try{
+        var year = res.locals.token.iss.split("/")[3]
+    }
+    catch(err){
+        var year = "0000"
+    }
     var cid = res.locals.context.lis.course_section_sourcedid
     
     var options = {
@@ -86,7 +102,6 @@ router.post('/upload',roleguard, async (req, res) => {
         fs.unlink(req.files.in_file.tempFilePath, (err) => {
             if (err) throw err;
         });
-        console.log(response.statusCode)
         if(response.statusCode == 200){
             lti.redirect(res, '/videolist', { newResource: true })
         }
@@ -103,7 +118,12 @@ router.get('/edit',roleguard, async (req, res) => {
 
 router.post('/edit',roleguard, async (req, res) => {
 
-    var year = res.locals.token.iss.slice(-4)
+    try{
+        var year = res.locals.token.iss.split("/")[3]
+    }
+    catch(err){
+        var year = "0000"
+    }
     var cid = res.locals.context.lis.course_section_sourcedid
     
     var options
@@ -235,7 +255,12 @@ const m3u8_proxy = createProxyMiddleware({
   selfHandleResponse: true, 
   pathRewrite: function (path, req) {
     var par = req.url.slice(1).split('/');
-    var year = req.res.locals.token.iss.split("/")[3]
+    try{
+        var year = req.res.locals.token.iss.split("/")[3]
+    }
+    catch(err){
+        var year = "0000"
+    }
     var cid = req.res.locals.context.lis.course_section_sourcedid
     return "/" + par[0] + "/" + year + "/" + cid + "/" + par[1] + "/" + par[2]
   },
@@ -252,7 +277,12 @@ const normal_proxy = createProxyMiddleware({
     changeOrigin: true ,
     pathRewrite: function (path, req) {
         var par = req.url.slice(1).split('/');
-        var year = req.res.locals.token.iss.split("/")[3]
+        try{
+            var year = req.res.locals.token.iss.split("/")[3]
+        }
+        catch(err){
+            var year = "0000"
+        }
         var cid = req.res.locals.context.lis.course_section_sourcedid
         return "/" + par[0] + "/" + year + "/" + cid + "/" + par[1] + "/" + par[2]
     }
