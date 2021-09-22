@@ -1,5 +1,8 @@
 # SHINtube各機能の利用について
 
+## SHINtubeの利用
+coming soon...
+
 ## 動画のアップロード・編集
 coming soon...
 

@@ -59,12 +59,17 @@ SHINtubeは、デフォルトでeALPluS-video-apiをネイティブに使用し�
  - [SHINtube-video-apiのインストール](https://github.com/penM000/SHINtube-video-api)
 
 ## ドキュメンテーション
+### 管理者用
  - [LMSへの登録について](./docs/RegistrationLMS.md)
  - [configファイルについて](./docs/ConfigSetting.md)
+ - [利用規約について](./docs/AboutManual.md)
+
+### 教師用
+ - [SHINtubeの利用方法について](./docs/SHINtubeManual.md#SHINtubeの利用)
  - [動画のアップロードについて](./docs/SHINtubeManual.md#動画のアップロード・編集)
  - [DeepLinkについて](./docs/SHINtubeManual.md#DeepLinkについて)
  - [グレーディングサービスについて](./docs/SHINtubeManual.md#グレーディングサービスについて)
- - [利用規約について](./docs/AboutManual.md)
+
 
 ## 貢献
 [GitHub](https://github.com/kuropengin/SHINtube)で私たちに⭐を頂けると嬉しいです！
