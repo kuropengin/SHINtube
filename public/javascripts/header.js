@@ -73,7 +73,7 @@ function ThemeModeInit() {
 
 
 function ThemeModeChange(mode) {
-    var elements = ["logo","header","munu-btn","munu","munu-icon","overlay","memo","download-btn","download-list","filter-word","delete-area","video-input"]
+    var elements = ["logo","header","munu-btn","munu","munu-icon","overlay","memo","download-btn","download-list","filter-word","delete-area","video-input","upload-btn"]
     for(var element of elements){
         var change_theme = document.getElementsByClassName("theme-" + element)
         for(var target_theme of change_theme){
