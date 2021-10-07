@@ -84,7 +84,7 @@ function postVideoProgress(){
 
     not_using_list.map(element => temp_list.push(element))
     temp_list.sort(sortFunction);
-    console.log(temp_list)
+    //console.log(temp_list)
 
     using_list = Array(temp_list.length).fill(1) 
     for(var i=0; i < temp_list.length; i++){
@@ -145,21 +145,17 @@ function videoInit(){
     const video = document.querySelector('video')
 
     var _volume = localStorage.getItem("volume")
+    
     if(!_volume){
         _volume = 1
     }
-    video.volume = _volume
-
-    video.onvolumechange = function(){
-        localStorage.setItem('volume', video.volume)
-    }
-
+    
     if (player) {player.dispose()} else {var player}  
     player = videojs('video-player', {
         autoplay: false,
         loop: false,
         controls: true,
-        preload: 'none',
+        preload: 'auto',
         playbackRates: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
         poster: '/video/' + params.get("video") + '/thumbnail_720.jpg/?ltik=' + params.get("ltik")
     });
@@ -172,6 +168,11 @@ function videoInit(){
     player.hlsQualitySelector({
         displayCurrentQuality: true
     });
+
+    video.volume = _volume
+    video.onvolumechange = function(){
+        localStorage.setItem('volume', video.volume)
+    }
 
     /*safariサポート待ち
     videojs.options.hls.overrideNative = true;
