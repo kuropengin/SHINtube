@@ -192,6 +192,14 @@
     color: #181818;
 }
 
+.light-theme-drag-area-block{
+    background: #FFF;
+}
+
+.dark-theme-drag-area-block{
+    background: #181818;
+}
+
 
 
 

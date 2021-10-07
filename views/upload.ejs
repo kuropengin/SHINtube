@@ -17,13 +17,17 @@
         <form id="upload-form" action="/upload" method="post" encType="multipart/form-data">
           <div class="step">
             <div class="step-contents">
-              <div id="drag-area" class="drag-area-init">
+              <div id="drag-area" class="drag-area-init drag-area-block-on">
                 <div class="drop-info">ファイルをドロップ</div>
                 <div class="drop-or">または</div>
                 <label class="theme-upload-btn">ファイルを選択する
                   <input id="uploader" type="file" name="in_file" required>
                 </label>
-                
+              </div>
+              <div id="drag-area-block" class="theme-drag-area-block">
+                <div class="input_text_title select-file-title">選択中動画</div>
+                <div id="input_file_name"></div>
+                <div id="re-select-btn" class="re-select-file">再選択</div>
               </div>
             </div>
           </div>
