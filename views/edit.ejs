@@ -28,12 +28,17 @@
         <form id="upload-form" action="/edit" method="post" encType="multipart/form-data">
           <div class="step">
             <div class="step-contents">
-              <div id="drag-area" class="drag-area-init">
+              <div id="drag-area" class="drag-area-init drag-area-block-on">
                 <div class="drop-info">ファイルをドロップ</div>
                 <div class="drop-or">または</div>
                 <label class="theme-upload-btn">ファイルを選択する
                   <input id="uploader" type="file" name="in_file" required>
                 </label>
+              </div>
+              <div id="drag-area-block" class="theme-drag-area-block">
+                <div class="input_text_title select-file-title">選択中動画</div>
+                <div id="input_file_name"></div>
+                <div id="re-select-btn" class="re-select-file">再選択</div>
               </div>
             </div>
           </div>
@@ -51,14 +56,14 @@
           </div>
           <div class="submit-area">
             <input id="input_hidden_vid" type="hidden" name="vid">
-            <div id="upload-btn" class="submit-btn">編集</div>
+            <div id="upload-btn" class="submit-btn">更新</div>
           </div>
         </form>
       </div>
       <div id="upload-overlay" class="off-overlay theme-overlay">
         <div id="upload-now">
           <div id="upload-progress-area">
-            <div class="upload-msg">編集内容の反映中</div>
+            <div class="upload-msg">更新内容の反映中</div>
             <div id="uploadbar"></div>
             <div id="upload-percent">0</div>
             <div id="result-area">

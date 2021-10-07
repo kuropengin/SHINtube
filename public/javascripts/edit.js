@@ -25,11 +25,17 @@ async function load_video({ target: { files } }) {
     input_video_file = files[0]
     console.log(input_video_file)
     await show_input_video_preview(input_video_file)
+    if(input_video_file){
+      select_file_info_show(input_video_file.name)
+    }
 }
 
 async function drop_load_video({ dataTransfer: { files } }) {
     input_video_file = files[0]
     await show_input_video_preview(input_video_file)
+    if(input_video_file){
+      select_file_info_show(input_video_file.name)
+    }
 }
 
 var fileArea = document.getElementById('drag-area')
@@ -172,6 +178,22 @@ function upload_video(){
 }
 
 document.getElementById("upload-btn").addEventListener("click", upload_video, false)
+
+function select_file_info_show(file){
+  document.getElementById("input_file_name").innerHTML = file
+  document.getElementById("drag-area").classList.toggle("drag-area-block-on")
+  document.getElementById("drag-area-block").classList.toggle("drag-area-block-on")
+}
+
+function re_select_file_info(){
+  document.getElementById("drag-area-block").classList.toggle("drag-area-block-on")
+  document.getElementById("drag-area").classList.toggle("drag-area-block-on")
+  document.getElementById('uploader').value = ""
+  document.getElementById('upload-video-preview').src=""
+  document.getElementById('upload-video-preview').classList.add("display-off")
+  document.getElementById('now-video-preview').classList.remove("display-off")
+}
+document.getElementById("re-select-btn").addEventListener("click", re_select_file_info, false)
 
 window.addEventListener("load", function() {
   getVideoInfoResponse(valueInit)

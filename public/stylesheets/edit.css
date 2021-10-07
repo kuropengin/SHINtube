@@ -36,8 +36,6 @@
     width: calc(100% - 26px);
     border-radius: 10px;
     margin: 10px;
-    display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     cursor: pointer;
@@ -45,6 +43,7 @@
 }
 
 .drag-area-init{
+    display: none;
     border: dashed 2px #cacaca;
 }
 
@@ -112,6 +111,47 @@
 
 input[type="textarea"]:focus{
     outline: none;
+}
+
+.theme-drag-area-block{
+    align-content: space-between;
+    justify-content: flex-end;
+    border-radius: 10px;
+    display: none;
+}
+
+.drag-area-block-on{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#input_file_name{
+    width: 100%;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.select-file-title{
+    width: 100%;
+}
+
+.re-select-file{
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    user-select: none;
+    text-align: right;
+
+    user-select: none;
+    cursor: pointer;
+
+    margin: 5px 10px;
+    border-radius: 5px;
+}
+
+.re-select-file:hover{
+    background: rgb(90 90 90 / 20%);
 }
 
 .submit-area{
