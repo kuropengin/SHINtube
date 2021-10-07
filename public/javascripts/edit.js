@@ -18,6 +18,7 @@ async function show_input_video_preview(input_video_file) {
   )
   await sleep(1000)
   input_video_preview.currentTime = 0
+  input_video_preview.controls = true
 }
 
 async function load_video({ target: { files } }) {
