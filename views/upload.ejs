@@ -15,6 +15,7 @@
       </div>
       <div class="upload-right-contents theme-video-input">
         <form id="upload-form" action="/upload" method="post" encType="multipart/form-data">
+          <div id="file-non-err" class="form-err-msg"></div>
           <div class="step">
             <div class="step-contents">
               <div id="drag-area" class="drag-area-init drag-area-block-on">
@@ -31,6 +32,7 @@
               </div>
             </div>
           </div>
+          <div id="title-non-err" class="form-err-msg"></div>
           <div class="step">
             <div class="step-contents">
               <div class="input_text_title">タイトル(必須)</div>

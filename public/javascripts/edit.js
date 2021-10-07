@@ -122,12 +122,14 @@ var upload_flag = false
 
 function upload_video(){
   var required_check = false
+  document.getElementById("title-non-err").innerHTML = ""
 
   const form = document.getElementById("upload-form")
 
   if(!form.title.value){
     required_check = true
     form.title.parentNode.parentNode.classList.add("required_input")
+    document.getElementById("title-non-err").innerHTML = "動画タイトルを入力してください"
   }
   else{
     form.title.parentNode.parentNode.classList.remove("required_input")

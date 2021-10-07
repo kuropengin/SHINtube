@@ -10,6 +10,12 @@
     background: #333;
 }
 
+.form-err-msg{
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff4a4a;
+}
+
 .step{
     width: calc(100% - 2px);
     margin: 10px 0;

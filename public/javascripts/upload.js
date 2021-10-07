@@ -74,11 +74,14 @@ var upload_flag = false;
 
 function upload_video(){
     var required_check = false
+    document.getElementById("file-non-err").innerHTML = ""
+    document.getElementById("title-non-err").innerHTML = ""
 
     const form = document.getElementById("upload-form");
     if(!form.in_file.value){
         required_check = true
         form.in_file.parentNode.parentNode.parentNode.parentNode.classList.add("required_input")
+        document.getElementById("file-non-err").innerHTML = "動画ファイルを選択してください"
     }
     else{
         form.in_file.parentNode.parentNode.parentNode.parentNode.classList.remove("required_input")
@@ -86,6 +89,7 @@ function upload_video(){
     if(!form.title.value){
         required_check = true
         form.title.parentNode.parentNode.classList.add("required_input")
+        document.getElementById("title-non-err").innerHTML = "動画タイトルを入力してください"
     }
     else{
         form.title.parentNode.parentNode.classList.remove("required_input")
