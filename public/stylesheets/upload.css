@@ -270,3 +270,13 @@ input[type="textarea"]:focus{
 .required_input{
     border: 1px solid #ff4a4a;
 }
+
+#title-input-limit, #exp-input-limit{
+    display: inline-block;
+}
+
+.input-limit-show{
+    color: #6c6c6c;
+    padding: 5px 20px;
+    text-align: end;
+}

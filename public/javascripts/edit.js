@@ -197,6 +197,16 @@ function re_select_file_info(){
 }
 document.getElementById("re-select-btn").addEventListener("click", re_select_file_info, false)
 
+function title_limit_change(){
+  document.getElementById("title-input-limit").innerHTML = document.getElementById("upload-title").value.length
+}
+document.getElementById("upload-title").addEventListener('input', title_limit_change);
+
+function exp_limit_change(){
+  document.getElementById("exp-input-limit").innerHTML = document.getElementById("upload-explanation").value.length
+}
+document.getElementById("upload-explanation").addEventListener('input', exp_limit_change);
+
 window.addEventListener("load", function() {
   getVideoInfoResponse(valueInit)
 })

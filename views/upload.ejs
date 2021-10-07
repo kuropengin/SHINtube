@@ -36,13 +36,15 @@
           <div class="step">
             <div class="step-contents">
               <div class="input_text_title">タイトル(必須)</div>
-              <textarea id="upload-title" class="input_text_init" cols="50" rows="4" name="title" required ></textarea>
+              <textarea id="upload-title" class="input_text_init" cols="50" rows="4" name="title" maxlength="40" required ></textarea>
+              <div class="input-limit-show"><div id="title-input-limit">0</div> / 40</div>
             </div>
           </div>
           <div class="step">
             <div class="step-contents">
               <div class="input_text_title">説明</div>
-              <textarea id="upload-explanation" class="input_text_init" cols="50" rows="4" name="explanation"></textarea>
+              <textarea id="upload-explanation" class="input_text_init" cols="50" rows="4" name="explanation" maxlength="200"></textarea>
+              <div class="input-limit-show"><div id="exp-input-limit">0</div> / 200</div>
             </div>
           </div>
           <div class="submit-area">
