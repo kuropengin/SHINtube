@@ -29,7 +29,10 @@ function postVideoProgressInit(){
             if(_score < 100){
                 lmsProgressScore = _score
                 if(_comment){
-                    lmsProgressList = _comment.split(',').map(ele => [parseFloat(ele.split('-')[0]), parseFloat(ele.split('-')[1])]);
+                    lmsProgressList = _comment.split(',').map(ele => [parseFloat(ele.split('-')[0]), parseFloat(ele.split('-')[1])])
+                    if(lmsProgressList.length){
+                        video.currentTime = lmsProgressList[0][1]
+                    }
                 }
 
 
