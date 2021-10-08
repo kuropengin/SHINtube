@@ -89,7 +89,6 @@ function getVideoInfoResponse(callback){
   }
   request.send()
 }
-
 function valueInit(InitData){
 
   var params = (new URL(document.location)).searchParams;
@@ -116,6 +115,9 @@ function valueInit(InitData){
   player.hlsQualitySelector({
     displayCurrentQuality: true
   })
+
+  title_limit_change()
+  exp_limit_change()
 }
 
 var upload_flag = false
