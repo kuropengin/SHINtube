@@ -23,6 +23,8 @@ html,body {
 }
 
 #info-area{
+    overflow-wrap: anywhere;
+    max-width: 1280px;
     margin: 10px 0;
 }
 
@@ -181,6 +183,9 @@ html,body {
         width: calc(100vw - 60px);
         height: calc((100vw - 60px)*0.5625);
     }
+    #info-area{
+        width: calc(100vw - 60px);
+    }
 
     #side-area{
         width: calc(100vw - 60px);
@@ -199,6 +204,9 @@ html,body {
     #video-area{
         width: calc(100vw - 60px);
         height: calc((100vw - 60px)*0.5625);
+    }
+    #info-area{
+        width: calc(100vw - 60px);
     }
 
     #side-area{
@@ -219,6 +227,9 @@ html,body {
         width: calc(100vw - 380px);
         height: calc((100vw - 380px)*0.5625);
     }
+    #info-area{
+        width: calc(100vw - 380px);
+    }
 
     #side-area{
         margin-left: 10px;
@@ -237,6 +248,9 @@ html,body {
     #video-area{
         width: calc(100vw - 580px);
         height: calc((100vw - 580px)*0.5625);
+    }
+    #info-area{
+        width: calc(100vw - 580px);
     }
 
     #side-area{
