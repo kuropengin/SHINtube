@@ -12,7 +12,12 @@
   <body class="theme-body">
     <%- include('./common/header') %>
     <div id="contents">
-      <div id="class-name" class="video-h1"></div>
+      <div class="contents_header">
+        <div id="class-name" class="video-h1"></div>
+        <div class="upload-area">
+          <div id="upload-btn"><img src="/images/upload.png">アップロード</div>
+        </div>
+      </div>
       <%- include('./common/filter') %>
       <div id="videolist-head">
         <div class="videolist-head-title head-thumbnail">サムネイル</div>
@@ -23,9 +28,6 @@
       </div>
       <div id="videolist-area">
         <div id="videolist"></div>
-        <div class="upload-area">
-          <div id="upload-btn">アップロード</div>
-        </div>
         <div id="delete-overlay" class="overlay theme-overlay">
           <div class="delete-area theme-delete-area">
             <p>この動画を削除しますか</p>
