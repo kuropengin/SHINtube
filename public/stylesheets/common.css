@@ -16,3 +16,17 @@ html,body {
   flex-wrap: wrap;
   overflow: auto;
 }
+
+::-webkit-scrollbar{
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track{
+  background: rgba(255, 255, 255, 0);
+  border: none;
+}
+::-webkit-scrollbar-thumb{
+  background: #ccc;
+  border-radius: 10px;
+  box-shadow: none;
+}
