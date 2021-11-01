@@ -143,7 +143,7 @@ router.get('/test', async (req, res) => {
   const token = res.locals.token
   const context = res.locals.context
 
-  const info = { }
+  const info = {}
   if (token.userInfo) {
     if (token.userInfo.name) info.name = token.userInfo.name
     if (token.userInfo.email) info.email = token.userInfo.email

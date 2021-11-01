@@ -8,49 +8,53 @@
   <body>
     <%- include('./common/header') %>
     <div id="contents">
-      <div class="upload-left-contents">
-        <div class="video-area">
-            <video id="upload-video-preview" controls="false" muted=""></video>
+      <%- include('./common/side-menu') %>
+      <div class="main-contents">
+        <div class="upload-left-contents">
+          <div class="video-area">
+              <video id="upload-video-preview" controls="false" muted=""></video>
+          </div>
         </div>
-      </div>
-      <div class="upload-right-contents theme-video-input">
-        <form id="upload-form" action="/upload" method="post" encType="multipart/form-data">
-          <div id="file-non-err" class="form-err-msg"></div>
-          <div class="step">
-            <div class="step-contents">
-              <div id="drag-area" class="drag-area-init drag-area-block-on">
-                <div class="drop-info">ファイルをドロップ</div>
-                <div class="drop-or">または</div>
-                <label class="theme-upload-btn">ファイルを選択する
-                  <input id="uploader" type="file" name="in_file" required>
-                </label>
+        <div class="upload-right-contents theme-video-input">
+          <form id="upload-form" action="/upload" method="post" encType="multipart/form-data">
+            <div id="file-non-err" class="form-err-msg"></div>
+            <div class="step">
+              <div class="step-contents">
+                <div id="drag-area" class="drag-area-init drag-area-block-on">
+                  <div class="drop-info">ファイルをドロップ</div>
+                  <div class="drop-or">または</div>
+                  <label class="theme-upload-btn">ファイルを選択する
+                    <input id="uploader" type="file" name="in_file" required>
+                  </label>
+                </div>
+                <div id="drag-area-block" class="theme-drag-area-block">
+                  <div class="input_text_title select-file-title">選択中動画</div>
+                  <div id="input_file_name"></div>
+                  <div id="re-select-btn" class="re-select-file">再選択</div>
+                </div>
               </div>
-              <div id="drag-area-block" class="theme-drag-area-block">
-                <div class="input_text_title select-file-title">選択中動画</div>
-                <div id="input_file_name"></div>
-                <div id="re-select-btn" class="re-select-file">再選択</div>
+            </div>
+            <div id="title-non-err" class="form-err-msg"></div>
+            <div class="step">
+              <div class="step-contents">
+                <div class="input_text_title">タイトル(必須)</div>
+                <textarea id="upload-title" class="input_text_init" cols="50" rows="4" name="title" maxlength="40" required ></textarea>
+                <div class="input-limit-show"><div id="title-input-limit">0</div> / 40</div>
               </div>
             </div>
-          </div>
-          <div id="title-non-err" class="form-err-msg"></div>
-          <div class="step">
-            <div class="step-contents">
-              <div class="input_text_title">タイトル(必須)</div>
-              <textarea id="upload-title" class="input_text_init" cols="50" rows="4" name="title" maxlength="40" required ></textarea>
-              <div class="input-limit-show"><div id="title-input-limit">0</div> / 40</div>
+            <div class="step">
+              <div class="step-contents">
+                <div class="input_text_title">説明</div>
+                <textarea id="upload-explanation" class="input_text_init" cols="50" rows="4" name="explanation" maxlength="200"></textarea>
+                <div class="input-limit-show"><div id="exp-input-limit">0</div> / 200</div>
+              </div>
             </div>
-          </div>
-          <div class="step">
-            <div class="step-contents">
-              <div class="input_text_title">説明</div>
-              <textarea id="upload-explanation" class="input_text_init" cols="50" rows="4" name="explanation" maxlength="200"></textarea>
-              <div class="input-limit-show"><div id="exp-input-limit">0</div> / 200</div>
+            <div class="submit-area">
+              <div id="cancel-btn" class="submit-btn submit-cancel">キャンセル</div>
+              <div id="upload-btn" class="submit-btn">アップロード</div>
             </div>
-          </div>
-          <div class="submit-area">
-            <div id="upload-btn" class="submit-btn">アップロード</div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
       <div id="upload-overlay" class="off-overlay theme-overlay">
         <div id="upload-now">

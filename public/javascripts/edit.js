@@ -1,5 +1,6 @@
 const input_video_preview = document.getElementById('upload-video-preview')
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec))
+var encoding_flag = false
 
 async function show_input_video_preview(input_video_file) {
   if(input_video_file){
@@ -97,24 +98,44 @@ function valueInit(InitData){
   document.getElementById('upload-explanation').value = InitData.explanation
   document.getElementById('input_hidden_vid').value = params.get("vid")
 
-  if (player) {player.dispose()} else {var player}  
-  player = videojs('now-video-preview', {
-    autoplay: false,
-    loop: false,
-    controls: true,
-    preload: 'auto',
-    playbackRates: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
-    poster: '/video/' + params.get("vid") + '/thumbnail_720.jpg/?ltik=' + params.get("ltik")
-  })
+  if(InitData.encode_error.length){
+    encoding_flag = false
+  }
+  else if(InitData.encode_tasks.length){
+    encoding_flag = false
+  }
+  else if(InitData.resolution.length == 0 && InitData.encode_tasks.length == 0){
+    encoding_flag = false
+  }
+  else{
+    encoding_flag = true
+  }
 
-  player.src({
-    type: 'application/x-mpegURL',
-    src: "/video/" + params.get("vid") + "/playlist.m3u8" + "?ltik=" + params.get("ltik")
-  })
+  if(encoding_flag){
+    if (player) {player.dispose()} else {var player}  
+    player = videojs('now-video-preview', {
+      autoplay: false,
+      loop: false,
+      controls: true,
+      preload: 'auto',
+      playbackRates: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
+      poster: '/video/' + params.get("vid") + '/thumbnail_720.jpg/?ltik=' + params.get("ltik")
+    })
 
-  player.hlsQualitySelector({
-    displayCurrentQuality: true
-  })
+    player.src({
+      type: 'application/x-mpegURL',
+      src: "/video/" + params.get("vid") + "/playlist.m3u8" + "?ltik=" + params.get("ltik")
+    })
+
+    player.hlsQualitySelector({
+      displayCurrentQuality: true
+    })
+  }
+  else{
+    document.getElementById("encoding-block").classList.add("drag-area-block-on")
+    document.getElementById("drag-area").classList.remove("drag-area-block-on")
+    document.getElementById("drag-area-block").classList.remove("drag-area-block-on")
+  }
 
   title_limit_change()
   exp_limit_change()
@@ -127,6 +148,9 @@ function upload_video(){
   document.getElementById("title-non-err").innerHTML = ""
 
   const form = document.getElementById("upload-form")
+  if(form.in_file.value && !encoding_flag){
+    form.in_file.value = ""
+  }
 
   if(!form.title.value){
     required_check = true
@@ -168,9 +192,15 @@ function upload_video(){
     else{
       document.getElementById("upload-info").innerHTML = "<font color='red'>反映に失敗しました</font>"
     }
+
     document.getElementById("back-btn").classList.toggle("lock-btn")
     document.getElementById("back-btn").addEventListener('click', function(){
       window.location.href = "/videolist?ltik=" + params.get("ltik")
+    })
+
+    document.getElementById("reedit-btn").classList.toggle("lock-btn")
+    document.getElementById("reedit-btn").addEventListener('click', function(){
+      window.location.reload()
     })
   }
 
@@ -182,6 +212,9 @@ function upload_video(){
 }
 
 document.getElementById("upload-btn").addEventListener("click", upload_video, false)
+document.getElementById("cancel-btn").addEventListener("click", function(){
+  window.location.href = "/videolist?ltik=" + params.get("ltik")
+}, false)
 
 function select_file_info_show(file){
   document.getElementById("input_file_name").innerHTML = file
@@ -200,11 +233,17 @@ function re_select_file_info(){
 document.getElementById("re-select-btn").addEventListener("click", re_select_file_info, false)
 
 function title_limit_change(){
+  if(document.getElementById("upload-title").value.length > 40){
+      document.getElementById("upload-title").value = document.getElementById("upload-title").value.slice(0,40)
+  }
   document.getElementById("title-input-limit").innerHTML = document.getElementById("upload-title").value.length
 }
 document.getElementById("upload-title").addEventListener('input', title_limit_change);
 
 function exp_limit_change(){
+  if(document.getElementById("upload-explanation").value.length > 200){
+      document.getElementById("upload-explanation").value = document.getElementById("upload-explanation").value.slice(0,200)
+  }
   document.getElementById("exp-input-limit").innerHTML = document.getElementById("upload-explanation").value.length
 }
 document.getElementById("upload-explanation").addEventListener('input', exp_limit_change);

@@ -1,9 +1,26 @@
+
+#contents{
+    width: 100%;
+    height: calc(100% - 56px);
+    padding: 0;
+    flex-wrap: nowrap;
+}
+
+
+.main-contents{
+    width: calc(100% - 200px);
+    overflow: auto;
+}
+
+
 .video-h1{
     padding: 20px;
     font-size: 24px;
     font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
-
 
 .contents_header{
     width: calc(100%);
@@ -11,60 +28,129 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    left: 0;
 }
 
 
+.listfilter-area {
+    position: sticky;
+    left: 0;
+}
 
 #videolist-head{
-    width: 100%;
     display: flex;
-    border-bottom: 1px solid #cacaca;
+    min-width: 1400px;
+    position: sticky;
+    top: 0;
+    background: var(--default_back_color);
+    z-index: 4;
 }
 
-.videolist-head-title{
-    border-left: 1px solid #cacaca;
-    text-align: center;
+#videolist-head p{
+    margin: 0;
+    width: auto;
+}
+
+#videolist-head .head-video{
+    width: 580px;
     padding: 10px 0;
+    padding-left: 20px;
+    flex: 0 0 580px;
+    border-bottom: 1px solid #cacaca;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+#videolist-head .head-status,
+#videolist-head .head-update,
+#videolist-head .head-create,
+#videolist-head .head-contributor{
+    padding: 10px;
+    border-bottom: 1px solid #cacaca;
+    justify-content: space-between;
+    cursor: pointer;
+    position: relative;
+}
+
+.head-video{
+    width: 600px;
+    display: flex;
+    flex-wrap: wrap;
+    position: sticky;
+    flex: 0 0 600px;
+    left: 0;
+    z-index: 1;
+    transform: translateZ(0);
+    padding: 10px 0;
+    background: var(--default_back_color);
 }
 
 .head-thumbnail{
-    width: 15%;
-    border-left: none;
+    width: 160px;
     display: flex;
-    justify-content: center;
+    padding: 0 20px;
     align-items: center;
     position: relative;
 }
 
 .head-title{
-    width: 20%;
+    width: 400px;
     display: flex;
-    justify-content: center;
-    align-items: center;
     overflow-wrap: anywhere;
+    flex-wrap: wrap;   
 }
 
-.head-explanation{
-    width: 30%;
+.head-status, .head-update, .head-create, .head-contributor{
+    min-width: 200px;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow-wrap: anywhere;
+    padding: 10px;
+    flex-wrap: wrap;
+    flex: 1 0 200px;
 }
 
-.head-status{
-    width: 15%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.head-operation{
-    width: 20%;
-    display: flex;
-    justify-content: center;
+.operation-div{
+    width: 100%;
+    display: none;
     align-items: center;
     flex-wrap: wrap;
+}
+
+.sort-head-btn{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.indicator{
+    width: 24px;
+    height: 24px;
+}
+
+.indicator::before {
+    content: "";
+    position: absolute;
+    border: 8px solid transparent;
+    border-bottom-color: #aaa;
+    margin-top: -6px;
+}
+  
+.indicator::after {
+    content: "";
+    position: absolute;
+    border: 8px solid transparent;
+    border-top-color: #aaa;
+    margin-top: 14px;
+}
+
+.asc .indicator::before {
+    border-bottom-color: #555;
+}
+
+.desc .indicator::after {
+    border-top-color: #555;
 }
 
 #videolist-area{
@@ -111,16 +197,35 @@
 
 #videolist{
     width: 100%;
+    padding-bottom: 50px;
 }
 
 .video_div{
-    width: 100%;
+    min-width: 1400px;
     display: flex;
-    padding: 10px 0;
+    position: relative;
+}
+
+.video_div:hover{
+    background: var(--hover_back_color);
+}
+
+.video_div:hover .head-video{
+    background: var(--hover_back_color);
+}
+
+.video_div:hover .head-explanation-p{
+    display: none;
+}
+
+.video_div:hover .operation-div{
+    display: flex;
 }
 
 .head-thumbnail img{
-    width: 80%;
+    width: 160px;
+    height: 90px;
+    object-fit: cover;
 }
 
 .head-thumbnail a{
@@ -131,13 +236,91 @@
     height: 100%;
 }
 
-.head-title p, .head-explanation p{
-    padding: 0 10px;
-    font-size: 18px;
-    font-weight: bold;
+.head-title p,
+.head-explanation p,
+.head-status p,
+.head-update p,
+.head-create p,
+.head-contributor p{
+    width: 100%;
+    margin: 0;
+    /*font-size: 18px;*/
+    /*font-weight: bold;*/
 }
 
-.head-status p, .head-operation p{
+.head-title-p{
+    font-size: 16px;
+    font-weight: 600;
+    height: 30px;
+    line-height: 30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.head-explanation-p{
+    font-size: 14px;
+    font-weight: 400;
+    height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.8;
+}
+
+.head-status-title{
+    font-size: 16px;
+    font-weight: 600;
+    height: 30px;
+    line-height: 30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.head-status-info{
+    font-size: 14px;
+    font-weight: 400;
+    height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.8;
+}
+
+.head-status-green{
+    color: #065e3c;
+    margin-right: 5px;
+}
+
+.head-status-yellow{
+    color: #ffc107;
+    margin-right: 5px;
+}
+
+.head-status-red{
+    color: #fa1d1d;
+    margin-right: 5px;
+}
+
+.head-update-ymd, .head-create-ymd, .head-contributor-p{
+    font-size: 16px;
+    font-weight: 600;
+    height: 30px;
+    line-height: 30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.head-update-hms, .head-create-hms{
+    font-size: 14px;
+    font-weight: 400;
+    height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.8;
+}
+
+.operation-div p{
     text-align: center;
     color: #FFF;
     font-size: 12px;
@@ -149,7 +332,7 @@
 .operation-btn{
     text-align: center;
     color: #FFF;
-    font-size: 12px;
+    font-size: 14px;
     padding: 8px;
     border-radius: 10px;
     font-weight: bold;
@@ -188,11 +371,11 @@
     user-select: none;
 }
 
-.head-operation .status-now{
+.operation-div .status-now{
     padding: 8px 10px;
 }
 
-.head-operation .status-ed{
+.operation-div .status-ed{
     padding: 8px 25px;
 }
 
@@ -219,13 +402,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    z-index: 10;
 }
 
 .overlay{
     visibility: hidden;
     opacity: 0;
     transition: ease .5s;
-    background: rgba(68, 68, 68, 0.2);
+    background: var(--overlay_back_color);
 }
 
 .delete-overlay-on{
@@ -302,5 +487,17 @@
     .listfilter-area{
         width: calc(100% - 20px);
         padding: 5px 10px;
+    }
+}
+
+@media screen and (max-width:1200px) { 
+    .main-contents{
+        width: calc(100% - 50px);
+    }
+}
+
+@media screen and (max-width:1690px) { 
+    .head-video{
+        border-right: 1px solid #cacaca;
     }
 }

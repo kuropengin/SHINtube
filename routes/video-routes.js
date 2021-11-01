@@ -2,6 +2,7 @@ const router = require('express').Router()
 const path = require('path')
 const fs = require('fs')
 const request = require('request');
+const system = require('../tool/system')
 
 // Requiring Ltijs
 const lti = require('ltijs').Provider
@@ -72,13 +73,25 @@ router.get('/watch', async (req, res) => {
     res.render('watch')
 })
 
+router.get('/system',roleguard, async (req, res) => {
+    res.render('system')
+})
+
+router.get('/system-check',roleguard, async (req, res) => {
+    const system_list = await system.check(req, res)
+    res.send(system_list)
+})
+
 router.get('/upload',roleguard, async (req, res) => {
     res.render('upload')
 })
 
 
 router.post('/upload',roleguard, async (req, res) => {
-
+    var metadata = {
+        "contributor_name" : res.locals.token.userInfo.name,
+        "contributor_id" : res.locals.token.user
+    }
     try{
         var year = res.locals.token.iss.split("/")[3]
     }
@@ -88,7 +101,7 @@ router.post('/upload',roleguard, async (req, res) => {
     var cid = res.locals.context.lis.course_section_sourcedid
     
     var options = {
-        url: BACK_DOMAIN + '/upload?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation),
+        url: BACK_DOMAIN + '/upload?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
         method: 'POST',
         headers: {
             "Content-Type": "multipart/form-data"
@@ -254,7 +267,8 @@ const m3u8_proxy = createProxyMiddleware({
   changeOrigin: true ,
   selfHandleResponse: true, 
   pathRewrite: function (path, req) {
-    var par = req.url.slice(1).split('/');
+    var temp_url = req.url.split('?')[0];
+    var par = temp_url.slice(1).split('/');
     try{
         var year = req.res.locals.token.iss.split("/")[3]
     }
@@ -276,7 +290,8 @@ const normal_proxy = createProxyMiddleware({
     target: BACK_DOMAIN, 
     changeOrigin: true ,
     pathRewrite: function (path, req) {
-        var par = req.url.slice(1).split('/');
+        var temp_url = req.url.split('?')[0];
+        var par = temp_url.slice(1).split('/');
         try{
             var year = req.res.locals.token.iss.split("/")[3]
         }

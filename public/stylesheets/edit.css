@@ -1,3 +1,19 @@
+#contents{
+    width: 100%;
+    height: calc(100% - 56px);
+    padding: 0;
+    flex-wrap: nowrap;
+}
+
+.main-contents{
+    width: calc(100% - 200px);
+    display: flex;
+    justify-content: center;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    overflow: auto;
+}
+
 .upload-left-contents,.upload-right-contents{
     max-width: 600px;
     width: 100%;
@@ -7,6 +23,11 @@
 #upload-video-preview{
     width: 100%;
     box-shadow: 2px 2px 4px grey;
+    background: #333;
+}
+
+#now-video-preview{
+    width: 100%;
     background: #333;
 }
 
@@ -168,23 +189,32 @@ input[type="textarea"]:focus{
 }
 
 .submit-btn{
-    background-color: transparent;
     border: none;
     cursor: pointer;
     outline: none;
     appearance: none;
-
     width: 200px;
-    height: 60px;
+    height: 55px;
     background: #065e3c;
     color: #FFF;
     text-align: center;
-    line-height: 60px;
+    line-height: 55px;
     font-size: 20px;
     font-weight: bold;
     user-select: none;
     border-radius: 10px;
+    margin: 0 10px;
+    opacity: 0.8;
 }
+
+.submit-btn:hover{
+    opacity: 1;
+}
+
+.submit-cancel{
+    background: #9e9e9e;
+}
+
 
 .video-area{
     padding-top: 10px;
@@ -262,11 +292,11 @@ input[type="textarea"]:focus{
 }
 
 #upload-info{
-    width: calc(100% - 110px);
+    width: calc(100% - 200px);
     font-weight: bold;
 }
 
-#back-btn{
+#back-btn,#reedit-btn{
     padding: 8px 15px;
     border-radius: 5px;
     cursor: pointer;
@@ -274,9 +304,15 @@ input[type="textarea"]:focus{
 
 .unlock-btn{
     background: #065e3c;
+    margin-left: 6px;
     color: #fff;
     cursor: pointer;
-} 
+    opacity: 0.8;
+}
+
+.unlock-btn:hover{
+    opacity: 1;
+}
 
 .lock-btn{
     background: #6f6f6f;
@@ -296,4 +332,19 @@ input[type="textarea"]:focus{
     color: #6c6c6c;
     padding: 5px 20px;
     text-align: end;
+}
+
+.encoding-title{
+    width: 100%;
+    height: 120px;
+    text-align: center;
+    line-height: 120px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+@media screen and (max-width:1200px) { 
+    .main-contents{
+        width: calc(100% - 50px);
+    }
 }

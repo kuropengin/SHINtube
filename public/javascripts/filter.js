@@ -68,71 +68,21 @@ class VideoFilter {
 }
 
 
+videofilter = new VideoFilter({
+    order : [{key: "created_at", reverse: false},{key: "updated_at", reverse: false}],
+    filtertarget : ["title","explanation","contributor_name"],
+    filterword : ""
+})
+
 function filterInit(){
-    videofilter = new VideoFilter({
-        order : [{key: "created_at", reverse: false},{key: "updated_at", reverse: false}],
-        filtertarget : ["title","explanation"],
-        filterword : ""
-    })
-
-    var filter_list_display = function(){
-        document.getElementById("filter-list").classList.toggle("filter-list-hidden")
+    var filter_focus = function(){
+        document.getElementById("filter-word").focus()
     }
-
-    document.getElementById("filter-btn").addEventListener("click", filter_list_display, false);
-    
-    document.addEventListener("click", (e) => {
-        if( !e.target.closest("#filter-list") && !e.target.closest("#filter-btn") && 
-            !document.getElementById("filter-list").classList.contains("filter-list-hidden")){
-            filter_list_display()
-        } 
-    })
-    
-    
-    document.getElementById("filter-type-create-up").addEventListener("click", function(){
-        videofilter.order = [
-            {key: "created_at", reverse: false},
-            {key: "updated_at", reverse: false}
-        ]
-        redraw_video_list()
-    }, false);
-    document.getElementById("filter-type-create-down").addEventListener("click", function(){
-        videofilter.order = [
-            {key: "created_at", reverse: true},
-            {key: "updated_at", reverse: true}
-        ]
-        redraw_video_list()
-    }, false);
-    document.getElementById("filter-type-update-up").addEventListener("click", function(){
-        videofilter.order = [
-            {key: "updated_at", reverse: false},
-            {key: "created_at", reverse: false}
-        ]
-        redraw_video_list()
-    }, false);
-    document.getElementById("filter-type-update-down").addEventListener("click", function(){
-        videofilter.order = [
-            {key: "updated_at", reverse: true},
-            {key: "created_at", reverse: true}
-        ]
-        redraw_video_list()
-    }, false);
-    document.getElementById("filter-type-title-up").addEventListener("click", function(){
-        videofilter.order = [
-            {key: "title", reverse: false},
-            {key: "created_at", reverse: false}
-        ]
-        redraw_video_list()
-    }, false);
-    document.getElementById("filter-type-title-down").addEventListener("click", function(){
-        videofilter.order = [
-            {key: "title", reverse: true},
-            {key: "created_at", reverse: true}
-        ]
-        redraw_video_list()
-    }, false);
-
+    document.getElementById("filter-btn").addEventListener("click", filter_focus, false);  
 }
+
+
+
 
 window.addEventListener("load", function() {
     filterInit()

@@ -3,12 +3,33 @@
   <head>
     <%- include('./common/head') %>
     <link rel='stylesheet' href='/stylesheets/deeplink.css'/>
-    <link rel='stylesheet' href='/stylesheets/theme.css'/>
     <script type="text/javascript" src="/javascripts/deeplink.js"></script>
   </head>
   <body>
     <div id="contents">
         <%- include('./common/filter') %>
+        <div id="videolist-head">
+          <div id="sort-video-btn" class="head-video">
+            <p>動画</p> 
+            <div class="indicator"></div>
+            <div class="sort-head-btn"></div>
+          </div>
+          <div id="sort-update-btn" class="head-update">
+            <p>更新日</p>
+            <div class="indicator"></div>
+            <div class="sort-head-btn"></div>
+          </div>
+          <div id="sort-create-btn" class="head-create">
+            <p>作成日</p>
+            <div class="indicator"></div>
+            <div class="sort-head-btn"></div>
+          </div>
+          <div id="sort-contributor-btn" class="head-contributor">
+            <p>投稿者</p>
+            <div class="indicator"></div>
+            <div class="sort-head-btn"></div>
+          </div>
+        </div>
         <form id="deeplinkPOST" action="/deeplink" method="POST" class="theme-deeplink-select">
             <div id="list-area">
 
@@ -19,6 +40,23 @@
                 <input id="url-submit" class="submit-btn" type="submit" value="リンクを生成">
             </div>
         </form>
+        <template id="template-video">
+          <div class="one-video">
+            <input class="input-select" type="radio" name="select_video">
+            <label class="label">
+              <div class="label-thumbnail">
+                <img class="img-thumbnail" src="">
+              </div>
+              <div class="video-info">
+                <div class="video-title"></div>
+                <div class="video-explanation"></div>
+                <div class="video-update"></div>
+                <div class="video-create"></div>
+                <div class="video-contributor"></div>
+              </div>
+            </label>
+          </div>
+        </template>
     </div>
   </body>
 </html>

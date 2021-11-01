@@ -1,127 +1,133 @@
 var video_dict = {}
 
+function resolutionSort(a, b) {
+  return parseInt(a) - parseInt(b)
+}
 
 function redraw_video_list(){
   videofilter.filterword = document.getElementById("filter-word").value
   video_list_draw(videofilter.VideoList())
 }
 
-
 function video_list_draw(video_view_list){
+  console.log(video_view_list)
   var params = (new URL(document.location)).searchParams
   document.getElementById("videolist").remove()
   var video_list_div = document.createElement("div")
   video_list_div.setAttribute("id","videolist")
   document.getElementById("videolist-area").prepend(video_list_div)
 
-  for (const element in video_view_list) {
-    var video_div = document.createElement("div")
-    video_div.setAttribute("id","video-" + video_view_list[element].vid)
-    video_div.setAttribute("class","video_div")
+  const video_content = document.querySelector('#template-video').content
 
-    var thumbnail_div = document.createElement("div")
-    thumbnail_div.setAttribute("class","head-thumbnail")
-    var img_a = document.createElement('a')
-    img_a.href = '/watch?video=' + video_view_list[element].vid + '&ltik=' + params.get("ltik")
-    var img_thumbnail = document.createElement('img')
-    img_thumbnail.src = '/video/' + video_view_list[element].vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
-    img_thumbnail.onerror = function(){
+  for (const element in video_view_list) {
+    const clone = document.importNode(video_content, true)
+    
+    const video_div = clone.querySelector('.video_div')
+    video_div.setAttribute("id","video-" + video_view_list[element].vid)
+
+    const thumbnail_img = clone.querySelector('.head-thumbnail-img')
+    thumbnail_img.src = '/video/' + video_view_list[element].vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
+    thumbnail_img.alt = video_view_list[element].title
+    thumbnail_img.onerror = function(){
       this.src='/images/no_thumbnail.jpg'
     }
-    img_thumbnail.alt = video_view_list[element].title
-    thumbnail_div.appendChild(img_thumbnail)
-    thumbnail_div.appendChild(img_a)
-    video_div.appendChild(thumbnail_div)
 
-    var title_div = document.createElement("div")
-    title_div.setAttribute("class","head-title")
-    var p_title = document.createElement("p")
-    p_title.innerHTML = video_view_list[element].title
-    title_div.appendChild(p_title)
-    video_div.appendChild(title_div)
+    const thumbnail_a = clone.querySelector('.head-thumbnail-a')
+    thumbnail_a.href = '/watch?video=' + video_view_list[element].vid + '&ltik=' + params.get("ltik")
 
-    var explanation_div = document.createElement("div")
-    explanation_div.setAttribute("class","head-explanation")
-    var p_explanation = document.createElement("p")
-    p_explanation.innerHTML = video_view_list[element].explanation
-    explanation_div.appendChild(p_explanation)
-    video_div.appendChild(explanation_div)
+    const title_div = clone.querySelector('.head-title-p')
+    title_div.innerHTML = video_view_list[element].title
 
-    var status_div = document.createElement("div")
-    status_div.setAttribute("class","head-status")
-    var p_status = document.createElement("p")
+    const explanation_div = clone.querySelector('.head-explanation-p')
+    explanation_div.innerHTML = video_view_list[element].explanation.length ? video_view_list[element].explanation : "説明なし"
+
+    const status_div = clone.querySelector('.head-status-title')
+    const status_info = clone.querySelector('.head-status-info')
     if(video_view_list[element].encode_error.length){
-      p_status.setAttribute("class","status-now")
-      p_status.innerHTML = "エンコードエラー"
-      p_status.title = "動画を削除して再度エンコードを行うか、管理者までお問い合わせください"
+      status_div.innerHTML = "<span class='head-status-red'>●</span>エンコードエラー"
+      status_div.title = "動画を削除して再度エンコードを行うか、管理者までお問い合わせください"
+      status_info.innerHTML = video_view_list[element].encode_error
     }
     else if(video_view_list[element].encode_tasks.length){
-      p_status.setAttribute("class","status-now")
-      p_status.innerHTML = "エンコード中"
-      p_status.title = video_view_list[element].encode_tasks
+      status_div.innerHTML = "<span class='head-status-yellow'>●</span>エンコード中"
+      status_div.title = video_view_list[element].encode_tasks
+      status_info.innerHTML = "再生可能解像度<br>" + video_view_list[element].resolution.sort(resolutionSort)
     }
     else if(video_view_list[element].resolution.length == 0 && video_view_list[element].encode_tasks.length == 0){
-      p_status.setAttribute("class","status-now")
-      p_status.innerHTML = "処理中"
-      p_status.title = "エンコード開始までしばらくお待ちください"
+      status_div.innerHTML = "<span class='head-status-yellow'>●</span>処理中"
+      status_div.title = "エンコード開始までしばらくお待ちください"
     }
     else{
-      p_status.setAttribute("class","status-ed")
-      p_status.innerHTML = "エンコード済み"
-      p_status.title = video_view_list[element].resolution
+      status_div.innerHTML = "<span class='head-status-green'>●</span>エンコード済み"
+      status_div.title = video_view_list[element].resolution
+      status_info.innerHTML = "再生可能解像度<br>" + video_view_list[element].resolution.sort(resolutionSort)
     }
-    status_div.appendChild(p_status)
-    video_div.appendChild(status_div)
 
-    var operation_div = document.createElement("div")
-    operation_div.setAttribute("class","head-operation")
-    var div_edit = document.createElement("div")
-    div_edit.setAttribute("id","edit-" + video_view_list[element].vid)
-    div_edit.innerHTML = "編集"
-    if(video_view_list[element].encode_error.length){
-      div_edit.setAttribute("class","operation-btn edit-lock")
-    }
-    else if(video_view_list[element].encode_tasks.length){
-      div_edit.setAttribute("class","operation-btn edit-lock")
-    }
-    else if(video_view_list[element].resolution.length == 0 && video_view_list[element].encode_tasks.length == 0){
-      div_edit.setAttribute("class","operation-btn edit-lock")
-    }
-    else{
-      div_edit.setAttribute("class","operation-btn status-ed")
-      div_edit.onclick = videoEdit
-    }
-    operation_div.appendChild(div_edit)
-    var div_delete = document.createElement("div")
-    div_delete.setAttribute("id","delete-" + video_view_list[element].vid)
-    div_delete.setAttribute("class","operation-btn")
-    div_delete.innerHTML = "削除"
-    if(video_view_list[element].encode_error.length){
-      div_delete.setAttribute("class","operation-btn status-now")
-      div_delete.onclick = videoDelete
-    }
-    else if(video_view_list[element].encode_tasks.length){
-      div_delete.setAttribute("class","operation-btn delete-lock")
-    }
-    else if(video_view_list[element].resolution.length == 0 && video_view_list[element].encode_tasks.length == 0){
-      div_delete.setAttribute("class","operation-btn delete-lock")
-    }
-    else{
-      div_delete.setAttribute("class","operation-btn status-now")
-      div_delete.onclick = videoDelete
-    }
+    const update_ymd = clone.querySelector('.head-update-ymd')
+    const update_hms = clone.querySelector('.head-update-hms')
+    const temp_update_date = new Date(video_view_list[element].updated_at)
+    update_ymd.innerHTML = temp_update_date.getFullYear() + "/" + temp_update_date.getMonth() + "/" + temp_update_date.getDate()
+    update_hms.innerHTML = temp_update_date
+
+    const create_ymd = clone.querySelector('.head-create-ymd')
+    const create_hms = clone.querySelector('.head-create-hms')
+    const temp_create_date = new Date(video_view_list[element].created_at)
+    create_ymd.innerHTML = temp_create_date.getFullYear() + "/" + temp_create_date.getMonth() + "/" + temp_create_date.getDate()
+    create_hms.innerHTML = temp_create_date
     
-    operation_div.appendChild(div_delete)
-    video_div.appendChild(operation_div)
 
-    video_list_div.appendChild(video_div)
+    const edit_div = clone.querySelector('.edit-operation-btn')
+    edit_div.setAttribute("id","edit-" + video_view_list[element].vid)
+    if(video_view_list[element].encode_error.length){
+      edit_div.setAttribute("class","operation-btn edit-lock")
+    }
+    else if(video_view_list[element].encode_tasks.length){
+      edit_div.setAttribute("class","operation-btn status-ed")
+      edit_div.onclick = videoEdit
+    }
+    else if(video_view_list[element].resolution.length == 0 && video_view_list[element].encode_tasks.length == 0){
+      edit_div.setAttribute("class","operation-btn edit-lock")
+    }
+    else{
+      edit_div.setAttribute("class","operation-btn status-ed")
+      edit_div.onclick = videoEdit
+    }
+
+    const delete_div = clone.querySelector('.delete-operation-btn')
+    delete_div.setAttribute("id","delete-" + video_view_list[element].vid)
+    if(video_view_list[element].encode_error.length){
+      delete_div.setAttribute("class","operation-btn status-now")
+      delete_div.onclick = videoDelete
+    }
+    else if(video_view_list[element].encode_tasks.length){
+      delete_div.setAttribute("class","operation-btn delete-lock")
+    }
+    else if(video_view_list[element].resolution.length == 0 && video_view_list[element].encode_tasks.length == 0){
+      delete_div.setAttribute("class","operation-btn delete-lock")
+    }
+    else{
+      delete_div.setAttribute("class","operation-btn status-now")
+      delete_div.onclick = videoDelete
+    }
+
+    const contributor_div = clone.querySelector('.head-contributor-p')
+    try{
+      contributor_div.innerHTML = video_view_list[element].contributor_name
+      contributor_div.setAttribute("id","contributor-" + video_view_list[element].contributor_id)
+    }catch(e){}
+    
+
+    video_list_div.appendChild(clone)
+
   }
 }
 
 function uploadInit(){
   var params = (new URL(document.location)).searchParams
+
   var upload_a = document.createElement('a')
   upload_a.href = '/upload?&ltik=' + params.get("ltik")
+
   document.getElementById("upload-btn").appendChild(upload_a)
 }
 
@@ -165,7 +171,31 @@ function deleteRun(){
         document.getElementById("video-" + selectVid).remove()
 
         delete video_dict[selectVid]
-        var video_array = Object.keys(video_dict).map((k)=>( Object.assign( { "vid": k }, video_dict[k] )))
+        var video_array = Object.keys(video_dict).map(function(k){
+          var t_video = Object.assign( { "vid": k }, video_dict[k] )
+          if(video_dict[k].encode_error.length){
+            t_video.status = 0
+          }
+          else if(video_dict[k].encode_tasks.length){
+            t_video.status = 1
+          }
+          else if(video_dict[k].resolution.length == 0 && video_dict[k].encode_tasks.length == 0){
+            t_video.status = 2
+          }
+          else{
+            t_video.status = 3
+          }
+          try{
+            const meta_data_obj = JSON.parse(video_dict[k].meta_data)
+            t_video.contributor_name = meta_data_obj.contributor_name
+            t_video.contributor_id = meta_data_obj.contributor_id
+          }catch(e){
+            t_video.contributor_name = ""
+            t_video.contributor_id = ""
+          }
+          
+          return t_video
+        })
         videofilter.updateOrigin = video_array
         video_list_draw(videofilter.VideoList())
       }
@@ -191,7 +221,31 @@ function getVideoList(){
     request.onload = function () {
       var listdata = JSON.parse(request.response)
       video_dict = listdata
-      var video_array = Object.keys(listdata).map((k)=>( Object.assign( { "vid": k }, listdata[k] )))
+      var video_array = Object.keys(listdata).map(function(k){
+        var t_video = Object.assign( { "vid": k }, listdata[k] )
+        if(listdata[k].encode_error.length){
+          t_video.status = 0
+        }
+        else if(listdata[k].encode_tasks.length){
+          t_video.status = 1
+        }
+        else if(listdata[k].resolution.length == 0 && listdata[k].encode_tasks.length == 0){
+          t_video.status = 2
+        }
+        else{
+          t_video.status = 3
+        }
+        try{
+          const meta_data_obj = JSON.parse(listdata[k].meta_data)
+          t_video.contributor_name = meta_data_obj.contributor_name
+          t_video.contributor_id = meta_data_obj.contributor_id
+        }catch(e){
+          t_video.contributor_name = ""
+          t_video.contributor_id = ""
+        }
+        
+        return t_video
+      })
       videofilter.updateOrigin = video_array
       video_list_draw(videofilter.VideoList())
       document.getElementById("filter-word").addEventListener('input', redraw_video_list)
@@ -201,16 +255,74 @@ function getVideoList(){
 
 
 function classNameInit(InitData){
-    document.getElementById("class-name").innerHTML = InitData.context.label + "のコンテンツ"
+  document.getElementById("class-name").innerHTML = InitData.context.label + "のコンテンツ"
 }
 
+function headSort(e){
+  var e = e || window.event
+  var elem = e.target || e.srcElement
+  var sort_id = elem.parentNode.id
+  var reverse_mode = false
+  if (elem.parentNode.classList.contains('asc')) {
+      elem.parentNode.classList.replace('asc', 'desc')
+      reverse_mode = false
+  } else if (elem.parentNode.classList.contains('desc')) {
+      elem.parentNode.classList.replace('desc', 'asc')
+      reverse_mode = true
+  } else {
+      elem.parentNode.classList.add('asc')
+      reverse_mode = true
+  }
 
+  for(var remove_id of ["sort-video-btn","sort-status-btn","sort-update-btn","sort-create-btn","sort-contributor-btn"]){
+    if(remove_id != sort_id){
+      document.getElementById(remove_id).classList.remove('asc', 'desc')
+    }
+  }
 
+  if(sort_id == "sort-video-btn"){
+    videofilter.order = [
+      {key: "title", reverse: reverse_mode},
+      {key: "created_at", reverse: false}
+    ]
+  }
+  else if(sort_id == "sort-status-btn"){
+    videofilter.order = [
+      {key: "status", reverse: reverse_mode},
+      {key: "created_at", reverse: false}
+    ]
+  }
+  else if(sort_id == "sort-update-btn"){
+    videofilter.order = [
+      {key: "updated_at", reverse: reverse_mode},
+      {key: "created_at", reverse: false}
+    ]
+  }
+  else if(sort_id == "sort-create-btn"){
+    videofilter.order = [
+      {key: "created_at", reverse: reverse_mode}
+    ]
+  }
+  else if(sort_id == "sort-contributor-btn"){
+    videofilter.order = [
+      {key: "contributor_name", reverse: reverse_mode},
+      {key: "created_at", reverse: false}
+    ]
+  }
+  
+  redraw_video_list()
+}
 
+function headSortInit(){
+  document.querySelectorAll(".sort-head-btn").forEach(function(target) {
+    target.addEventListener("click", headSort, false)
+  })
+}
 
 window.addEventListener("load", function() {
     getLtiInfoResponse(classNameInit)
     getVideoList()
     uploadInit()
+    headSortInit()
 })
 

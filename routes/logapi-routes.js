@@ -1,12 +1,13 @@
 const router = require('express').Router()
 const path = require('path')
-const bodyParser = require('body-parser');
-const logger = require('../tool/log');
+const bodyParser = require('body-parser')
+const logger = require('../tool/log')
+
 
 // Requiring Ltijs
 const lti = require('ltijs').Provider
 
-router.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.urlencoded({ extended: true }))
 router.use(bodyParser.json());
 
 router.post('/log', async (req, res) => {

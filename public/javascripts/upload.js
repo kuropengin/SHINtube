@@ -138,11 +138,16 @@ function upload_video(){
     }
 }
 document.getElementById("upload-btn").addEventListener("click", upload_video, false)
+document.getElementById("cancel-btn").addEventListener("click", function(){
+    window.location.href = "/videolist?ltik=" + params.get("ltik")
+}, false)
 
 function select_file_info_show(file){
     document.getElementById("input_file_name").innerHTML = file
+    document.getElementById("upload-title").value = file.slice(0, file.lastIndexOf("."))
     document.getElementById("drag-area").classList.toggle("drag-area-block-on")
     document.getElementById("drag-area-block").classList.toggle("drag-area-block-on")
+    title_limit_change()
 }
 
 function re_select_file_info(){
@@ -155,11 +160,17 @@ document.getElementById("re-select-btn").addEventListener("click", re_select_fil
 
 
 function title_limit_change(){
+    if(document.getElementById("upload-title").value.length > 40){
+        document.getElementById("upload-title").value = document.getElementById("upload-title").value.slice(0,40)
+    }
     document.getElementById("title-input-limit").innerHTML = document.getElementById("upload-title").value.length
 }
 document.getElementById("upload-title").addEventListener('input', title_limit_change);
 
 function exp_limit_change(){
+    if(document.getElementById("upload-explanation").value.length > 200){
+        document.getElementById("upload-explanation").value = document.getElementById("upload-explanation").value.slice(0,200)
+    }
     document.getElementById("exp-input-limit").innerHTML = document.getElementById("upload-explanation").value.length
 }
 document.getElementById("upload-explanation").addEventListener('input', exp_limit_change);

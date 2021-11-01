@@ -17,7 +17,7 @@ ul {
     top: -48px;
     right: 240px;
 
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--menu_back_color);
     height: 100vh;
     width: 300px;
 
@@ -176,6 +176,7 @@ ul {
 .menu-contents-icon{
     width: 32px;
     height: 32px;
+    filter: var(--default_icon_filter);
 } 
 
 .menu-contents-span{

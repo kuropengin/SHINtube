@@ -7,10 +7,34 @@ function getVideoList(){
         document.getElementById("deeplinkPOST").action += "?ltik=" + params.get('ltik')
 
         var listdata = JSON.parse(request.response)
-        var video_array = Object.keys(listdata).map((k)=>( Object.assign( { "vid": k }, listdata[k] )))
+        video_dict = listdata
+        var video_array = Object.keys(listdata).map(function(k){
+            var t_video = Object.assign( { "vid": k }, listdata[k] )
+            if(listdata[k].encode_error.length){
+                t_video.status = 0
+            }
+            else if(listdata[k].encode_tasks.length){
+                t_video.status = 1
+            }
+            else if(listdata[k].resolution.length == 0 && listdata[k].encode_tasks.length == 0){
+                t_video.status = 2
+            }
+            else{
+                t_video.status = 3
+            }
+            try{
+                const meta_data_obj = JSON.parse(listdata[k].meta_data)
+                t_video.contributor_name = meta_data_obj.contributor_name
+                t_video.contributor_id = meta_data_obj.contributor_id
+            }catch(e){
+                t_video.contributor_name = ""
+                t_video.contributor_id = ""
+            }
+            
+            return t_video
+        })
         videofilter.updateOrigin = video_array
         create_list(videofilter.VideoList())
-        
         document.getElementById("filter-word").addEventListener('input', redraw_video_list)
     }
     request.send()
@@ -29,51 +53,46 @@ function create_list(listdata){
     list_area.setAttribute("id","list-area")
     document.getElementById("deeplinkPOST").prepend(list_area)
 
+    const video_content = document.querySelector('#template-video').content
+
     for (const element in listdata) {
-        var one_video = document.createElement("div")
-        one_video.setAttribute("class","one-video")
-        var _radio = document.createElement('input')
+        const clone = document.importNode(video_content, true)
+    
+        const _radio = clone.querySelector('.input-select')
         _radio.setAttribute("id","video-" + listdata[element].vid)
-        _radio.setAttribute("type","radio")
         _radio.setAttribute("value", listdata[element].vid)
-        _radio.setAttribute("name","select_video")
         _radio.onchange = selected_video
 
-        var _label = document.createElement('label')
-        _label.setAttribute("class","label")
+        const _label = clone.querySelector('.label')
         _label.setAttribute("for","video-" + listdata[element].vid)
 
-        var thumbnail = document.createElement("div")
-        thumbnail.setAttribute("class","label-thumbnail")
-        var img_thumbnail = document.createElement('img')
-        img_thumbnail.src = '/video/' + listdata[element].vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
-        img_thumbnail.onerror = function(){
+        const _thumbnail = clone.querySelector('.img-thumbnail')
+        _thumbnail.src = '/video/' + listdata[element].vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
+        _thumbnail.onerror = function(){
             this.src='/images/no_thumbnail.jpg'
         }
 
-        thumbnail.appendChild(img_thumbnail)
-        _label.appendChild(thumbnail)
+        const _title = clone.querySelector('.video-title')
+        _title.innerHTML = listdata[element].title
+        _title.setAttribute("id","title-" + listdata[element].vid)
 
-        var video_info = document.createElement("div")
-        video_info.setAttribute("class","video-info")
-        var video_title = document.createElement('div')
-        video_title.innerHTML = listdata[element].title
-        video_title.setAttribute("class","video-title")
-        video_title.setAttribute("id","title-" + listdata[element].vid)
-        var video_explanation = document.createElement('div')
-        video_explanation.innerHTML = listdata[element].explanation
-        video_explanation.setAttribute("class","video-explanation")
+        const _explanation = clone.querySelector('.video-explanation')
+        _explanation.innerHTML = listdata[element].explanation
 
-        video_info.appendChild(video_title)
-        video_info.appendChild(video_explanation)
-        _label.appendChild(video_info)
+        const _update = clone.querySelector('.video-update')
+        const temp_update_date = new Date(listdata[element].updated_at)
+        _update.innerHTML = "更新日 : " + temp_update_date.getFullYear() + "/" + temp_update_date.getMonth() + "/" + temp_update_date.getDate()
+
+        const _create = clone.querySelector('.video-create')
+        const temp_create_date = new Date(listdata[element].created_at)
+        _create.innerHTML = "作成日 : " + temp_create_date.getFullYear() + "/" + temp_create_date.getMonth() + "/" + temp_create_date.getDate()
+
+        const _contributor = clone.querySelector('.video-contributor')
+        _contributor.innerHTML = "投稿者 : " + listdata[element].contributor_name
 
 
-        one_video.appendChild(_radio)
-        one_video.appendChild(_label)
-        list_area.appendChild(one_video)
-
-        }
+        list_area.appendChild(clone)
+    }
     selected_video()
 }
 
@@ -82,7 +101,6 @@ function selected_video() {
     document.getElementById("url-submit").disabled = true
     for(var i = 0; i < check_list.length; i++){
         if(check_list[i].checked) {
-            console.log(check_list[i])
             document.getElementById("select_title").value = document.getElementById("title-" + check_list[i].value).innerHTML 
             document.getElementById("select_url").value = document.location.origin + "/watch?video=" + check_list[i].value + "&deeplink=true"
             document.getElementById("url-submit").disabled = false
@@ -91,53 +109,63 @@ function selected_video() {
     }
 }
 
-function ThemeModeInit() {
-    var local_theme = localStorage.getItem("theme-mode") || false
+function headSort(e){
+    var e = e || window.event
+    var elem = e.target || e.srcElement
+    var sort_id = elem.parentNode.id
+    var reverse_mode = false
+    if (elem.parentNode.classList.contains('asc')) {
+        elem.parentNode.classList.replace('asc', 'desc')
+        reverse_mode = false
+    } else if (elem.parentNode.classList.contains('desc')) {
+        elem.parentNode.classList.replace('desc', 'asc')
+        reverse_mode = true
+    } else {
+        elem.parentNode.classList.add('asc')
+        reverse_mode = true
+    }
 
-    if(local_theme == "dark"){
-        ThemeModeChange("dark-theme")
-    }
-    else if(local_theme == "light"){
-        ThemeModeChange("light-theme")
-    }
-    else if(os_theme_mode){
-        localStorage.setItem('theme-mode', "dark")
-        ThemeModeChange("dark-theme")
-    }
-    else{
-        localStorage.setItem('theme-mode', "light")
-        ThemeModeChange("light-theme")
-    }
-    
-}
-
-function ThemeModeChange(mode) {
-    var elements = ["logo","header","munu-btn","munu","munu-icon","overlay","memo","download-btn","download-list","filter-word","delete-area","video-input","deeplink-area","deeplink-select"]
-    for(var element of elements){
-        var change_theme = document.getElementsByClassName("theme-" + element)
-        for(var target_theme of change_theme){
-            if(mode == "light-theme"){
-                target_theme.classList.remove("dark-theme-" + element)
-                target_theme.classList.add("light-theme-" + element)
-            }
-            else{
-                target_theme.classList.add("dark-theme-" + element)
-                target_theme.classList.remove("light-theme-" + element)
-            }
+    for(var remove_id of ["sort-video-btn","sort-update-btn","sort-create-btn","sort-contributor-btn"]){
+        if(remove_id != sort_id){
+        document.getElementById(remove_id).classList.remove('asc', 'desc')
         }
     }
 
-    if(mode == "light-theme"){
-        document.body.classList.remove("dark-theme-body")
-        document.body.classList.add("light-theme-body")
+    if(sort_id == "sort-video-btn"){
+        videofilter.order = [
+        {key: "title", reverse: reverse_mode},
+        {key: "created_at", reverse: false}
+        ]
     }
-    else{
-        document.body.classList.add("dark-theme-body")
-        document.body.classList.remove("light-theme-body")
+    else if(sort_id == "sort-update-btn"){
+        videofilter.order = [
+        {key: "updated_at", reverse: reverse_mode},
+        {key: "created_at", reverse: false}
+        ]
     }
+    else if(sort_id == "sort-create-btn"){
+        videofilter.order = [
+        {key: "created_at", reverse: reverse_mode}
+        ]
+    }
+    else if(sort_id == "sort-contributor-btn"){
+        videofilter.order = [
+        {key: "contributor_name", reverse: reverse_mode},
+        {key: "created_at", reverse: false}
+        ]
+    }
+
+    redraw_video_list()
+}
+
+
+function headSortInit(){
+    document.querySelectorAll(".sort-head-btn").forEach(function(target) {
+        target.addEventListener("click", headSort, false)
+    })
 }
 
 window.addEventListener("load", function() {
+    headSortInit()
     getVideoList()
-    ThemeModeInit()
 })

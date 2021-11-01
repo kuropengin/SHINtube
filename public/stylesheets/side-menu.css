@@ -1,0 +1,113 @@
+.side-contents{
+    padding: 10px 0;
+    width: 200px;
+    border-right: 1px solid #cacaca;
+    position: sticky;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-between;
+    overflow: auto;
+    transition: width 300ms 0s ease;
+    background: var(--default_back_color);
+}
+
+.side-menu{
+    width: 100%;
+    height: 30px;
+    padding: 10px 0;
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    cursor: pointer;
+    z-index: 5;
+    position: relative;
+}
+
+.side-menu a{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.side-menu:hover{
+    background: rgb(145 145 145 / 10%);
+}
+
+.side-menu-select{
+    background: rgb(145 145 145 / 10%);
+}
+
+.side-menu-select::before{
+    position: absolute;
+    left: 0px;
+    width: 5px;
+    height: 50px;
+    background-color: #065e3c;
+    content: "";
+}
+
+.side-menu-start{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+.side-menu-end{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+.side-menu-image{
+    flex: 0 0 40px;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 40px;
+    margin: 0 5px;
+    filter: var(--default_icon_filter);
+}
+
+.side-menu-image-all{
+    background-image: url(../images/sub-all.png);
+}
+
+.side-menu-image-upload{
+    background-image: url(../images/sub-upload.png);
+}
+
+.side-menu-image-manual{
+    background-image: url(../images/sub-manual.png);
+}
+
+.side-menu-image-analytics{
+    background-image: url(../images/sub-analytics.png);
+}
+
+.side-menu-image-system{
+    background-image: url(../images/sub-status.png);
+}
+
+.side-menu-image-mail{
+    background-image: url(../images/sub-mail.png);
+}
+
+.side-menu-title{
+    padding-left: 10px;
+    font-size: 16px;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.side-menu-hiden{
+    display: none;
+}
+
+@media screen and (max-width:1200px) { 
+    .side-contents{
+        width: 50px;
+    }
+}

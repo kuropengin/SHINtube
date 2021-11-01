@@ -152,15 +152,14 @@ function videoInit(){
     if(!_volume){
         _volume = 1
     }
-    
     if (player) {player.dispose()} else {var player}  
     player = videojs('video-player', {
         autoplay: false,
         loop: false,
         controls: true,
-        preload: 'auto',
+        preload: 'metadata',
         playbackRates: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
-        poster: '/video/' + params.get("video") + '/thumbnail_720.jpg/?ltik=' + params.get("ltik")
+        poster: '/video/' + params.get("video") + '/thumbnail_720.jpg/?ltik=' + params.get("ltik"),
     });
 
     player.src({

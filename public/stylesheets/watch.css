@@ -154,6 +154,34 @@ html,body {
 	height: calc(100% - 79px);
 }
 
+.memo-area button{
+    color: var(--default_color);
+}
+
+.memo-area .CodeMirror{
+    background: var(--memo_back_color);
+    color: var(--default_color);
+}
+
+.memo-area .CodeMirror-cursor{
+    border-left: 1px solid var(--default_color);
+}
+
+.memo-area button.active, .memo-area button:hover{
+    background: var(--default_back_color);
+    border-color: var(--default_color);
+}
+
+.memo-area .editor-preview-full,
+.memo-area .editor-preview,
+.memo-area .editor-preview-active{
+    color: var(--default_color);
+}
+
+.memo-area .editor-toolbar.fullscreen, .memo-area .editor-preview{
+    background: var(--memo_back_color);
+}
+
 .editor-statusbar{
     display: none;
 }

@@ -1,3 +1,20 @@
+#contents{
+    width: 100%;
+    height: calc(100% - 56px);
+    padding: 0;
+    flex-wrap: nowrap;
+}
+
+.main-contents{
+    width: calc(100% - 200px);
+    display: flex;
+    justify-content: center;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    overflow: auto;
+}
+
+
 .upload-left-contents,.upload-right-contents{
     max-width: 600px;
     width: 100%;
@@ -170,22 +187,30 @@ input[type="textarea"]:focus{
 }
 
 .submit-btn{
-    background-color: transparent;
     border: none;
     cursor: pointer;
     outline: none;
     appearance: none;
-
     width: 200px;
-    height: 60px;
+    height: 55px;
     background: #065e3c;
     color: #FFF;
     text-align: center;
-    line-height: 60px;
+    line-height: 55px;
     font-size: 20px;
     font-weight: bold;
     user-select: none;
     border-radius: 10px;
+    margin: 0 10px;
+    opacity: 0.8;
+}
+
+.submit-btn:hover{
+    opacity: 1;
+}
+
+.submit-cancel{
+    background: #9e9e9e;
 }
 
 #upload-now{
@@ -279,4 +304,10 @@ input[type="textarea"]:focus{
     color: #6c6c6c;
     padding: 5px 20px;
     text-align: end;
+}
+
+@media screen and (max-width:1200px) { 
+    .main-contents{
+        width: calc(100% - 50px);
+    }
 }
