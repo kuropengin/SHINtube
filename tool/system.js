@@ -65,14 +65,7 @@ async function gradeCheck(req, res){
             const response = await lti.Grade.getLineItems(idtoken, { resourceLinkId: true })
             const lineItems = response.lineItems
             if (lineItems.length === 0) {
-                const newLineItem = {
-                    scoreMaximum: 100,
-                    label: 'Grade',
-                    tag: 'grade',
-                    resourceLinkId: idtoken.platformContext.resource.id
-                }
-                const lineItem = await lti.Grade.createLineItem(idtoken, newLineItem)
-                lineItemId = lineItem.id
+                return {"status":false,"msg":"An error occurred while checking the grading system."}
             } 
             else lineItemId = lineItems[0].id
         }
@@ -87,7 +80,7 @@ async function gradeCheck(req, res){
         }
     }
     catch (err) {
-        return {"status":false,"msg":err}
+        return {"status":false,"msg":"An error occurred while checking the grading system."}
     }
 }
 
