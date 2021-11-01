@@ -15,8 +15,16 @@ router.post('/log', async (req, res) => {
         if(req.body.verb && req.body.obj){
             var _cid = req.res.locals.context.lis.course_section_sourcedid
             var _sid = req.res.locals.token.userInfo.email.split("@")[0]
-    
-            logger.log(_cid, _sid, req.body.obj, req.body.verb)
+            if(req.body.obj_ex){
+                var temp_obj = req.body.obj + "?"
+                for(const ex in req.body.obj_ex){
+                    temp_obj = temp_obj + ex + "=" + req.body.obj_ex[ex] + "&"
+                }
+                logger.log(_cid, _sid, temp_obj.slice(0,-1), req.body.verb)
+            }
+            else{
+                logger.log(_cid, _sid, req.body.obj, req.body.verb)
+            }
             res.status(200).send()
         }
         else{

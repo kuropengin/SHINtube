@@ -1,13 +1,15 @@
 
-function postLog(verb, obj=false){
+function postLog(verb, obj=false, obj_ex=false){
     var request = new XMLHttpRequest()
+
     if(!obj){
         obj = params.get("video")
     }
+        
     //console.log(verb, obj)
     request.open('POST', "/log" + "?ltik=" + params.get("ltik"), true)
     request.setRequestHeader('Content-Type', 'application/json');
-    request.send(JSON.stringify({"verb":verb,"obj":obj}))
+    request.send(JSON.stringify({"verb":verb, "obj":obj, "obj_ex":obj_ex}))
 }
 
 function observarInit(){
@@ -36,7 +38,7 @@ function observarInit(){
     const video = document.querySelector('video')
 
     video.addEventListener('pause', (event) => {
-        postLog("paused")
+        postLog("paused", false, {"position":video.currentTime})
     })
 
     video.addEventListener('ended', (event) => {
@@ -44,11 +46,11 @@ function observarInit(){
     })
 
     video.addEventListener('play', (event) => {
-        postLog("play")
+        postLog("play", false, {"position":video.currentTime})
     })
 
     video.addEventListener('seeked', (event) => {
-        postLog("skipped")
+        postLog("skipped", false, {"position":video.currentTime})
     })    
   
 }
