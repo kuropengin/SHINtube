@@ -66,13 +66,13 @@ function video_list_draw(video_view_list){
     const update_ymd = clone.querySelector('.head-update-ymd')
     const update_hms = clone.querySelector('.head-update-hms')
     const temp_update_date = new Date(video_view_list[element].updated_at)
-    update_ymd.innerHTML = temp_update_date.getFullYear() + "/" + temp_update_date.getMonth() + "/" + temp_update_date.getDate()
+    update_ymd.innerHTML = temp_update_date.getFullYear() + "/" + (temp_update_date.getMonth()+1) + "/" + temp_update_date.getDate()
     update_hms.innerHTML = temp_update_date
 
     const create_ymd = clone.querySelector('.head-create-ymd')
     const create_hms = clone.querySelector('.head-create-hms')
     const temp_create_date = new Date(video_view_list[element].created_at)
-    create_ymd.innerHTML = temp_create_date.getFullYear() + "/" + temp_create_date.getMonth() + "/" + temp_create_date.getDate()
+    create_ymd.innerHTML = temp_create_date.getFullYear() + "/" + (temp_create_date.getMonth()+1) + "/" + temp_create_date.getDate()
     create_hms.innerHTML = temp_create_date
     
 
