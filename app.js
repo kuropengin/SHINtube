@@ -1,6 +1,8 @@
 const express = require('express')
 const path = require('path')
 const fileUpload = require('express-fileupload');
+const register = require('./tool/register')
+
 const ltiRoutes = require('./routes/lti-routes')
 const videoRoutes = require('./routes/video-routes')
 const logapiRoutes = require('./routes/logapi-routes')
@@ -121,21 +123,7 @@ lti.app.use(logapiRoutes)
 
 const setup = async () => {
   await lti.deploy({ port: PORT })
-
-  for(var platform of lti_config.platform){
-    if(platform.name && platform.key && platform.url){
-      try{
-        await lti.registerPlatform({
-          url: platform.url,
-          name: platform.name,
-          clientId: platform.key,
-          authenticationEndpoint: platform.url + '/mod/lti/auth.php',
-          accesstokenEndpoint: platform.url + '/mod/lti/token.php',
-          authConfig: { method: 'JWK_SET', key: platform.url + '/mod/lti/certs.php' }
-        })
-      }catch(err){}
-    }
-  }
+  await register.regPlatform()
 }
 
 setup()

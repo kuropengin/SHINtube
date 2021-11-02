@@ -19,4 +19,4 @@ function logger(class_code,student_id,tool_id,msg){
   }
 }
 
-exports.log = logger;
+exports.log = logger
