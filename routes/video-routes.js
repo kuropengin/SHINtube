@@ -34,6 +34,9 @@ router.get('/videolist',roleguard, async (req, res) => {
 router.post('/videolist',roleguard, async (req, res) => {
     try{
         var year = res.locals.token.iss.split("/")[3]
+        if(isNaN(year) || year.length == 0){
+            year = "0000"
+        }
     }
     catch(err){
         var year = "0000"
@@ -53,6 +56,9 @@ router.post('/videolist',roleguard, async (req, res) => {
 router.post('/videodelete',roleguard, async (req, res) => {
     try{
         var year = res.locals.token.iss.split("/")[3]
+        if(isNaN(year) || year.length == 0){
+            year = "0000"
+        }
     }
     catch(err){
         var year = "0000"
@@ -94,6 +100,9 @@ router.post('/upload',roleguard, async (req, res) => {
     }
     try{
         var year = res.locals.token.iss.split("/")[3]
+        if(isNaN(year) || year.length == 0){
+            year = "0000"
+        }
     }
     catch(err){
         var year = "0000"
@@ -133,6 +142,9 @@ router.post('/edit',roleguard, async (req, res) => {
 
     try{
         var year = res.locals.token.iss.split("/")[3]
+        if(isNaN(year) || year.length == 0){
+            year = "0000"
+        }
     }
     catch(err){
         var year = "0000"
@@ -271,6 +283,9 @@ const m3u8_proxy = createProxyMiddleware({
     var par = temp_url.slice(1).split('/');
     try{
         var year = req.res.locals.token.iss.split("/")[3]
+        if(isNaN(year) || year.length == 0){
+            year = "0000"
+        }
     }
     catch(err){
         var year = "0000"
@@ -294,6 +309,9 @@ const normal_proxy = createProxyMiddleware({
         var par = temp_url.slice(1).split('/');
         try{
             var year = req.res.locals.token.iss.split("/")[3]
+            if(isNaN(year) || year.length == 0){
+                year = "0000"
+            }
         }
         catch(err){
             var year = "0000"
