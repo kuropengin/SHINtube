@@ -218,6 +218,10 @@
     display: none;
 }
 
+.head-title:hover .head-explanation-p{
+    display: none;
+}
+
 .video_div:hover .operation-div{
     display: flex;
 }
