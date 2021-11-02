@@ -13,12 +13,15 @@ function subMenuInit(){
   
     var sub_contents_a = document.createElement('a')
     sub_contents_a.href = '/videolist?&ltik=' + params.get("ltik")
+    sub_contents_a.title = "全てのコンテンツ"
 
     var sub_upload_a = document.createElement('a')
     sub_upload_a.href = '/upload?&ltik=' + params.get("ltik")
+    sub_upload_a.title = "アップロード"
 
     var sub_system_a = document.createElement('a')
     sub_system_a.href = '/system?&ltik=' + params.get("ltik")
+    sub_system_a.title = "システム"
     
     document.getElementById("sub-contents-btn").appendChild(sub_contents_a)
     document.getElementById("sub-upload-btn").appendChild(sub_upload_a)
