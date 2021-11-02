@@ -1,7 +1,7 @@
 const express = require('express')
 const path = require('path')
 const fileUpload = require('express-fileupload');
-const register = require('./tool/register')
+const platform = require('./tool/platform')
 
 const ltiRoutes = require('./routes/lti-routes')
 const videoRoutes = require('./routes/video-routes')
@@ -123,7 +123,7 @@ lti.app.use(logapiRoutes)
 
 const setup = async () => {
   await lti.deploy({ port: PORT })
-  await register.regPlatform()
+  await platform.regPlatform()
 }
 
 setup()
