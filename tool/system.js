@@ -114,11 +114,11 @@ async function lmsCheck(req, res){
         try{
             info.lmsYear = token.iss.split("/")[3]
             if(isNaN(info.lmsYear) || info.lmsYear.length == 0){
-                info.lmsYear = "0000"
+                info.lmsYear = "1000"
             }
         }
         catch(err){
-            info.lmsYear = "0000"
+            info.lmsYear = "1000"
         }
     } 
 

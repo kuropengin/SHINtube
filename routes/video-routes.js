@@ -35,11 +35,11 @@ router.post('/videolist',roleguard, async (req, res) => {
     try{
         var year = res.locals.token.iss.split("/")[3]
         if(isNaN(year) || year.length == 0){
-            year = "0000"
+            year = "1000"
         }
     }
     catch(err){
-        var year = "0000"
+        var year = "1000"
     }
     
     var cid = res.locals.context.lis.course_section_sourcedid
@@ -57,11 +57,11 @@ router.post('/videodelete',roleguard, async (req, res) => {
     try{
         var year = res.locals.token.iss.split("/")[3]
         if(isNaN(year) || year.length == 0){
-            year = "0000"
+            year = "1000"
         }
     }
     catch(err){
-        var year = "0000"
+        var year = "1000"
     }
     var cid = res.locals.context.lis.course_section_sourcedid
     var vid = req.body.vid
@@ -101,11 +101,11 @@ router.post('/upload',roleguard, async (req, res) => {
     try{
         var year = res.locals.token.iss.split("/")[3]
         if(isNaN(year) || year.length == 0){
-            year = "0000"
+            year = "1000"
         }
     }
     catch(err){
-        var year = "0000"
+        var year = "1000"
     }
     var cid = res.locals.context.lis.course_section_sourcedid
     
@@ -143,11 +143,11 @@ router.post('/edit',roleguard, async (req, res) => {
     try{
         var year = res.locals.token.iss.split("/")[3]
         if(isNaN(year) || year.length == 0){
-            year = "0000"
+            year = "1000"
         }
     }
     catch(err){
-        var year = "0000"
+        var year = "1000"
     }
     var cid = res.locals.context.lis.course_section_sourcedid
     
@@ -284,11 +284,11 @@ const m3u8_proxy = createProxyMiddleware({
     try{
         var year = req.res.locals.token.iss.split("/")[3]
         if(isNaN(year) || year.length == 0){
-            year = "0000"
+            year = "1000"
         }
     }
     catch(err){
-        var year = "0000"
+        var year = "1000"
     }
     var cid = req.res.locals.context.lis.course_section_sourcedid
     return "/" + par[0] + "/" + year + "/" + cid + "/" + par[1] + "/" + par[2]
@@ -310,11 +310,11 @@ const normal_proxy = createProxyMiddleware({
         try{
             var year = req.res.locals.token.iss.split("/")[3]
             if(isNaN(year) || year.length == 0){
-                year = "0000"
+                year = "1000"
             }
         }
         catch(err){
-            var year = "0000"
+            var year = "1000"
         }
         var cid = req.res.locals.context.lis.course_section_sourcedid
         return "/" + par[0] + "/" + year + "/" + cid + "/" + par[1] + "/" + par[2]
