@@ -10,6 +10,10 @@ const lti = require('ltijs').Provider
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(bodyParser.json());
 
+function log_escape(string){
+    return String(string).replace(/&/g, '&lt;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, "&#x27;")
+}
+
 router.post('/log', async (req, res) => {
     try{
         if(req.body.verb && req.body.obj){
@@ -18,20 +22,21 @@ router.post('/log', async (req, res) => {
             if(req.body.obj_ex){
                 var temp_obj = req.body.obj + "?"
                 for(const ex in req.body.obj_ex){
-                    temp_obj = temp_obj + ex + "=" + req.body.obj_ex[ex] + "&"
+                    var esc_ex = log_escape(ex)
+                    temp_obj = temp_obj + esc_ex + "=" + log_escape(req.body.obj_ex[esc_ex]) + "&"
                 }
-                logger.log(_cid, _sid, temp_obj.slice(0,-1), req.body.verb)
+                logger.log(_cid, _sid, temp_obj.slice(0,-1), log_escape(req.body.verb))
             }
             else{
-                logger.log(_cid, _sid, req.body.obj, req.body.verb)
+                logger.log(_cid, _sid, log_escape(req.body.obj), log_escape(req.body.verb))
             }
             res.status(200).send()
         }
         else{
-            res.status(201).send()
+            res.status(400).send()
         }   
     }catch(err){
-        res.status(201).send()
+        res.status(400).send()
     }
 })
 
