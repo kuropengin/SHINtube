@@ -1,7 +1,7 @@
 function getVideoList(){
     var request = new XMLHttpRequest()
     var params = (new URL(document.location)).searchParams
-    request.open('POST', "/videolist?ltik=" + params.get("ltik"), true)
+    request.open('POST', "./videolist?ltik=" + params.get("ltik"), true)
 
     request.onload = function () {
         document.getElementById("deeplinkPOST").action += "?ltik=" + params.get('ltik')
@@ -67,9 +67,9 @@ function create_list(listdata){
         _label.setAttribute("for","video-" + listdata[element].vid)
 
         const _thumbnail = clone.querySelector('.img-thumbnail')
-        _thumbnail.src = '/video/' + listdata[element].vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
+        _thumbnail.src = './video/' + listdata[element].vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
         _thumbnail.onerror = function(){
-            this.src='/images/no_thumbnail.jpg'
+            this.src='./images/no_thumbnail.jpg'
         }
 
         const _title = clone.querySelector('.video-title')
@@ -102,7 +102,7 @@ function selected_video() {
     for(var i = 0; i < check_list.length; i++){
         if(check_list[i].checked) {
             document.getElementById("select_title").value = document.getElementById("title-" + check_list[i].value).innerHTML 
-            document.getElementById("select_url").value = document.location.origin + "/watch?video=" + check_list[i].value + "&deeplink=true"
+            document.getElementById("select_url").value = document.location.origin +　document.location.pathname.replace("/deeplink", "") + "/watch?video=" + check_list[i].value + "&deeplink=true"
             document.getElementById("url-submit").disabled = false
             break
         }

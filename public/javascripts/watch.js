@@ -7,7 +7,7 @@ var lmsProgressList = []
 function postVideoProgressInit(){
     const video = document.querySelector('video')
     var request = new XMLHttpRequest()
-    request.open('GET', "/view-progress" + "?ltik=" + params.get("ltik"), true)
+    request.open('GET', "./view-progress" + "?ltik=" + params.get("ltik"), true)
 
     request.onload = function () {
         var _score = 0
@@ -129,7 +129,7 @@ function postVideoProgress(){
         sendData.append("comment", send_list.join(','))
 
         var request = new XMLHttpRequest()
-        request.open('POST', "/view-progress" + "?ltik=" + params.get("ltik"), true)
+        request.open('POST', "./view-progress" + "?ltik=" + params.get("ltik"), true)
         request.send(sendData)
     }
 }
@@ -159,12 +159,12 @@ function videoInit(){
         controls: true,
         preload: 'metadata',
         playbackRates: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
-        poster: '/video/' + params.get("video") + '/thumbnail_720.jpg/?ltik=' + params.get("ltik"),
+        poster: './video/' + params.get("video") + '/thumbnail_720.jpg?ltik=' + params.get("ltik"),
     });
 
     player.src({
         type: 'application/x-mpegURL',
-        src: "/video/" + params.get("video") + "/playlist.m3u8" + "?ltik=" + params.get("ltik")
+        src: "./video/" + params.get("video") + "/playlist.m3u8" + "?ltik=" + params.get("ltik")
     });
 
     player.hlsQualitySelector({
@@ -189,7 +189,7 @@ function videoInit(){
 
 function videoInfoInit(){
     var request = new XMLHttpRequest()
-    request.open('GET', "/video/" + params.get("video") + "/info.json" + "?ltik=" + params.get("ltik"), true)
+    request.open('GET', "./video/" + params.get("video") + "/info.json" + "?ltik=" + params.get("ltik"), true)
 
     request.onload = function () {
         var infodata = JSON.parse(request.response)

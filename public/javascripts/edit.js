@@ -82,7 +82,7 @@ var params = (new URL(document.location)).searchParams
 function getVideoInfoResponse(callback){
   var request = new XMLHttpRequest()
   var params = (new URL(document.location)).searchParams
-  request.open('GET', "/video/" + params.get("vid") + "/info.json?ltik=" + params.get("ltik"), true)
+  request.open('GET', "./video/" + params.get("vid") + "/info.json?ltik=" + params.get("ltik") + "&datte=" + new Date().getTime(), true)
 
   request.onload = function () {
     ResponseData = JSON.parse(request.response)
@@ -119,12 +119,12 @@ function valueInit(InitData){
       controls: true,
       preload: 'auto',
       playbackRates: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
-      poster: '/video/' + params.get("vid") + '/thumbnail_720.jpg/?ltik=' + params.get("ltik")
+      poster: './video/' + params.get("vid") + '/thumbnail_720.jpg?ltik=' + params.get("ltik")
     })
 
     player.src({
       type: 'application/x-mpegURL',
-      src: "/video/" + params.get("vid") + "/playlist.m3u8" + "?ltik=" + params.get("ltik")
+      src: "./video/" + params.get("vid") + "/playlist.m3u8" + "?ltik=" + params.get("ltik")
     })
 
     player.hlsQualitySelector({
@@ -171,7 +171,7 @@ function upload_video(){
   const fd = new FormData(form)
 
   var xhr = new XMLHttpRequest()
-  xhr.open('post', "/edit" + "?ltik=" + params.get("ltik"), true)
+  xhr.open('post', "./edit" + "?ltik=" + params.get("ltik"), true)
 
   xhr.upload.addEventListener('progress', (evt) => {
     let percent = (evt.loaded / evt.total * 100).toFixed(1)
@@ -195,7 +195,7 @@ function upload_video(){
 
     document.getElementById("back-btn").classList.toggle("lock-btn")
     document.getElementById("back-btn").addEventListener('click', function(){
-      window.location.href = "/videolist?ltik=" + params.get("ltik")
+      window.location.href = "./videolist?ltik=" + params.get("ltik")
     })
 
     document.getElementById("reedit-btn").classList.toggle("lock-btn")
@@ -213,7 +213,7 @@ function upload_video(){
 
 document.getElementById("upload-btn").addEventListener("click", upload_video, false)
 document.getElementById("cancel-btn").addEventListener("click", function(){
-  window.location.href = "/videolist?ltik=" + params.get("ltik")
+  window.location.href = "./videolist?ltik=" + params.get("ltik")
 }, false)
 
 function select_file_info_show(file){

@@ -26,14 +26,14 @@ function video_list_draw(video_view_list){
     video_div.setAttribute("id","video-" + video_view_list[element].vid)
 
     const thumbnail_img = clone.querySelector('.head-thumbnail-img')
-    thumbnail_img.src = '/video/' + video_view_list[element].vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
+    thumbnail_img.src = './video/' + video_view_list[element].vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
     thumbnail_img.alt = video_view_list[element].title
     thumbnail_img.onerror = function(){
-      this.src='/images/no_thumbnail.jpg'
+      this.src='./images/no_thumbnail.jpg'
     }
 
     const thumbnail_a = clone.querySelector('.head-thumbnail-a')
-    thumbnail_a.href = '/watch?video=' + video_view_list[element].vid + '&ltik=' + params.get("ltik")
+    thumbnail_a.href = './watch?video=' + video_view_list[element].vid + '&ltik=' + params.get("ltik")
 
     const title_div = clone.querySelector('.head-title-p')
     title_div.innerHTML = video_view_list[element].title
@@ -126,7 +126,7 @@ function uploadInit(){
   var params = (new URL(document.location)).searchParams
 
   var upload_a = document.createElement('a')
-  upload_a.href = '/upload?&ltik=' + params.get("ltik")
+  upload_a.href = './upload?&ltik=' + params.get("ltik")
 
   document.getElementById("upload-btn").appendChild(upload_a)
 }
@@ -142,9 +142,9 @@ function videoDelete(e){
   var params = (new URL(document.location)).searchParams
 
   document.getElementById("delete-overlay").classList.toggle("delete-overlay-on")
-  document.getElementById("delete-thumbnail").src = '/video/' + vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
+  document.getElementById("delete-thumbnail").src = './video/' + vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
   document.getElementById("delete-thumbnail").onerror = function(){
-    this.src='/images/no_thumbnail.jpg'
+    this.src='./images/no_thumbnail.jpg'
   }
   document.getElementById("delete-title").innerHTML = video_dict[vid].title
   document.getElementById("delete-cancel-btn").onclick = deleteCancel
@@ -161,7 +161,7 @@ function deleteRun(){
     var xhr = new XMLHttpRequest();
     var params = (new URL(document.location)).searchParams
     var send_json = {"vid":selectVid}
-    xhr.open('post', "/videodelete?ltik=" + params.get("ltik"), true)
+    xhr.open('post', "./videodelete?ltik=" + params.get("ltik"), true)
     xhr.setRequestHeader('Content-Type', 'application/json')
     xhr.send(JSON.stringify(send_json))
 
@@ -209,14 +209,14 @@ function videoEdit(e){
   var vid = elem.id.split('-')[1]
   var params = (new URL(document.location)).searchParams
 
-  window.location.href = "/edit?vid=" + vid + "&ltik=" + params.get("ltik")
+  window.location.href = "./edit?vid=" + vid + "&ltik=" + params.get("ltik")
 }
 
 
 function getVideoList(){
     var request = new XMLHttpRequest()
     var params = (new URL(document.location)).searchParams
-    request.open('POST', "/videolist?ltik=" + params.get("ltik"), true)
+    request.open('POST', "./videolist?ltik=" + params.get("ltik"), true)
   
     request.onload = function () {
       var listdata = JSON.parse(request.response)

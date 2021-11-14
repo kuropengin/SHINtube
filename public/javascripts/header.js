@@ -3,7 +3,7 @@ var ResponseData = false
 function getLtiInfoResponse(callback) {
     var request = new XMLHttpRequest()
     var params = (new URL(document.location)).searchParams
-    request.open('GET', "/info?ltik=" + params.get("ltik"), true)
+    request.open('GET', "./info?ltik=" + params.get("ltik"), true)
 
     request.onload = function () {
         if(request.status == 200){
@@ -31,16 +31,16 @@ function hederInit(InitData) {
         document.getElementById("class-title").innerHTML = "LTI認証エラー"
     }
     document.getElementById("root-page").addEventListener('click', function(){
-        window.location.href = "/?ltik=" + params.get("ltik")
+        window.location.href = "./?ltik=" + params.get("ltik")
     })
     document.getElementById("about-page").addEventListener('click', function(){
-        window.location.href = "/about?ltik=" + params.get("ltik")
+        window.location.href = "./about?ltik=" + params.get("ltik")
     })
     document.getElementById("return-page").addEventListener('click', function(){
-        window.location.href = "/return?ltik=" + params.get("ltik")
+        window.location.href = "./return?ltik=" + params.get("ltik")
     })
     document.getElementById("logout-page").addEventListener('click', function(){
-        window.location.href = "/logout?ltik=" + params.get("ltik")
+        window.location.href = "./logout?ltik=" + params.get("ltik")
     })
 }
 

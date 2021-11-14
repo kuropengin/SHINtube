@@ -9,6 +9,7 @@ const logapiRoutes = require('./routes/logapi-routes')
 
 const db_config = require('./config/db_config.json')
 const lti_config = require('./config/lti_config.json')
+const app_config = require('./config/app_config.json')
 
 const DB_URL = db_config.mongo_url || process.env.DB_URL || "mongo"
 const DB_NAME = db_config.db_name || process.env.DB_NAME || "SHINtube"
@@ -18,7 +19,12 @@ const DB_PASS = db_config.pass || process.env.DB_PASS || "pass"
 const MY_DOMAIN = lti_config.my_domain || process.env.MY_DOMAIN || ""
 const REG_KEY = lti_config.reg_key || process.env.REG_KEY || "pass1234"
 
-const PORT = process.env.PORT || 3000
+const PORT = app_config.app_port || process.env.PORT || 3000
+const ROOT_PATH = app_config.app_root_path || process.env.ROOT_PATH || "/"
+
+const middleware = (app) => {
+  app.use(path.join('/', ROOT_PATH), express.static(path.join(__dirname, 'public')));
+}
 
 const lti = require('ltijs').Provider
 lti.setup('LTIKEY',
@@ -27,23 +33,24 @@ lti.setup('LTIKEY',
     connection: { user: DB_USER, pass: DB_PASS }
   },
   {
-    appRoute: '/', 
-    loginRoute: '/login',
-    staticPath: path.join(__dirname, 'public'),
+    appRoute: path.join('/', ROOT_PATH), 
+    loginRoute: path.join('/', ROOT_PATH, 'login'),
+    keysetRoute: path.join('/', ROOT_PATH, 'keys'),
+    serverAddon: middleware,
     cookies: {
       secure: true,
       sameSite: 'None'
     },
-    dynRegRoute: '/register', 
+    dynRegRoute: path.join('/', ROOT_PATH, 'register'), 
     dynReg: {
-      url: MY_DOMAIN,
+      url: MY_DOMAIN + path.join('/', ROOT_PATH, '/'),
       name: 'SHINtube',
-      logo: MY_DOMAIN + '/images/favicon.ico',
+      logo: MY_DOMAIN + path.join('/', ROOT_PATH, '/images/favicon.ico'),
       description: 'Video sharing platform for Shinshu University.', 
       redirectUris: [
-        MY_DOMAIN,
-        MY_DOMAIN + '/deeplink',
-        MY_DOMAIN + '/watch'
+        MY_DOMAIN + MY_DOMAIN + path.join('/', ROOT_PATH),
+        MY_DOMAIN + path.join('/', ROOT_PATH, '/deeplink'),
+        MY_DOMAIN + path.join('/', ROOT_PATH, '/watch')
       ],
       autoActivate: true 
     }
@@ -60,19 +67,19 @@ lti.app.use(fileUpload({
 lti.onConnect((token, req, res) => {
   try{
     if(res.locals.context.roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor') != -1){
-      return lti.redirect(res, '/videolist', { newResource: true })
+      return lti.redirect(res, path.join('/', ROOT_PATH, '/videolist'), { newResource: true })
     }
     else{
-      return lti.redirect(res, '/about', { newResource: true })
+      return lti.redirect(res, path.join('/', ROOT_PATH, '/about'), { newResource: true })
     }
   }catch(err){
-    return lti.redirect(res, '/about', { newResource: true })
+    return lti.redirect(res, path.join('/', ROOT_PATH, '/about'), { newResource: true })
   }
   
 })
 
 lti.onDeepLinking(async (token, req, res) => {
-  return lti.redirect(res, '/deeplink', { newResource: true })
+  return lti.redirect(res, path.join('/', ROOT_PATH, '/deeplink'), { newResource: true })
 })
 
 lti.app.get('/deeplink', async (req, res) => {
@@ -114,7 +121,7 @@ lti.onDynamicRegistration(async (req, res, next) => {
 })
 
 
-lti.whitelist(lti.appRoute(), { route: '/error', method: 'get' },{ route: '/about', method: 'get' },{ route: '/TOS', method: 'get' })
+lti.whitelist(lti.appRoute(), { route: path.join('/', ROOT_PATH, '/error'), method: 'get' },{ route: path.join('/', ROOT_PATH, '/about'), method: 'get' },{ route: path.join('/', ROOT_PATH, '/TOS'), method: 'get' })
 
 lti.app.use(ltiRoutes)
 lti.app.use(videoRoutes)

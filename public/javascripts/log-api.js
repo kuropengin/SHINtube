@@ -7,7 +7,7 @@ function postLog(verb, obj=false, obj_ex=false){
     }
         
     //console.log(verb, obj)
-    request.open('POST', "/log" + "?ltik=" + params.get("ltik"), true)
+    request.open('POST', "./log" + "?ltik=" + params.get("ltik"), true)
     request.setRequestHeader('Content-Type', 'application/json');
     request.send(JSON.stringify({"verb":verb, "obj":obj, "obj_ex":obj_ex}))
 }

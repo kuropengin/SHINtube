@@ -47,7 +47,7 @@ function systemDisplay(system){
 function systemCheck(){
     var request = new XMLHttpRequest()
     var params = (new URL(document.location)).searchParams
-    request.open('GET', "/system-check?ltik=" + params.get("ltik"), true)
+    request.open('GET', "./system-check?ltik=" + params.get("ltik"), true)
   
     request.onload = function () {
         const systemdata = JSON.parse(request.response)

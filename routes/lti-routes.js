@@ -4,6 +4,8 @@ const path = require('path')
 // Requiring Ltijs
 const lti = require('ltijs').Provider
 
+const app_config = require('../config/app_config.json')
+const ROOT_PATH = app_config.app_root_path || process.env.ROOT_PATH || "/"
 
 function roleguard(req, res, next){
   if(res.locals.context.roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor') != -1){
@@ -14,72 +16,16 @@ function roleguard(req, res, next){
   }
 }
 
-// Grading route
-router.post('/grade', async (req, res) => {
-  try {
-    const idtoken = res.locals.token // IdToken
-    const score = req.body.grade // User numeric score sent in the body
-    // Creating Grade object
-    const gradeObj = {
-      userId: idtoken.user,
-      scoreGiven: score,
-      scoreMaximum: 100,
-      activityProgress: 'Completed',
-      gradingProgress: 'FullyGraded'
-    }
-
-    // Selecting linetItem ID
-    let lineItemId = idtoken.platformContext.endpoint.lineitem // Attempting to retrieve it from idtoken
-    if (!lineItemId) {
-      const response = await lti.Grade.getLineItems(idtoken, { resourceLinkId: true })
-      const lineItems = response.lineItems
-      if (lineItems.length === 0) {
-        // Creating line item if there is none
-        console.log('Creating new line item')
-        const newLineItem = {
-          scoreMaximum: 100,
-          label: 'Grade',
-          tag: 'grade',
-          resourceLinkId: idtoken.platformContext.resource.id
-        }
-        const lineItem = await lti.Grade.createLineItem(idtoken, newLineItem)
-        lineItemId = lineItem.id
-      } else lineItemId = lineItems[0].id
-    }
-
-    // Sending Grade
-    const responseGrade = await lti.Grade.submitScore(idtoken, lineItemId, gradeObj)
-    return res.send(responseGrade)
-  } catch (err) {
-    console.log(err.message)
-    return res.status(500).send({ err: err.message })
-  }
-})
-
-// Names and Roles route
-router.get('/members', async (req, res) => {
-  try {
-    const result = await lti.NamesAndRoles.getMembers(res.locals.token)
-    if (result) return res.send(result.members)
-    return res.sendStatus(500)
-  } catch (err) {
-    console.log(err.message)
-    return res.status(500).send(err.message)
-  }
-})
-
-
-router.get('/deeplink',roleguard, async (req, res) => {
+router.get(path.join('/', ROOT_PATH, '/deeplink'),roleguard, async (req, res) => {
   try {
     res.render('deeplink')
   } catch (err) {
-    console.log(err.message)
+    console.error(err.message)
     return res.status(500).send(err.message)
   }
 })
 
-// Deep linking route
-router.post('/deeplink', async (req, res) => {
+router.post(path.join('/', ROOT_PATH, '/deeplink'), async (req, res) => {
   try {
     const resource = req.body
 
@@ -97,32 +43,12 @@ router.post('/deeplink', async (req, res) => {
     if (form) return res.send(form)
     return res.sendStatus(500)
   } catch (err) {
-    console.log(err.message)
+    console.error(err.message)
     return res.status(500).send(err.message)
   }
 })
 
-// Return available deep linking resources
-router.get('/resources', async (req, res) => {
-  const resources = [
-    {
-      name: 'Resource1',
-      value: 'value1'
-    },
-    {
-      name: 'Resource2',
-      value: 'value2'
-    },
-    {
-      name: 'Resource3',
-      value: 'value3'
-    }
-  ]
-  return res.send(resources)
-})
-
-// Get user and context information
-router.get('/info', async (req, res) => {
+router.get(path.join('/', ROOT_PATH, '/info'), async (req, res) => {
   const token = res.locals.token
   const context = res.locals.context
 
@@ -139,7 +65,7 @@ router.get('/info', async (req, res) => {
 })
 
 
-router.get('/test', async (req, res) => {
+router.get(path.join('/', ROOT_PATH, '/test'), async (req, res) => {
   const token = res.locals.token
   const context = res.locals.context
 

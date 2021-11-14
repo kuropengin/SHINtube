@@ -3,18 +3,20 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const logger = require('../tool/log')
 
-
 // Requiring Ltijs
 const lti = require('ltijs').Provider
 
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(bodyParser.json());
 
+const app_config = require('../config/app_config.json')
+const ROOT_PATH = app_config.app_root_path || process.env.ROOT_PATH || "/"
+
 function log_escape(string){
     return String(string).replace(/&/g, '&lt;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, "&#x27;")
 }
 
-router.post('/log', async (req, res) => {
+router.post(path.join('/', ROOT_PATH, '/log'), async (req, res) => {
     try{
         if(req.body.verb && req.body.obj){
             var _cid = req.res.locals.context.lis.course_section_sourcedid
