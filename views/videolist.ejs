@@ -20,8 +20,26 @@
             <div id="upload-btn"><img src="./images/sub-upload.png">アップロード</div>
           </div>
         </div>
+
+        <div class="contents-category">
+          <div id="video-category" class="category">動画</div>
+          <div id="list-category" class="category checkbox-selected-off">再生リスト</div>
+          <div id="category-select-bar" class="category-select-video"></div>
+        </div>
+        
         <%- include('./common/filter') %>
         <div id="videolist-head">
+          <div class="head-checkbox">
+            <input type="checkbox" id="all-checkbox" class="all-checkbox">
+            <label for="all-checkbox" class="checkbox-label"></label>
+          </div>
+          <div class="checkbox-selected checkbox-selected-off">
+            <div class="selected-length">0 件選択しました</div>
+            <div class="selected-action-area">
+              <div class="selected-add-list checkbox-selected-off">再生リストに追加</div>
+              <div id="selected-delete" class="selected-delete" onclick="videoDelete()">一括削除</div>
+            </div>
+          </div>
           <div id="sort-video-btn" class="head-video">
             <p>動画</p> 
             <div class="indicator"></div>
@@ -57,6 +75,7 @@
                 <img id="delete-thumbnail"></img>
                 <div id="delete-title"></div>
               </div>
+              <div id="delete-warning"></div>
               <div class="delete-btn-area">
                 <div id="delete-cancel-btn" class="delete-btn">キャンセル</div>
                 <div id="delete-run-btn" class="delete-btn">削除</div>
@@ -64,7 +83,11 @@
             </div>
           </div>
           <template id="template-video">
+            <input type="checkbox" class="list-checkbox" name="video-checkbox" onchange="selectedList()">
             <div class="video_div" ontouchstart="">
+              <div class="head-checkbox">
+                <label class="checkbox-label"></label>
+              </div>
               <div class="head-video">
                 <div class="head-thumbnail">
                   <img class="head-thumbnail-img">

@@ -21,6 +21,12 @@ function video_list_draw(video_view_list){
 
   for (const element in video_view_list) {
     const clone = document.importNode(video_content, true)
+
+    const check_div = clone.querySelector('.list-checkbox')
+    check_div.setAttribute("id","check-" + video_view_list[element].vid)
+
+    const label_div = clone.querySelector('.checkbox-label')
+    label_div.setAttribute("for","check-" + video_view_list[element].vid)
     
     const video_div = clone.querySelector('.video_div')
     video_div.setAttribute("id","video-" + video_view_list[element].vid)
@@ -116,10 +122,10 @@ function video_list_draw(video_view_list){
       contributor_div.setAttribute("id","contributor-" + video_view_list[element].contributor_id)
     }catch(e){}
     
-
     video_list_div.appendChild(clone)
-
   }
+  document.getElementById("all-checkbox").checked = false
+  selectedList()
 }
 
 function uploadInit(){
@@ -133,12 +139,19 @@ function uploadInit(){
 
 
 
-var selectVid = ""
+var selectVid = []
 function videoDelete(e){
   var e = e || window.event
   var elem = e.target || e.srcElement
-  var vid = elem.id.split('-')[1]
-  selectVid = vid
+  if(elem.id != "selected-delete"){
+    var vid = elem.id.split('-')[1]
+    selectVid.push(vid)
+  }
+  else{
+    selectVid = selectedList()
+    var delete_list = deleteList(selectVid)
+    var vid = selectVid[0]
+  }
   var params = (new URL(document.location)).searchParams
 
   document.getElementById("delete-overlay").classList.toggle("delete-overlay-on")
@@ -146,31 +159,39 @@ function videoDelete(e){
   document.getElementById("delete-thumbnail").onerror = function(){
     this.src='./images/no_thumbnail.jpg'
   }
-  document.getElementById("delete-title").innerHTML = video_dict[vid].title
+  if(elem.id != "selected-delete"){
+    document.getElementById("delete-title").innerHTML = video_dict[vid].title
+  }
+  else{
+    document.getElementById("delete-title").innerHTML = selectVid.length + " 件の動画"
+    if(selectVid.length != delete_list.length){
+      document.getElementById("delete-warning").innerHTML = (selectVid.length - delete_list.length) + " 件の動画は削除できません"
+      selectVid = delete_list
+    }
+  }
   document.getElementById("delete-cancel-btn").onclick = deleteCancel
   document.getElementById("delete-run-btn").onclick = deleteRun
 }
 
 function deleteCancel(){
   document.getElementById("delete-overlay").classList.toggle("delete-overlay-on")
-  selectVid = ""
+  selectVid = []
 }
 
 function deleteRun(){
-  if(selectVid){
-    var xhr = new XMLHttpRequest();
-    var params = (new URL(document.location)).searchParams
-    var send_json = {"vid":selectVid}
+  var params = (new URL(document.location)).searchParams
+  selectVid.forEach(function(delete_vid){
+    var send_json = {"vid":delete_vid}
+    var xhr = new XMLHttpRequest()
     xhr.open('post', "./videodelete?ltik=" + params.get("ltik"), true)
     xhr.setRequestHeader('Content-Type', 'application/json')
     xhr.send(JSON.stringify(send_json))
 
     xhr.onload = function () {
       if(xhr.status == 200){
-        document.getElementById("delete-overlay").classList.toggle("delete-overlay-on")
-        document.getElementById("video-" + selectVid).remove()
+        document.getElementById("video-" + delete_vid).remove()
 
-        delete video_dict[selectVid]
+        delete video_dict[delete_vid]
         var video_array = Object.keys(video_dict).map(function(k){
           var t_video = Object.assign( { "vid": k }, video_dict[k] )
           if(video_dict[k].encode_error.length){
@@ -200,7 +221,22 @@ function deleteRun(){
         video_list_draw(videofilter.VideoList())
       }
     }
-  }
+  })
+  document.getElementById("delete-overlay").classList.toggle("delete-overlay-on")
+}
+
+function deleteList(list){
+  var check_list = {}
+  videofilter.VideoList().forEach(function(target){
+    check_list[target.vid] = target
+  })
+  var result = []
+  list.forEach(function(target){
+    if(check_list[target].status == 3){
+      result.push(target)
+    }
+  })
+  return result
 }
 
 function videoEdit(e){
@@ -319,7 +355,50 @@ function headSortInit(){
   })
 }
 
+function categoryBarInit(){
+  document.getElementById("video-category").addEventListener('click', function(){
+    document.getElementById("category-select-bar").classList.remove("category-select-list")
+    document.getElementById("category-select-bar").classList.add("category-select-video")
+  })
+
+  document.getElementById("list-category").addEventListener('click', function(){
+    document.getElementById("category-select-bar").classList.remove("category-select-video")
+    document.getElementById("category-select-bar").classList.add("category-select-list")
+  })
+}
+
+function checkboxInit(){
+  document.getElementById("all-checkbox").addEventListener("change", function(){
+    var all_checked = document.getElementById("all-checkbox").checked
+    document.getElementsByName("video-checkbox").forEach(function(target){
+        target.checked = all_checked
+    })
+    selectedList()
+  }, false)
+}
+
+function selectedList(){
+  var selected_contents = []
+  document.getElementsByName("video-checkbox").forEach(function(target){
+    if(target.checked){
+      selected_contents.push(target.id.split("-")[1])
+    }
+  })
+
+  if(selected_contents.length){
+    document.getElementsByClassName("checkbox-selected")[0].classList.remove("checkbox-selected-off")
+    document.getElementsByClassName("selected-length")[0].innerHTML = selected_contents.length + " 件選択しました"
+  }
+  else{
+    document.getElementsByClassName("checkbox-selected")[0].classList.add("checkbox-selected-off")
+    document.getElementsByClassName("selected-length")[0].innerHTML = "0 件選択しました"
+  }
+  return selected_contents
+}
+
 window.addEventListener("load", function() {
+    categoryBarInit()
+    checkboxInit()
     getLtiInfoResponse(classNameInit)
     getVideoList()
     uploadInit()

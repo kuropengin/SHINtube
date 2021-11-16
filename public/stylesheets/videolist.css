@@ -24,7 +24,7 @@
 
 .contents_header{
     width: calc(100%);
-    border-bottom: 1px solid #cacaca;
+    margin-top: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -32,6 +32,44 @@
     left: 0;
 }
 
+.contents-category{
+    width: calc(100% - 40px);
+    padding: 0 20px;
+    display: flex;
+    border-bottom: 1px solid #cacaca;
+    font-size: 18px;
+    font-weight: 400;
+    position: sticky;
+    left: 0;
+}
+
+.category{
+    padding: 10px 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.category:hover{
+    background: rgb(145 145 145 / 10%);
+}
+
+#category-select-bar{
+    position: absolute;
+    bottom: 0;
+    height: 4px;
+    background: #065e3c;
+    transition: all .1s ease-in;
+}
+
+.category-select-video{
+    width: 76px;
+    left: 20px;
+}
+
+.category-select-list{
+    width: 130px;
+    left: 96px;
+}
 
 .listfilter-area {
     position: sticky;
@@ -40,7 +78,7 @@
 
 #videolist-head{
     display: flex;
-    min-width: 1400px;
+    min-width: 1440px;
     position: sticky;
     top: 0;
     background: var(--default_back_color);
@@ -53,13 +91,135 @@
 }
 
 #videolist-head .head-video{
-    width: 580px;
+    width: 600px;
     padding: 10px 0;
-    padding-left: 20px;
-    flex: 0 0 580px;
+    flex: 0 0 600px;
     border-bottom: 1px solid #cacaca;
     justify-content: space-between;
     cursor: pointer;
+}
+
+#videolist-head .head-checkbox{
+    border-bottom: 1px solid #cacaca;
+    position: sticky;
+    top: 0;
+}
+.head-checkbox{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: sticky;
+    background: var(--default_back_color);
+    left: 0;
+    width: 40px;
+    flex: 0 0 40px;
+    z-index: 3;
+}
+
+.list-checkbox, .all-checkbox{
+    display: none;
+}
+
+
+.checkbox-label{
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.checkbox-label::before,
+.checkbox-label::after {
+    content: "";
+    display: block; 
+    position: absolute;
+}
+
+.checkbox-label::before {
+    border-radius: 0%;
+    border: 1px solid #cacaca;
+    border-radius: 2px;
+    width: 20px;
+    height: 20px;
+    transform: translateY(-50%);
+    top: 50%;
+    left: 9px;
+}
+
+.checkbox-label::after {
+    border-bottom: 2px solid #cacaca;
+    border-left: 2px solid #cacaca;
+    opacity: 0;
+    height: 5px;
+    width: 10px;
+    transform: rotate(-45deg);
+    top: calc(50% - 4px);
+    left: 14px;
+}
+
+.list-checkbox:checked + .video_div .head-checkbox .checkbox-label::after,
+.all-checkbox:checked + .checkbox-label::after{
+    opacity: 1;
+    border-color: #FFF
+}
+
+.list-checkbox:checked + .video_div .head-checkbox .checkbox-label::before,
+.all-checkbox:checked + .checkbox-label::before{
+    background: #065e3c;
+}
+
+.list-checkbox:checked + .video_div,
+.list-checkbox:checked + .video_div .head-checkbox,
+.list-checkbox:checked + .video_div .head-video{
+    background: var(--hover_back_color);
+}
+
+.checkbox-selected{
+    width: calc(100% - 40px);
+    height: calc(100% - 1px);
+    margin-left: 40px;
+    position: absolute;
+    background: var(--default_back_color);
+    z-index: 2;
+    border-bottom: 1px solid #cacaca;
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-selected-off{
+    display: none;
+}
+
+.selected-length{
+    margin: 0 10px;
+}
+
+.selected-action-area{
+    display: flex;
+    align-items: center;
+    height: calc(100% - 10px);
+    margin: 5px 0;
+    border-left: 1px solid #cacaca;
+}
+
+.selected-add-list{
+    margin: 0 5px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.selected-add-list:hover{
+    background: var(--hover_back_color);
+}
+
+.selected-delete{
+    margin: 0 5px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.selected-delete:hover{
+    background: var(--hover_back_color);
 }
 
 #videolist-head .head-status,
@@ -79,7 +239,7 @@
     flex-wrap: wrap;
     position: sticky;
     flex: 0 0 600px;
-    left: 0;
+    left: 40px;
     z-index: 1;
     transform: translateZ(0);
     padding: 10px 0;
@@ -89,13 +249,13 @@
 .head-thumbnail{
     width: 160px;
     display: flex;
-    padding: 0 20px;
+    padding-right: 20px;
     align-items: center;
     position: relative;
 }
 
 .head-title{
-    width: 400px;
+    width: 410px;
     display: flex;
     overflow-wrap: anywhere;
     flex-wrap: wrap;   
@@ -158,7 +318,7 @@
 }
 
 .upload-area{
-    margin: 20px;
+    margin: 0 20px;
 }
 
 #upload-btn{
@@ -202,12 +362,16 @@
 }
 
 .video_div{
-    min-width: 1400px;
+    min-width: 1440px;
     display: flex;
     position: relative;
 }
 
 .video_div:hover{
+    background: var(--hover_back_color);
+}
+
+.video_div:hover .head-checkbox{
     background: var(--hover_back_color);
 }
 
@@ -452,6 +616,15 @@
 
 #delete-title{
     width: 70%;
+}
+
+#delete-warning{
+    width: calc(100% - 40px);
+    margin-top: 20px;
+    padding: 0 20px;
+    color: #fa1d1d;
+    font-weight: 400;
+    text-align: right;
 }
 
 .delete-btn-area{
