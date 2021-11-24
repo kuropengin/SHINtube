@@ -56,6 +56,82 @@ router.post(path.join('/', ROOT_PATH, '/videolist'),roleguard, async (req, res) 
     })
 })
 
+router.post(path.join('/', ROOT_PATH, '/createplaylist'),roleguard, async (req, res) => {
+    var metadata = {
+        "contributor_name" : res.locals.token.userInfo.name,
+        "contributor_id" : res.locals.token.user,
+        "content_type":"playlist",
+        "playlist": req.body.playlist
+    }
+    try{
+        var year = res.locals.token.iss.split("/")[3]
+        if(isNaN(year) || year.length == 0){
+            year = "1000"
+        }
+    }
+    catch(err){
+        var year = "1000"
+    }
+    var cid = res.locals.context.lis.course_section_sourcedid
+    
+    var options = {
+        url: BACK_DOMAIN + '/api/video/emptyfileupload?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
+        method: 'POST'
+    }
+    
+    request(options, function (error, response, body) {
+        if(response.statusCode == 200){
+            res.send(body)
+        }
+        else{
+            res.status(response.statusCode).send(body)
+        }
+    })
+})
+
+router.post(path.join('/', ROOT_PATH, '/updateplaylist'),roleguard, async (req, res) => {
+    var cid = res.locals.context.lis.course_section_sourcedid
+    try{
+        var year = res.locals.token.iss.split("/")[3]
+        if(isNaN(year) || year.length == 0){
+            year = "1000"
+        }
+    }
+    catch(err){
+        var year = "1000"
+    }
+
+    var options = {
+        url: BACK_DOMAIN + '/video/' + encodeURI(year) + '/' + encodeURI(cid) + '/' + encodeURI(req.body.vid) + '/info.json' ,
+        method: 'GET'
+    }
+    request(options, function (error, response, body) {
+        if(response.statusCode == 200){
+            
+            var temp_meta_data = JSON.parse(JSON.parse(body).meta_data)
+            temp_meta_data["content_type"] = "playlist"
+            temp_meta_data["playlist"] = req.body.playlist
+
+            var _options = {
+                url: BACK_DOMAIN + '/api/video/updateinfo?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(temp_meta_data)),
+                method: 'POST'
+            }
+
+            request(_options, function (_error, _response, _body) {
+                if(_response.statusCode == 200){
+                    res.send({"vid":req.body.vid,"playlist":req.body.playlist})
+                }
+                else{
+                    res.status(_response.statusCode).send(_body)
+                }
+            })   
+        }
+        else{
+            res.status(response.statusCode).send(body)
+        }
+    })
+})
+
 router.post(path.join('/', ROOT_PATH, '/videodelete'),roleguard, async (req, res) => {
     try{
         var year = res.locals.token.iss.split("/")[3]
@@ -99,7 +175,8 @@ router.get(path.join('/', ROOT_PATH, '/upload'),roleguard, async (req, res) => {
 router.post(path.join('/', ROOT_PATH, '/upload'),roleguard, async (req, res) => {
     var metadata = {
         "contributor_name" : res.locals.token.userInfo.name,
-        "contributor_id" : res.locals.token.user
+        "contributor_id" : res.locals.token.user,
+        "duration" : req.body.duration
     }
     try{
         var year = res.locals.token.iss.split("/")[3]
@@ -158,7 +235,8 @@ router.post(path.join('/', ROOT_PATH, '/edit'),roleguard, async (req, res) => {
     if(req.files){
         var metadata = {
             "contributor_name" : res.locals.token.userInfo.name,
-            "contributor_id" : res.locals.token.user
+            "contributor_id" : res.locals.token.user,
+            "duration" : req.body.duration
         }
         options = {
             url: BACK_DOMAIN + '/updatevideo?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
@@ -203,9 +281,28 @@ router.get(path.join('/', ROOT_PATH, '/error'), async (req, res) => {
 
 router.get(path.join('/', ROOT_PATH, '/view-progress'), async (req, res) => {
     try {
+        const view_vid = req.query.vid
         const idtoken = res.locals.token
         const response = await lti.Grade.getScores(idtoken, idtoken.platformContext.endpoint.lineitem, { userId: idtoken.user })
-        return res.status(200).send(response)
+        if(response.scores.length){
+            try{
+                var send_comment = JSON.parse(response.scores[0].comment)
+                if(view_vid in send_comment){
+                    response.scores[0].resultScore = send_comment[view_vid].score
+                    response.scores[0].comment = send_comment[view_vid].view_list
+                }
+                else{
+                    response.scores[0].resultScore = 0
+                    response.scores[0].comment = ""
+                }
+            }
+            catch(e){}  
+
+            return res.status(200).send(response)     
+        }
+        else{
+            return res.status(200).send(response)
+        }
     }
     catch (err) {
         console.error(err.message)
@@ -215,40 +312,150 @@ router.get(path.join('/', ROOT_PATH, '/view-progress'), async (req, res) => {
 
 router.post(path.join('/', ROOT_PATH, '/view-progress'), async (req, res) => {
     try {
-      const idtoken = res.locals.token
-      const score = req.body.score
-      const view_list = req.body.comment
-  
-      const gradeObj = {
-        userId: idtoken.user,
-        scoreGiven: score,
-        scoreMaximum: 100,
-        comment : view_list,
-        activityProgress: 'Completed',
-        gradingProgress: 'FullyGraded'
-      }
+        const idtoken = res.locals.token
+        const nowLmsProgress = await lti.Grade.getScores(idtoken, idtoken.platformContext.endpoint.lineitem, { userId: idtoken.user })     
 
-      let lineItemId = idtoken.platformContext.endpoint.lineitem 
-      if (!lineItemId) {
-        const response = await lti.Grade.getLineItems(idtoken, { resourceLinkId: true })
-        const lineItems = response.lineItems
-        if (lineItems.length === 0) {
-          const newLineItem = {
+        const score = req.body.score
+        const view_list = req.body.comment
+        const view_duration = req.body.duration
+        const view_vid = req.body.vid
+        const view_playlist = req.body.playlist 
+
+        var send_comment = {}
+        var send_result_score = 0
+
+        if(!nowLmsProgress.scores.length){
+            if(view_playlist){
+                send_result_score = view_playlist.length ? score / view_playlist.length : score
+            }
+            else{
+                send_result_score = score
+            }
+
+            send_comment[view_vid] = {
+                "score" : score,
+                "view_list" : view_list
+            }   
+        }
+        else{   
+            try{
+                send_comment = JSON.parse(nowLmsProgress.scores[0].comment)
+                if(view_vid in send_comment){
+                    send_comment[view_vid] = {
+                        "score" : send_comment[view_vid].score || 0,
+                        "view_list" : send_comment[view_vid].view_list || "0-0.1"
+                    }
+                }
+            }
+            catch(e){
+                send_comment[view_vid] = {
+                    "score" : nowLmsProgress.scores[0].resultScore || 0,
+                    "view_list" : nowLmsProgress.scores[0].comment || "0-0.1"
+                }
+            }
+
+            if(view_vid in send_comment){
+                const rec_list = view_list.split(",").map(function(x){
+                    var arrayX = x.split("-")
+                    return [parseFloat(arrayX[0]),parseFloat(arrayX[1])]
+                })
+                const lms_list = send_comment[view_vid].view_list.split(",").map(function(x){
+                    var arrayX = x.split("-")
+                    return [parseFloat(arrayX[0]),parseFloat(arrayX[1])]
+                })
+
+                
+                const allProgressList = lms_list.concat(rec_list)
+                allProgressList.sort(function(a, b) {
+                    if (a[0] === b[0]) {
+                        return 0;
+                    }
+                    else {
+                        return (a[0] < b[0]) ? -1 : 1;
+                    }
+                })
+
+                var mergedProgressList = []
+                mergedProgressList.push(allProgressList[0])
+                
+                for(const _temp of allProgressList){
+                    if(_temp[0] > mergedProgressList[mergedProgressList.length - 1][1]){
+                        mergedProgressList.push(_temp)
+                    }
+                    else if(_temp[1] > mergedProgressList[mergedProgressList.length - 1][1]){
+                        mergedProgressList[mergedProgressList.length - 1][1] = _temp[1]
+                    } 
+                }     
+
+                var view_sum = 0
+                var send_view_list = []
+                for(const progress_one of mergedProgressList){
+                    view_sum += progress_one[1] - progress_one[0]
+                    send_view_list.push(progress_one[0] + "-" + progress_one[1])
+                }
+                send_view_list = send_view_list.join(',')
+                
+                var send_score = Math.floor((view_sum / view_duration) * 100)
+
+                send_comment[view_vid] = {
+                    "score" : send_score,
+                    "view_list" : send_view_list
+                }   
+            }
+            else{
+                send_comment[view_vid] = {
+                    "score" : score,
+                    "view_list" : view_list
+                }   
+            }
+
+            if(view_playlist){
+                var a_score = 0
+                for(const t_score in send_comment){
+                    if(send_comment[t_score].score && view_playlist.indexOf(t_score) != -1){
+                        a_score += send_comment[t_score].score
+                    } 
+                }
+                send_result_score = view_playlist.length ? a_score / view_playlist.length : a_score / Object.keys(send_comment).length
+
+            }
+            else{
+                send_result_score = send_score
+            }
+             
+        }
+
+        const send_json = {
+            userId: idtoken.user,
+            scoreGiven: Math.floor(send_result_score) || 0,
             scoreMaximum: 100,
-            label: 'Grade',
-            tag: 'grade',
-            resourceLinkId: idtoken.platformContext.resource.id
-          }
-          const lineItem = await lti.Grade.createLineItem(idtoken, newLineItem)
-          lineItemId = lineItem.id
-        } else lineItemId = lineItems[0].id
-      }
+            comment : JSON.stringify(send_comment),
+            activityProgress: 'Completed',
+            gradingProgress: 'FullyGraded'
+        }
+
+        let lineItemId = idtoken.platformContext.endpoint.lineitem 
+        if (!lineItemId) {
+            const response = await lti.Grade.getLineItems(idtoken, { resourceLinkId: true })
+            const lineItems = response.lineItems
+            if (lineItems.length === 0) {
+            const newLineItem = {
+                scoreMaximum: 100,
+                label: 'Grade',
+                tag: 'grade',
+                resourceLinkId: idtoken.platformContext.resource.id
+            }
+            const lineItem = await lti.Grade.createLineItem(idtoken, newLineItem)
+            lineItemId = lineItem.id
+            } else lineItemId = lineItems[0].id
+        }
   
-      const responseGrade = await lti.Grade.submitScore(idtoken, lineItemId, gradeObj)
-      return res.send(responseGrade)
-    } catch (err) {
-      console.error(err.message)
-      return res.status(500).send({ err: err.message })
+        const responseGrade = await lti.Grade.submitScore(idtoken, lineItemId, send_json)
+        return res.send(responseGrade)
+    } 
+    catch (err) {
+        console.error(err.message)
+        return res.status(500).send({ err: err.message })
     }
 })
 

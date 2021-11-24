@@ -1,13 +1,14 @@
 
 var params = (new URL(document.location)).searchParams
 
-
 var lmsProgressScore = 0
 var lmsProgressList = []
-function postVideoProgressInit(){
+
+var playListVid = []
+function postVideoProgressInit(vid){
     const video = document.querySelector('video')
     var request = new XMLHttpRequest()
-    request.open('GET', "./view-progress" + "?ltik=" + params.get("ltik"), true)
+    request.open('GET', "./view-progress" + "?vid=" + vid + "&ltik=" + params.get("ltik"), true)
 
     request.onload = function () {
         var _score = 0
@@ -15,14 +16,14 @@ function postVideoProgressInit(){
 
         if(request.status == 200){
             savedProgress = JSON.parse(request.response)
-
+            
             try{
-                _score = savedProgress.scores[0].resultScore
+                _score = savedProgress.scores[0].resultScore || 0
             }
             catch(err){}
             
             try{
-                _comment = savedProgress.scores[0].comment
+                _comment = savedProgress.scores[0].comment || ""
             }
             catch(err){}
 
@@ -36,12 +37,15 @@ function postVideoProgressInit(){
                 }
 
 
-                window.addEventListener('beforeunload', (event) => {
-                    postVideoProgress()
+                window.addEventListener('beforeunload', async function(event){
+                    const video = document.querySelector('video')
+                    if(!video.paused){
+                        postVideoProgress(vid)
+                    }  
                 })
 
                 video.addEventListener('pause', (event) => {
-                    postVideoProgress()
+                    postVideoProgress(vid)
                 })
             }
         }
@@ -49,88 +53,63 @@ function postVideoProgressInit(){
     request.send()
 }
 
-function postVideoProgress(){
+async function postVideoProgress(vid){
     const video = document.querySelector('video')
-    var view_sum = 0
-    var temp_list = []
-    var progress_list = []
-    var send_list = []
-    
 
-    var using_list = Array(lmsProgressList.length).fill(1) 
+    var clientProgressList = []
     for(var i=0; i < video.played.length; i++){
-        var _start = video.played.start(i)
-        var _end = video.played.end(i)
-        for(var j=0; j < lmsProgressList.length; j++){
-            if(using_list[j] &&video.played.start(i) >= lmsProgressList[j][0] && video.played.end(i) <= lmsProgressList[j][1]){
-                _start = lmsProgressList[j][0]
-                _end = lmsProgressList[j][1]
-                using_list[j] = 0
-            }
-            else if(using_list[j] &&video.played.start(i) <= lmsProgressList[j][0] && video.played.end(i) >= lmsProgressList[j][1]){
-                using_list[j] = 0
-            }
-            else if(using_list[j] && video.played.start(i) >= lmsProgressList[j][0] && video.played.start(i) <= lmsProgressList[j][1]){
-                _start = lmsProgressList[j][0]
-                using_list[j] = 0
-            }
-            else if(using_list[j] &&video.played.end(i) >= lmsProgressList[j][0] && video.played.end(i) <= lmsProgressList[j][1]){
-                _end = lmsProgressList[j][1]
-                using_list[j] = 0
-            }
-        }
-        temp_list.push([_start,_end])
+        clientProgressList.push([video.played.start(i),video.played.end(i)])
     }
-    var not_using_list = lmsProgressList.filter(function(value, index, self){
-        return using_list[index] === 1
-    })
+    const allProgressList = lmsProgressList.concat(clientProgressList)
+    allProgressList.sort(sortFunction)
 
-    not_using_list.map(element => temp_list.push(element))
-    temp_list.sort(sortFunction);
-    //console.log(temp_list)
-
-    using_list = Array(temp_list.length).fill(1) 
-    for(var i=0; i < temp_list.length; i++){
-        if(using_list[i]){
-            var _start = temp_list[i][0]
-            var _end = temp_list[i][1]
-            for(var j=0; j < temp_list.length; j++){
-                if(i != j){
-                    if(using_list[j] && _end >= temp_list[j][0] && _end >= temp_list[j][1]){
-                        using_list[j] = 0
-                    }
-                    else if(using_list[j] && _end >= temp_list[j][0]){
-                        _end = temp_list[j][1]
-                        using_list[j] = 0
-                    }
-                    else{
-                        break
-                    }
-                }
-            }
-            progress_list.push([_start,_end])
+    var mergedProgressList = []
+    mergedProgressList.push(allProgressList[0])
+    
+    for(const _temp of allProgressList){
+        if(_temp[0] > mergedProgressList[mergedProgressList.length - 1][1]){
+            mergedProgressList.push(_temp)
         }
+        else if(_temp[1] > mergedProgressList[mergedProgressList.length - 1][1]){
+            mergedProgressList[mergedProgressList.length - 1][1] = _temp[1]
+        } 
     }
 
-    for(progress_one of progress_list){
+
+    var view_sum = 0
+    var send_list = []
+    for(const progress_one of mergedProgressList){
         view_sum += progress_one[1] - progress_one[0]
         send_list.push(progress_one[0] + "-" + progress_one[1])
     }
 
-    view_progress = Math.floor((view_sum / video.duration) * 100)
-    
-    if(view_progress > 100){
-        view_progress = 100
-    }
+    let view_progress = Math.floor((view_sum / video.duration) * 100)
+    view_progress = view_progress > 100 ? 100 : view_progress
 
     if(lmsProgressScore < view_progress){
-        var sendData = new FormData()
-        sendData.append("score", view_progress)
-        sendData.append("comment", send_list.join(','))
+        var sendData = {
+            "vid": vid,
+            "duration": video.duration,
+            "playlist": playListVid.length ? playListVid : false,
+            "score": view_progress,
+            "comment": send_list.join(',')
+        }
 
         var request = new XMLHttpRequest()
         request.open('POST', "./view-progress" + "?ltik=" + params.get("ltik"), true)
-        request.send(sendData)
+
+        request.onload = function () {
+            if(request.status == 200){
+                const lmsResult = JSON.parse(JSON.parse(request.response).comment)
+                lmsProgressScore = lmsResult[vid].score
+                lmsProgressList = lmsResult[vid].view_list.split(',').map(ele => [parseFloat(ele.split('-')[0]), parseFloat(ele.split('-')[1])])
+            }
+            return
+        }
+
+
+        request.setRequestHeader('Content-Type', 'application/json')
+        request.send(JSON.stringify(sendData))
     }
 }
 
@@ -144,7 +123,7 @@ function sortFunction(a, b) {
 }
 
 
-function videoInit(){
+function videoInit(vid){
     const video = document.querySelector('video')
 
     var _volume = localStorage.getItem("volume")
@@ -154,17 +133,18 @@ function videoInit(){
     }
     if (player) {player.dispose()} else {var player}  
     player = videojs('video-player', {
-        autoplay: false,
+        autoplay: params.get("index")? true : false,
         loop: false,
         controls: true,
+        playsinline : true,
         preload: 'metadata',
         playbackRates: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
-        poster: './video/' + params.get("video") + '/thumbnail_720.jpg?ltik=' + params.get("ltik"),
+        poster: './video/' + vid + '/thumbnail_720.jpg?ltik=' + params.get("ltik"),
     });
 
     player.src({
         type: 'application/x-mpegURL',
-        src: "./video/" + params.get("video") + "/playlist.m3u8" + "?ltik=" + params.get("ltik")
+        src: "./video/" + vid + "/playlist.m3u8" + "?ltik=" + params.get("ltik")
     });
 
     player.hlsQualitySelector({
@@ -187,31 +167,69 @@ function videoInit(){
 }
 
 
-function videoInfoInit(){
+function videoInfoInit(vid){
     var request = new XMLHttpRequest()
-    request.open('GET', "./video/" + params.get("video") + "/info.json" + "?ltik=" + params.get("ltik"), true)
+    request.open('GET', "./video/" + vid + "/info.json" + "?ltik=" + params.get("ltik"), true)
 
     request.onload = function () {
         var infodata = JSON.parse(request.response)
-        var update_date = new Date(infodata.updated_at)
-        var update_Year = update_date.getFullYear()
-        var update_Month = (update_date.getMonth() + 1) < 10 ? "0" + (update_date.getMonth() + 1) : (update_date.getMonth() + 1) 
-        var update_Date = update_date.getDate()
-        document.getElementById("video-title").innerHTML = infodata.title
-        document.getElementById("video-update").innerHTML += update_Year + "/" + update_Month  + "/" + update_Date
-        document.getElementById("video-explanation").innerHTML = infodata.explanation ? infodata.explanation : "説明なし";
+        try{
+            infodata.meta_data = JSON.parse(infodata.meta_data)
+        }
+        catch(err){
+            infodata.meta_data = {
+                "content_type" : "video"
+            }
+        }
+        if(infodata.meta_data.content_type == "playlist"){
+            if(!params.get("playlist") || params.get("playlist") == params.get("video")){
+                if(infodata.meta_data.playlist.length){
+                    videoInfoInit(infodata.meta_data.playlist[0])
+                }
+                else{
+                    var update_date = new Date(infodata.updated_at)
+                    var update_Year = update_date.getFullYear()
+                    var update_Month = (update_date.getMonth() + 1) < 10 ? "0" + (update_date.getMonth() + 1) : (update_date.getMonth() + 1) 
+                    var update_Date = update_date.getDate()
+                    document.getElementById("video-title").innerHTML = infodata.title
+                    document.getElementById("video-update").innerHTML += update_Year + "/" + update_Month  + "/" + update_Date
+                    document.getElementById("video-explanation").innerHTML = infodata.explanation ? infodata.explanation : "説明なし";
+                    memoInit(vid)
+                }
+            }
+            else{
+                videoInfoInit(params.get("video"))
+            }
+            
+            playlistInit(infodata,vid)
+        }
+        else{
+            var update_date = new Date(infodata.updated_at)
+            var update_Year = update_date.getFullYear()
+            var update_Month = (update_date.getMonth() + 1) < 10 ? "0" + (update_date.getMonth() + 1) : (update_date.getMonth() + 1) 
+            var update_Date = update_date.getDate()
+            document.getElementById("video-title").innerHTML = infodata.title
+            document.getElementById("video-update").innerHTML += update_Year + "/" + update_Month  + "/" + update_Date
+            document.getElementById("video-explanation").innerHTML = infodata.explanation ? infodata.explanation : "説明なし";
+
+            if(params.get("deeplink")){
+                postVideoProgressInit(vid)
+            }
+            videoInit(vid)
+            memoInit(vid)
+        }
     }
     request.send()
 }
 
 
-function memoInit(){
+function memoInit(vid){
     var easyMDE = new EasyMDE({
         element: document.getElementById("memo-editor"),
         showIcons: ['strikethrough', 'code', 'table', 'heading', 'horizontal-rule'],
         autosave: {
             enabled: true,
-            uniqueId: params.get("video"),
+            uniqueId: vid,
             delay: 1000,
         },
         spellChecker: false
@@ -285,12 +303,128 @@ function memoInit(){
 }
 
 
-window.addEventListener("load", function() {
-    videoInit()
-    videoInfoInit()
-    if(params.get("deeplink")){
-        postVideoProgressInit()
+function playlistInit(playlist_info, playlist_id=params.get("playlist")){
+    document.getElementById("playlist-area").classList.remove("playlist-none")
+
+    document.getElementById("playlist-info-title").innerHTML = playlist_info.title
+    if(playlist_info.meta_data.playlist.length){
+        document.getElementById("playlist-info-index").innerHTML = (params.get("index") ? params.get("index") : "1") + " / " + playlist_info.meta_data.playlist.length
     }
-    memoInit()
+    else{
+        document.getElementById("playlist-info-index").innerHTML = "再生リストに動画がありません"
+    }
+
+    const list_element = document.getElementById("playlist-list")
+    const playlist_content = document.querySelector('#template-playlist-content').content
+    const playlist = playlist_info.meta_data.playlist
+
+    playListVid = []
+
+    playlist.forEach(function(playlist_vid, index){
+        playListVid.push(playlist_vid)
+        const clone = document.importNode(playlist_content, true)
+
+        const playlist_div = clone.querySelector('.playlist-content-div')
+        if(!params.get("index") && index == 0){
+            playlist_div.classList.add("playing-content")
+        }
+        else if(params.get("index") == index + 1){
+            playlist_div.classList.add("playing-content")
+        }
+
+        const index_div = clone.querySelector('.playlist-content-index')
+        index_div.innerHTML = index + 1
+
+        const thumbnail_img = clone.querySelector('.playlist-content-thumbnail-img')
+        thumbnail_img.src = './video/' + playlist_vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
+        thumbnail_img.onerror = function(){
+            this.src = './images/no_thumbnail.jpg'
+        }
+
+        const thumbnail_ps = clone.querySelector('.playlist-content-thumbnail-ps')
+        thumbnail_ps.setAttribute("id","playlist-ps-" + playlist_vid)
+        thumbnail_ps.innerHTML = "00:00"
+
+        const title_div = clone.querySelector('.playlist-content-info-title')
+        title_div.setAttribute("id","playlist-title-" + playlist_vid)
+
+        const explanation_div = clone.querySelector('.playlist-content-info-explanation')
+        explanation_div.setAttribute("id","playlist-explanation-" + playlist_vid)
+
+        const a_div = clone.querySelector('.playlist-content-a')
+        if(params.get("deeplink")){
+            a_div.href = './watch?video=' + playlist_vid + '&playlist=' + playlist_id + '&deeplink=true&index=' + (index + 1) + '&ltik=' + params.get("ltik")
+        }
+        else{
+            a_div.href = './watch?video=' + playlist_vid + '&playlist=' + playlist_id + '&index=' + (index + 1) + '&ltik=' + params.get("ltik")
+        }
+        
+
+        list_element.appendChild(clone)
+        playlistVideoInfo(playlist_vid)
+    })
+
+    const video = document.querySelector('video')
+
+    var next_index = 1
+    if(params.get("index")){
+        next_index = Number(params.get("index"))
+    }
+
+    if(playlist.length > next_index){
+        video.addEventListener('ended', async function(event){
+            //await postVideoProgress(playlist[next_index - 1])
+            if(params.get("deeplink")){
+                location.href = './watch?video=' + playlist[next_index] + '&playlist=' + playlist_id + '&deeplink=true&index=' + (next_index + 1) + '&ltik=' + params.get("ltik")
+            }
+            else{
+                location.href = './watch?video=' + playlist[next_index] + '&playlist=' + playlist_id + '&index=' + (next_index + 1) + '&ltik=' + params.get("ltik")
+            }
+        })
+    }
+
+}
+
+
+function playlistVideoInfo(vid){
+    var request = new XMLHttpRequest()
+    request.open('GET', "./video/" + vid + "/info.json" + "?ltik=" + params.get("ltik"), true)
+
+    request.onload = function () {
+        if(request.status == 200){
+            var infodata = JSON.parse(request.response)
+            document.getElementById("playlist-title-" + vid).innerHTML = infodata.title
+
+            var res_meta_data = {}
+            try{
+                res_meta_data = JSON.parse(infodata.meta_data)
+                if(res_meta_data.duration){
+                    const _s = Math.floor(res_meta_data.duration)
+                    var H = Math.floor(_s % (24 * 60 * 60) / (60 * 60))
+                    var M = Math.floor(_s % (24 * 60 * 60) % (60 * 60) / 60)
+                    var S = _s % (24 * 60 * 60) % (60 * 60) % 60
+                    if(H){
+                        document.getElementById("playlist-ps-" + vid).innerHTML = H + ":" + M + ":" + S
+                    }
+                    else{
+                        document.getElementById("playlist-ps-" + vid).innerHTML = M + ":" + ("0" + S).slice(-2)
+                    }
+
+                }
+            }
+            catch(e){}
+            
+        }
+        else{
+            document.getElementById("playlist-title-" + vid).innerHTML = "取得できませんでした"
+        }
+    }
+    
+    request.send()
+}
+
+
+window.addEventListener("load", function() {
+    videoInfoInit(params.get("playlist") || params.get("video"))
 })
     

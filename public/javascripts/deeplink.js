@@ -26,9 +26,17 @@ function getVideoList(){
                 const meta_data_obj = JSON.parse(listdata[k].meta_data)
                 t_video.contributor_name = meta_data_obj.contributor_name
                 t_video.contributor_id = meta_data_obj.contributor_id
+                t_video.content_type = meta_data_obj.content_type || "video"
+                if(t_video.content_type == "playlist"){
+                    t_video.playlist = meta_data_obj.playlist || []
+                    t_video.status = 3
+                }
+                t_video.duration = meta_data_obj.duration || 0
             }catch(e){
                 t_video.contributor_name = ""
                 t_video.contributor_id = ""
+                t_video.content_type = "video"
+                t_video.duration = 0
             }
             
             return t_video
@@ -67,9 +75,36 @@ function create_list(listdata){
         _label.setAttribute("for","video-" + listdata[element].vid)
 
         const _thumbnail = clone.querySelector('.img-thumbnail')
-        _thumbnail.src = './video/' + listdata[element].vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
+        if(listdata[element].content_type == "playlist"){
+            if(listdata[element].playlist.length){
+                _thumbnail.src = './video/' + listdata[element].playlist[0] + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
+            }
+            else{
+                _thumbnail.src = './images/no_thumbnail.jpg'
+            }
+        }
+        else{
+            _thumbnail.src = './video/' + listdata[element].vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
+        }
         _thumbnail.onerror = function(){
-            this.src='./images/no_thumbnail.jpg'
+            this.src= './images/no_thumbnail.jpg'
+        }
+        const _ps_thumbnail = clone.querySelector('.img-thumbnail-ps')
+        if(listdata[element].content_type == "playlist"){
+            _ps_thumbnail.classList.add("playlist-thumbnail")
+            _ps_thumbnail.innerHTML = listdata[element].playlist.length
+        }
+        else{
+            const _s = Math.floor(listdata[element].duration)
+            var H = Math.floor(_s % (24 * 60 * 60) / (60 * 60))
+            var M = Math.floor(_s % (24 * 60 * 60) % (60 * 60) / 60)
+            var S = _s % (24 * 60 * 60) % (60 * 60) % 60
+            if(H){
+                _ps_thumbnail.innerHTML = H + ":" + M + ":" + S
+            }
+            else{
+                _ps_thumbnail.innerHTML = M + ":" + ("0" + S).slice(-2)
+            }
         }
 
         const _title = clone.querySelector('.video-title')

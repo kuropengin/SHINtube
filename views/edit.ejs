@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@2.1.0/dist/videojs-contrib-quality-levels.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@1.1.4/dist/videojs-hls-quality-selector.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@1.1.4/dist/videojs-hls-quality-selector.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
     <link rel='stylesheet' href='./stylesheets/player.css'/>
 
@@ -25,10 +26,33 @@
             <video id="upload-video-preview" class="display-on display-off"></video>
             <video id="now-video-preview" class="video-js display-on"></video>
           </div>
+          <div id="playlist-area" class="playlist-area display-off">
+            <div class="playlist">
+              <div class="playlist-title">再生順の変更</div>
+              <div id="playlist-sort">
+
+              </div>
+              <template id="template-playlist-content">
+                <div class="playlist-content-div" ontouchstart="">
+                  <div class="playlist-content-index"></div>
+                  <div class="playlist-content-thumbnail">
+                    <img class="playlist-content-thumbnail-img" src="">
+                  </div>
+                  <div class="playlist-content-info">
+                    <div class="playlist-content-info-title"></div>
+                    <div class="playlist-content-info-explanation"></div>
+                  </div>
+                  <div class="playlist-content-delete">
+                    <div class="playlist-content-delete-btn" title="再生リストから削除"></div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
         </div>
         <div class="upload-right-contents theme-video-input">
           <form id="upload-form" action="/edit" method="post" encType="multipart/form-data">
-            <div class="step">
+            <div id="video-step" class="step">
               <div class="step-contents">
                 <div id="drag-area" class="drag-area-init drag-area-block-on">
                   <div class="drop-info">ファイルをドロップ</div>
@@ -88,8 +112,5 @@
       </div>
     </div>
 
-    <script>
-
-    </script>
   </body>
 </html>

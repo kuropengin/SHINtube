@@ -14,7 +14,6 @@ async function show_input_video_preview(input_video_file) {
 
 async function load_video({ target: { files } }) {
     input_video_file = files[0]
-    console.log(input_video_file)
     await show_input_video_preview(input_video_file)
     if(input_video_file){
         select_file_info_show(input_video_file.name)
@@ -103,6 +102,19 @@ function upload_video(){
     document.getElementById("upload-btn").removeEventListener("click", upload_video, false)
 
     const fd = new FormData(form)
+
+    try{
+        const duration = document.getElementById("upload-video-preview").duration
+        if(duration){
+            fd.append("duration", duration)
+        }
+        else{
+            fd.append("duration", 0)
+        }
+    }
+    catch(e){
+        fd.append("duration", 0)
+    }
 
     var xhr = new XMLHttpRequest()
     xhr.open('post', "./upload" + "?ltik=" + params.get("ltik"), true)

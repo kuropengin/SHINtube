@@ -40,8 +40,38 @@
         <div id="video-explanation"></div>
       </div>
     </div>
-    <div id="side-area" class="memo-area">
-      <textarea id="memo-editor"></textarea>
+    <div id="side-area">
+      <div id="playlist-area" class="playlist-none">
+        <div class="playlist">
+          <details open class="playlist-details">
+            <summary>
+              <div class="playlist-info">
+                <div id="playlist-info-title"></div>
+                <div id="playlist-info-index"></div>
+              </div>
+            </summary>
+            <div id="playlist-list" class="playlist-list">
+              <template id="template-playlist-content">
+                <div class="playlist-content-div" ontouchstart="">
+                  <div class="playlist-content-index"></div>
+                  <div class="playlist-content-thumbnail">
+                    <img class="playlist-content-thumbnail-img" src="">
+                    <div class="playlist-content-thumbnail-ps"></div>
+                  </div>
+                  <div class="playlist-content-info">
+                    <div class="playlist-content-info-title"></div>
+                    <div class="playlist-content-info-explanation"></div>
+                  </div>
+                  <a class="playlist-content-a"></a>
+                </div>
+              </template>
+            </div>
+          </details>
+        </div>
+      </div>
+      <div class="memo-area">
+        <textarea id="memo-editor"></textarea>
+      </div>
       <div id="memo-controller">
         <div id="memo-download-btn" class="theme-download-btn">
           <div class="memo-download-icon save-icon"></div>

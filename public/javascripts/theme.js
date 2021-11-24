@@ -49,12 +49,19 @@ function ThemeModeChange(mode) {
 
         root.style.setProperty('--default_back_color',"#FFF")
         root.style.setProperty('--default_color',"#181818")
+        root.style.setProperty('--default_border',"rgba(0, 0, 0, 0.1")
         root.style.setProperty('--hover_back_color',"#f3f3f3")
         root.style.setProperty('--default_icon_filter',"none")
         root.style.setProperty('--menu_back_color',"rgba(255, 255, 255, 0.95)")
         root.style.setProperty('--deeplink_select_back_color',"#f3f3f3")
         root.style.setProperty('--memo_back_color',"#fbfbfb")
+        root.style.setProperty('--playlist_info_back_color',"#FFF")
+        root.style.setProperty('--playlist_list_back_color',"#f9f9f9")
+        root.style.setProperty('--input_title_color',"#4e4e4e")
         root.style.setProperty('--overlay_back_color',"rgba(68, 68, 68, 0.2)")
+        root.style.setProperty('--overlay_content_back_color',"#FFF")
+        root.style.setProperty('--overlay_content_info_back_color',"#ececec")
+        root.style.setProperty('--overlay_content_btn__color',"#0000ff")
     }
     else{
         document.body.classList.add("dark-theme-body")
@@ -62,12 +69,19 @@ function ThemeModeChange(mode) {
 
         root.style.setProperty('--default_back_color',"#181818")
         root.style.setProperty('--default_color',"#FFF")
+        root.style.setProperty('--default_border',"rgba(255, 255, 255, 0.1")
         root.style.setProperty('--hover_back_color',"#2c2c2c")
         root.style.setProperty('--default_icon_filter',"invert(88%) sepia(61%) saturate(0%) hue-rotate(229deg) brightness(107%) contrast(101%)")
         root.style.setProperty('--menu_back_color',"rgba(32, 32, 32, 0.95)")
         root.style.setProperty('--deeplink_select_back_color',"#2c2c2c")
         root.style.setProperty('--memo_back_color',"#313131")
+        root.style.setProperty('--playlist_info_back_color',"#202020")
+        root.style.setProperty('--playlist_list_back_color',"#181818")
+        root.style.setProperty('--input_title_color',"#bbb")
         root.style.setProperty('--overlay_back_color',"rgba(0, 0, 0, 0.5)")
+        root.style.setProperty('--overlay_content_back_color',"#202020")
+        root.style.setProperty('--overlay_content_info_back_color',"#353535")
+        root.style.setProperty('--overlay_content_btn__color',"#87b7ff")
     }
 }
 

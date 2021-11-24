@@ -115,6 +115,7 @@
     font-size: 14px;
     font-weight: bold;
     user-select: none;
+    color: var(--input_title_color);
 }
 
 .input_text_init{

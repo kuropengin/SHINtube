@@ -22,9 +22,9 @@
         </div>
 
         <div class="contents-category">
-          <div id="video-category" class="category">動画</div>
-          <div id="list-category" class="category checkbox-selected-off">再生リスト</div>
-          <div id="category-select-bar" class="category-select-video"></div>
+          <div id="video-category" class="category">動画<a href="#videoCategory"></a></div>
+          <div id="list-category" class="category">再生リスト<a href="#listCategory"></a></div>
+          <div id="category-select-bar"></div>
         </div>
         
         <%- include('./common/filter') %>
@@ -36,7 +36,7 @@
           <div class="checkbox-selected checkbox-selected-off">
             <div class="selected-length">0 件選択しました</div>
             <div class="selected-action-area">
-              <div class="selected-add-list checkbox-selected-off">再生リストに追加</div>
+              <div id="selected-add-list" class="selected-add-list" onclick="videoAddPlayList()">再生リストに追加</div>
               <div id="selected-delete" class="selected-delete" onclick="videoDelete()">一括削除</div>
             </div>
           </div>
@@ -69,8 +69,8 @@
         <div id="videolist-area">
           <div id="videolist"></div>
           <div id="delete-overlay" class="overlay">
-            <div class="delete-area theme-delete-area">
-              <p>この動画を削除しますか</p>
+            <div class="delete-area">
+              <p id="delete-area-title"></p>
               <div class="delete-info">
                 <img id="delete-thumbnail"></img>
                 <div id="delete-title"></div>
@@ -79,6 +79,35 @@
               <div class="delete-btn-area">
                 <div id="delete-cancel-btn" class="delete-btn">キャンセル</div>
                 <div id="delete-run-btn" class="delete-btn">削除</div>
+              </div>
+            </div>
+          </div>
+          <div id="playlist-overlay" class="overlay">
+            <div class="playlist-add-area">
+              <p>再生リストの選択</p>
+              <div id="playlist-list-area" class="playlist-list-area">
+                <div id="playlist-list"></div>
+              </div>
+              <div id="playlist-new-area" class="playlist-new-area playlist-new-off">
+                <div class="step">
+                  <div class="step-contents">
+                    <div class="input_text_title">タイトル(必須)<div id="title-non-err" class="create-playlist-err-msg"></div></div>
+                    <textarea id="upload-title" class="input_text_init" cols="50" rows="4" name="title" maxlength="40" required ></textarea>
+                    <div class="input-limit-show"><div id="title-input-limit">0</div> / 40</div>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step-contents">
+                    <div class="input_text_title">説明</div>
+                    <textarea id="upload-explanation" class="input_text_init" cols="50" rows="4" name="explanation" maxlength="200"></textarea>
+                    <div class="input-limit-show"><div id="exp-input-limit">0</div> / 200</div>
+                  </div>
+                </div>
+              </div>
+              <div class="delete-btn-area">
+                <div id="playlist-new-btn" class="playlist-btn">新規再生リスト</div>
+                <div id="playlist-cancel-btn" class="playlist-btn">キャンセル</div>
+                <div id="playlist-add-btn" class="playlist-btn">追加</div>
               </div>
             </div>
           </div>
@@ -92,6 +121,7 @@
                 <div class="head-thumbnail">
                   <img class="head-thumbnail-img">
                   <a class="head-thumbnail-a"></a>
+                  <div class="head-thumbnail-ps"></div>
                 </div>
                 <div class="head-title">
                   <p class="head-title-p"></p>
@@ -118,6 +148,14 @@
                 <p class="head-contributor-p"></p>
               </div>
               
+            </div>
+          </template>
+          <template id="template-playlist">
+            <input type="checkbox" class="list-checkbox" name="playlist-checkbox">
+            <div class="playlist_div" ontouchstart="">
+              <div class="head-checkbox">
+                <label class="checkbox-label"></label>
+              </div>
             </div>
           </template>
         </div>

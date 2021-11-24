@@ -15,11 +15,161 @@
 #side-area{
     margin-left: 0px;
     margin-top: 20px;
-    max-height: calc(1280px*0.5625);
 }
 
-html,body {
-    background-color: #f9f9f9;
+#playlist-area{
+    background: var(--default_back_color);
+    margin-bottom: 15px; 
+}
+
+.playlist{
+    width: calc(100% - 2px);
+    border: 1px solid var(--default_border);
+}
+
+.playlist-details{
+    width: 100%;
+    height: 100%; 
+}
+
+
+.playlist-details summary {
+    display: block;
+}
+
+.playlist-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.playlist-info{
+    width: calc(100% - 10px);
+    height: 50px;
+    padding: 5px;
+    background: var(--playlist_info_back_color);
+    cursor: pointer;
+    user-select:none;
+}
+
+#playlist-info-title{
+    font-size: 16px;
+    padding-left: 5px;
+    height: 30px;
+    line-height: 30px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#playlist-info-index{
+    font-size: 12px;
+    padding-left: 5px;
+    height: 20px;
+    opacity: 0.5;
+}
+
+.playlist-list{
+    width: 100%;
+    background: var(--playlist_list_back_color);
+    max-height: calc((1280px*0.5625) - 62px);
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    overflow: auto;
+}
+
+.playlist-content-index{
+    width: 30px;
+    text-align: center;
+    line-height: 60px;
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+.playlist-content-div{
+    width: 100%;
+    height: 60px;
+    display: flex;
+    padding: 5px 0;
+    position: relative;
+    user-select: none;
+}
+
+.playlist-content-div:hover{
+    background: var(--hover_back_color);
+}
+
+.playing-content{
+    background: var(--hover_back_color);
+}
+
+.playing-content::before{
+    position: absolute;
+    top: calc(50% - 6px);
+    left: 8px;
+    content: "";
+    border-right: 6px solid transparent;
+    border-left: 10px solid var(--default_color);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    opacity: 0.6;
+}
+
+.playing-content .playlist-content-index{
+    opacity: 0;
+}
+
+.playlist-content-a{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.playlist-content-thumbnail{
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.playlist-content-thumbnail-img{
+    width: 96px;
+    height: 54px;
+    object-fit: cover;
+}
+
+.playlist-content-thumbnail-ps{
+    position: absolute;
+    bottom: 4px;
+    right: 2px;
+    height: 16px;
+    background: rgb(38 38 38 / 80%);
+    color: #FFF;
+    font-size: 12px;
+    padding: 2px;
+}
+
+.playlist-content-info{
+    width: calc(100% - 140px);
+    padding-left: 10px;
+    padding-right: 4px;
+}
+
+.playlist-content-info-title{
+    font-size: 14px;
+    margin-top: 3px;
+    height: 40px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.playlist-none{
+    display: none;
+}
+
+.memo-area{
+    max-height: calc(1280px*0.5625);
 }
 
 #info-area{
@@ -38,7 +188,7 @@ html,body {
     padding: 10px;
     padding-top: 0;
     font-size: 16px;
-    border-bottom: 1px solid #cacaca;
+    border-bottom: 1px solid var(--default_border);
 }
 
 #video-explanation{
@@ -150,17 +300,21 @@ html,body {
     height: 100%;
 }
 
-.EasyMDEContainer .CodeMirror {
-	height: calc(100% - 79px);
-}
-
 .memo-area button{
     color: var(--default_color);
 }
 
 .memo-area .CodeMirror{
+    height: calc(100% - 79px);
     background: var(--memo_back_color);
     color: var(--default_color);
+    border: 1px solid var(--default_border);
+}
+
+.memo-area .editor-toolbar{
+    border-top: 1px solid var(--default_border);
+    border-left: 1px solid var(--default_border);
+    border-right: 1px solid var(--default_border);
 }
 
 .memo-area .CodeMirror-cursor{
@@ -187,16 +341,36 @@ html,body {
 }
 
 /* 〜479px */
-@media screen and (max-width:479px) { 
+@media screen and (max-width:479px) {
+    
+    #contents {
+        width: calc(100%);
+        height: calc(100% - ((100vw)*0.5625) - 82px);
+        padding: 10px 0 10px 0;
+        margin-top: calc((100vw)*0.5625 + 6px);
+    }
+
+    #main-area {
+        width: 100%;
+    }
+
     #video-area{
-        width: calc(100vw - 60px);
-        height: calc((100vw - 60px)*0.5625);
+        position: absolute;
+        top: 60px;
+        width: 100vw;
+        height: calc(100vw*0.5625);
+    }
+
+    #info-area{
+        width: calc(100vw - 30px);
+        padding: 0 10px;
     }
 
     #side-area{
-        width: calc(100vw - 60px);
+        width: calc(100vw - 30px);
          /*height: calc((100vw - 60px)*0.5625);*/
     }
+
     .EasyMDEContainer{
         height: 400px;
     }
@@ -211,6 +385,7 @@ html,body {
         width: calc(100vw - 60px);
         height: calc((100vw - 60px)*0.5625);
     }
+
     #info-area{
         width: calc(100vw - 60px);
     }
@@ -233,6 +408,7 @@ html,body {
         width: calc(100vw - 60px);
         height: calc((100vw - 60px)*0.5625);
     }
+
     #info-area{
         width: calc(100vw - 60px);
     }
@@ -255,6 +431,7 @@ html,body {
         width: calc(100vw - 380px);
         height: calc((100vw - 380px)*0.5625);
     }
+
     #info-area{
         width: calc(100vw - 380px);
     }
@@ -262,8 +439,13 @@ html,body {
     #side-area{
         margin-left: 10px;
         margin-top: 0px;
-        width: 300px;
+        width: 300px; 
+    }
+    .memo-area{
         height: calc((100vw - 380px)*0.5625);
+    }
+    .playlist-list{
+        max-height: calc((100vw - 380px)*0.5625 - 62px);
     }
 
     .EasyMDEContainer .CodeMirror {
@@ -274,9 +456,36 @@ html,body {
 /* 1281px〜 */
 @media screen and (min-width:1281px) {
     #video-area{
+        width: calc(100vw - 480px);
+        height: calc((100vw - 480px)*0.5625);
+    }
+
+    #info-area{
+        width: calc(100vw - 480px);
+    }
+
+    #side-area{
+        margin-left: 10px;
+        margin-top: 0px;
+        width: 400px;
+    } 
+    .memo-area{
+        height: calc((100vw - 480px)*0.5625);
+    }
+    .playlist-list{
+        /*height: calc((100vw - 480px)*0.5625 - 62px);*/
+        max-height: calc((100vw - 480px)*0.5625 - 62px);
+    }
+
+}
+
+@media screen and (min-width:1600px) {
+
+    #video-area{
         width: calc(100vw - 580px);
         height: calc((100vw - 580px)*0.5625);
     }
+
     #info-area{
         width: calc(100vw - 580px);
     }
@@ -285,6 +494,19 @@ html,body {
         margin-left: 10px;
         margin-top: 0px;
         width: 500px;
-        height: calc((100vw - 580px)*0.5625);
     } 
+    .memo-area{
+        height: calc((100vw - 580px)*0.5625);
+    }
+    .playlist-list{
+        /*height: calc((100vw - 580px)*0.5625 - 62px);*/
+        max-height: calc((100vw - 580px)*0.5625 - 62px);
+    }
+
+}
+
+@media screen and (min-width:1600px) {
+    .playlist-list{
+        max-height: calc((1280px*0.5625) - 62px);
+    }
 }
