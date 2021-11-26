@@ -49,6 +49,8 @@ function postVideoProgressInit(vid){
                 })
             }
         }
+
+        document.getElementById("video-progress").innerHTML = _score + "%視聴完了"
     }
     request.send()
 }
@@ -103,6 +105,7 @@ async function postVideoProgress(vid){
                 const lmsResult = JSON.parse(JSON.parse(request.response).comment)
                 lmsProgressScore = lmsResult[vid].score
                 lmsProgressList = lmsResult[vid].view_list.split(',').map(ele => [parseFloat(ele.split('-')[0]), parseFloat(ele.split('-')[1])])
+                document.getElementById("video-progress").innerHTML = lmsResult[vid].score + "%視聴完了"
             }
             return
         }

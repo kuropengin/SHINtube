@@ -184,14 +184,22 @@
     padding: 10px;
 }
 
-#video-update{
-    padding: 10px;
-    padding-top: 0;
-    font-size: 16px;
-    border-bottom: 1px solid var(--default_border);
+.video-info-ex{
+    display: flex;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+#video-update, #video-progress{
+    padding: 0 10px;
+    font-size: 15px;
+    font-weight: 400;
+    opacity: 0.8;
 }
 
 #video-explanation{
+    border-top: 1px solid var(--default_border);
     padding: 10px;
     font-size: 18px;
     font-weight: bold;
