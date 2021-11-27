@@ -3,10 +3,6 @@
     height: 100%;
 }
 
-#main-area{
-    /*width: 100%;*/
-}
-
 #video-area{
     max-width: 1280px;
     max-height: calc(1280px*0.5625);
