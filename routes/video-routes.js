@@ -22,6 +22,30 @@ function roleguard(req, res, next){
     }
 }
 
+function getMeta(year,cid,vid){
+    return new Promise(resolve => { 
+        let options = {
+            url: BACK_DOMAIN + '/video/' + encodeURI(year) + '/' + encodeURI(cid) + '/' + encodeURI(vid) + '/info.json' ,
+            method: 'GET'
+        }
+        request(options, function (_error, _response, _body) {
+            var temp_meta_data = {}
+            if(_response.statusCode == 200){
+                try{
+                    temp_meta_data = JSON.parse(JSON.parse(_body).meta_data)
+                }
+                catch(e){
+                    temp_meta_data = {
+                        "contributor_name": "",
+                        "contributor_id": ""
+                    }
+                }
+            }
+            resolve(temp_meta_data)
+        })
+    })
+}
+
 router.get(path.join('/', ROOT_PATH, '/about'), async (req, res) => {
     res.render('about')
 })
@@ -230,8 +254,8 @@ router.post(path.join('/', ROOT_PATH, '/edit'),roleguard, async (req, res) => {
         var year = "1000"
     }
     var cid = res.locals.context.lis.course_section_sourcedid
-    
     var options
+
     if(req.files){
         var metadata = {
             "contributor_name" : res.locals.token.userInfo.name,
@@ -246,6 +270,17 @@ router.post(path.join('/', ROOT_PATH, '/edit'),roleguard, async (req, res) => {
             },
             formData: {
                 "in_file" : fs.createReadStream(req.files.in_file.tempFilePath)
+            }
+        }
+    }
+    else if(req.body.duration){
+        let req_meta_data = await getMeta(year,cid,req.body.vid)
+        req_meta_data["duration"] = req.body.duration
+        options = {
+            url: BACK_DOMAIN + '/updateinfo?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(req_meta_data)),
+            method: 'POST',
+            headers: {
+                "Content-Type": "multipart/form-data"
             }
         }
     }
@@ -274,6 +309,8 @@ router.post(path.join('/', ROOT_PATH, '/edit'),roleguard, async (req, res) => {
     })
     
 })
+
+
 
 router.get(path.join('/', ROOT_PATH, '/error'), async (req, res) => {
     res.render('error', {"error":"LTI token error"})

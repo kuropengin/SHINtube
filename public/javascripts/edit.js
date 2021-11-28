@@ -300,6 +300,20 @@ function upload_video(){
         fd.append("duration", 0)
     }
   }
+  else if(!ResponseData.meta_data.duration){
+    try{
+      const up_duration = document.getElementById("now-video-preview").querySelector("video").duration
+      if(up_duration){
+          fd.append("duration", up_duration)
+      }
+      else{
+          fd.append("duration", 0)
+      }
+    }
+    catch(e){
+        fd.append("duration", 0)
+    }
+  }
 
   var xhr = new XMLHttpRequest()
   xhr.open('post', "./edit" + "?ltik=" + params.get("ltik"), true)
