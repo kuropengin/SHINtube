@@ -143,6 +143,9 @@ function videoInit(vid){
         preload: 'metadata',
         playbackRates: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
         poster: './video/' + vid + '/thumbnail_720.jpg?ltik=' + params.get("ltik"),
+        userActions: {
+            hotkeys: true
+        }
     });
 
     player.src({
