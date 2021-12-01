@@ -1,6 +1,6 @@
 
 function getTOS() {
-    var request = new XMLHttpRequest()
+    let request = new XMLHttpRequest()
     request.open('GET', "./TOS", true)
 
     request.onload = function () {

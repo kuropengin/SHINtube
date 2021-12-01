@@ -1,6 +1,3 @@
-
-var params = (new URL(document.location)).searchParams
-
 var lmsProgressScore = 0
 var lmsProgressList = []
 

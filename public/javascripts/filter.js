@@ -75,10 +75,9 @@ videofilter = new VideoFilter({
 })
 
 function filterInit(){
-    var filter_focus = function(){
+    document.getElementById("filter-btn").addEventListener("click", function(){
         document.getElementById("filter-word").focus()
-    }
-    document.getElementById("filter-btn").addEventListener("click", filter_focus, false);  
+    }, false);  
 }
 
 

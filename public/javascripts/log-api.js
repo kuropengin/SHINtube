@@ -1,6 +1,6 @@
 
 function postLog(verb, obj=false, obj_ex=false){
-    var request = new XMLHttpRequest()
+    let request = new XMLHttpRequest()
 
     if(!obj){
         obj = params.get("video")
@@ -18,7 +18,7 @@ function observarInit(){
 
     lastcheck = document.hasFocus();
     setInterval( function () {
-        var check = document.hasFocus() ;
+        let check = document.hasFocus() ;
         if ( lastcheck !== check ) {
             lastcheck = check;
             if(check){

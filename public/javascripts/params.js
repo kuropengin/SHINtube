@@ -1,0 +1,1 @@
+const params = (new URL(document.location)).searchParams

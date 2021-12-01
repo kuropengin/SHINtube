@@ -28,8 +28,8 @@ async function drop_load_video({ dataTransfer: { files } }) {
     }
 }
 
-var fileArea = document.getElementById('drag-area')
-var fileInput = document.getElementById('uploader')
+const fileArea = document.getElementById('drag-area')
+const fileInput = document.getElementById('uploader')
 
 fileArea.addEventListener('dragover', function (e) {
     e.preventDefault()
@@ -46,10 +46,10 @@ fileArea.addEventListener('drop', function (e) {
     e.preventDefault()
     fileArea.classList.remove('dragover')
 
-    var files = e.dataTransfer.files
+    let files = e.dataTransfer.files
 
     fileInput.files = files
-    var file = files[0]
+    let file = files[0]
     if (typeof e.dataTransfer.files[0] !== 'undefined') {
         if (file.type.match("video.*") || file.type.match("image.gif")) {
             console.log("ロード完了")
@@ -65,14 +65,13 @@ fileArea.addEventListener('drop', function (e) {
 
 document.getElementById('uploader').addEventListener('change', load_video)
 document.getElementById('drag-area').addEventListener('drop', drop_load_video)
-var params = (new URL(document.location)).searchParams
 document.getElementById('upload-form').action += "?ltik=" + params.get("ltik")
 
-var upload_flag = false;
+let upload_flag = false;
 
 
 function upload_video(){
-    var required_check = false
+    let required_check = false
     document.getElementById("file-non-err").innerHTML = ""
     document.getElementById("title-non-err").innerHTML = ""
 
@@ -116,7 +115,7 @@ function upload_video(){
         fd.append("duration", 0)
     }
 
-    var xhr = new XMLHttpRequest()
+    let xhr = new XMLHttpRequest()
     xhr.open('post', "./upload" + "?ltik=" + params.get("ltik"), true)
 
     xhr.upload.addEventListener('progress', (evt) => {

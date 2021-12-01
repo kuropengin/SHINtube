@@ -1,6 +1,5 @@
 function getVideoList(){
     var request = new XMLHttpRequest()
-    var params = (new URL(document.location)).searchParams
     request.open('POST', "./videolist?ltik=" + params.get("ltik"), true)
 
     request.onload = function () {
@@ -54,8 +53,6 @@ function redraw_video_list(){
 }
 
 function create_list(listdata){
-    var params = (new URL(document.location)).searchParams
-
     document.getElementById("list-area").remove()
     var list_area = document.createElement("div")
     list_area.setAttribute("id","list-area")

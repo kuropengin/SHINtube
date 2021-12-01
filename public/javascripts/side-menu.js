@@ -1,6 +1,4 @@
 function subMenuInit(){
-    var params = (new URL(document.location)).searchParams
-
     const now_path = location.pathname.split("/").slice(-1)[0]
     if(now_path == "videolist"){
         document.getElementById("sub-contents-btn").classList.add("side-menu-select")

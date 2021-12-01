@@ -1,8 +1,8 @@
 const os_theme_mode = window.matchMedia('(prefers-color-scheme: dark)').matches
 
 function ThemeModeInit() {
-    var local_theme = localStorage.getItem("theme-mode") || false
-    var toggle_btn = document.getElementById("toggle") || {}
+    const local_theme = localStorage.getItem("theme-mode") || false
+    const toggle_btn = document.getElementById("toggle") || {}
 
     if(local_theme == "dark"){
         toggle_btn.checked = false
@@ -27,10 +27,10 @@ function ThemeModeInit() {
 
 
 function ThemeModeChange(mode) {
-    var elements = ["logo","header","munu-btn","munu","overlay","download-btn","download-list","filter-word","delete-area","video-input","upload-btn","drag-area-block"]
-    for(var element of elements){
-        var change_theme = document.getElementsByClassName("theme-" + element)
-        for(var target_theme of change_theme){
+    const elements = ["logo","header","munu-btn","munu","overlay","download-btn","download-list","filter-word","delete-area","video-input","upload-btn","drag-area-block"]
+    for(let element of elements){
+        let change_theme = document.getElementsByClassName("theme-" + element)
+        for(let target_theme of change_theme){
             if(mode == "light-theme"){
                 target_theme.classList.remove("dark-theme-" + element)
                 target_theme.classList.add("light-theme-" + element)

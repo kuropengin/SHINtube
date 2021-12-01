@@ -2,7 +2,6 @@ var ResponseData = false
 
 function getLtiInfoResponse(callback) {
     var request = new XMLHttpRequest()
-    var params = (new URL(document.location)).searchParams
     request.open('GET', "./info?ltik=" + params.get("ltik"), true)
 
     request.onload = function () {
@@ -21,7 +20,6 @@ function butotnClick() {
 }
 
 function hederInit(InitData) {
-    var params = (new URL(document.location)).searchParams
     if(InitData){
         document.getElementById("user-name").innerHTML = InitData.name
         document.getElementById("class-title").innerHTML = InitData.context.label

@@ -1,6 +1,6 @@
 const input_video_preview = document.getElementById('upload-video-preview')
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec))
-var encoding_flag = false
+let encoding_flag = false
 
 async function show_input_video_preview(input_video_file) {
   if(input_video_file){
@@ -38,8 +38,8 @@ async function drop_load_video({ dataTransfer: { files } }) {
     }
 }
 
-var fileArea = document.getElementById('drag-area')
-var fileInput = document.getElementById('uploader')
+const fileArea = document.getElementById('drag-area')
+const fileInput = document.getElementById('uploader')
 
 fileArea.addEventListener('dragover', function (e) {
   e.preventDefault()
@@ -56,10 +56,10 @@ fileArea.addEventListener('drop', function (e) {
   e.preventDefault()
   fileArea.classList.remove('dragover')
 
-  var files = e.dataTransfer.files
+  let files = e.dataTransfer.files
 
   fileInput.files = files
-  var file = files[0]
+  let file = files[0]
   if (typeof e.dataTransfer.files[0] !== 'undefined') {
     if (file.type.match("video.*") || file.type.match("image.gif")) {
       console.log("ロード完了")
@@ -75,12 +75,10 @@ fileArea.addEventListener('drop', function (e) {
 
 document.getElementById('uploader').addEventListener('change', load_video)
 document.getElementById('drag-area').addEventListener('drop', drop_load_video)
-var params = (new URL(document.location)).searchParams
 
 
 function getVideoInfoResponse(callback){
-  var request = new XMLHttpRequest()
-  var params = (new URL(document.location)).searchParams
+  let request = new XMLHttpRequest()
   request.open('GET', "./video/" + params.get("vid") + "/info.json?ltik=" + params.get("ltik") + "&datte=" + new Date().getTime(), true)
 
   request.onload = function () {
@@ -98,9 +96,6 @@ function getVideoInfoResponse(callback){
 }
 
 function valueInit(InitData){
-
-  var params = (new URL(document.location)).searchParams;
-
   document.getElementById('upload-title').value = InitData.title
   document.getElementById('upload-explanation').value = InitData.explanation
   document.getElementById('input_hidden_vid').value = params.get("vid")
@@ -118,7 +113,7 @@ function valueInit(InitData){
     encoding_flag = true
   }
 
-  var edit_content_type = ""
+  let edit_content_type = ""
   try{
     edit_content_type = InitData.meta_data.content_type || "video"
   }
@@ -216,28 +211,15 @@ function playlistInit(playlist_info, playlist_id=params.get("playlist")){
       list_element.appendChild(clone)
       playlistVideoInfo(playlist_vid)
   })
-
-  const video = document.querySelector('video')
-
-  var next_index = 1
-  if(params.get("index")){
-      next_index = Number(params.get("index"))
-  }
-
-  if(playlist.length > next_index){
-      video.addEventListener('ended', (event) => {
-          location.href = './watch?video=' + playlist[next_index] + '&playlist=' + playlist_id + '&index=' + (next_index + 1) + '&ltik=' + params.get("ltik")
-      })
-  }
 }
 
 function playlistVideoInfo(vid){
-  var request = new XMLHttpRequest()
+  let request = new XMLHttpRequest()
   request.open('GET', "./video/" + vid + "/info.json" + "?ltik=" + params.get("ltik"), true)
 
   request.onload = function () {
       if(request.status == 200){
-          var infodata = JSON.parse(request.response)
+          let infodata = JSON.parse(request.response)
           
           document.getElementById("playlist-title-" + vid).innerHTML = infodata.title
       }
@@ -250,17 +232,17 @@ function playlistVideoInfo(vid){
 }
 
 function listIndexSort(evt) {
-  var items = document.getElementsByClassName("playlist-content-div")
-  for (var i = 0; i < items.length; i++) {
+  let items = document.getElementsByClassName("playlist-content-div")
+  for (let i = 0; i < items.length; i++) {
     items[i].querySelector('.playlist-content-index').innerHTML = i + 1
   }
 }
 
 
-var upload_flag = false
+let upload_flag = false
 
 function upload_video(){
-  var required_check = false
+  let required_check = false
   document.getElementById("title-non-err").innerHTML = ""
 
   const form = document.getElementById("upload-form")
@@ -315,7 +297,7 @@ function upload_video(){
     }
   }
 
-  var xhr = new XMLHttpRequest()
+  let xhr = new XMLHttpRequest()
   xhr.open('post', "./edit" + "?ltik=" + params.get("ltik"), true)
 
   xhr.upload.addEventListener('progress', (evt) => {
@@ -356,7 +338,7 @@ function upload_video(){
 }
 
 function upload_list(){
-  var required_check = false
+  let required_check = false
   document.getElementById("title-non-err").innerHTML = ""
 
   const form = document.getElementById("upload-form")
@@ -382,7 +364,7 @@ function upload_list(){
   
   const fd = new FormData(form)
 
-  var xhr = new XMLHttpRequest()
+  let xhr = new XMLHttpRequest()
   xhr.open('post', "./updateplaylist?ltik=" + params.get("ltik"), true)
 
   xhr.upload.addEventListener('progress', (evt) => {
@@ -419,13 +401,13 @@ function upload_list(){
   if(!upload_flag){
     upload_flag = true
 
-    var items = document.getElementsByClassName("playlist-content-div")
-    var send_playlist = []
-    for (var i = 0; i < items.length; i++) {
+    let items = document.getElementsByClassName("playlist-content-div")
+    let send_playlist = []
+    for (let i = 0; i < items.length; i++) {
       send_playlist.push(items[i].id.split("-")[1])
     }
 
-    var send_json = {
+    let send_json = {
       "title": form.title.value,
       "explanation": form.title.explanation || "",
       "playlist" : send_playlist,
@@ -438,8 +420,8 @@ function upload_list(){
 
 function deleteList(e){
   var e = e || window.event
-  var elem = e.target || e.srcElement
-  var vid = elem.id.split('-')[1]
+  const elem = e.target || e.srcElement
+  const vid = elem.id.split('-')[1]
   document.getElementById("playlist-" + vid).remove()
   listIndexSort()
 }

@@ -12,7 +12,6 @@ function redraw_video_list(){
 
 function video_list_draw(video_view_list){
   //console.log(video_view_list)
-  var params = (new URL(document.location)).searchParams
   document.getElementById("videolist").remove()
   var video_list_div = document.createElement("div")
   video_list_div.setAttribute("id","videolist")
@@ -187,8 +186,6 @@ function video_list_draw(video_view_list){
 }
 
 function uploadInit(){
-  var params = (new URL(document.location)).searchParams
-
   var upload_a = document.createElement('a')
   upload_a.href = './upload?&ltik=' + params.get("ltik")
 
@@ -243,8 +240,6 @@ function play_list_draw(list){
 function addPlayList(){
   const add_play_list = document.getElementsByName("playlist-checkbox")
   const add_play_list_video = selectedList()
-
-  const params = (new URL(document.location)).searchParams
 
   add_play_list.forEach(function(target){
     if(target.checked){
@@ -394,7 +389,6 @@ function videoDelete(e){
     var vid = selectVid[0]
   }
 
-  var params = (new URL(document.location)).searchParams
 
   document.getElementById("delete-overlay").classList.add("delete-overlay-on")
   if(selected_category == "playlist"){
@@ -429,7 +423,6 @@ function deleteCancel(){
 }
 
 function deleteRun(){
-  var params = (new URL(document.location)).searchParams
   selectVid.forEach(function(delete_vid){
     var send_json = {"vid":delete_vid}
     var xhr = new XMLHttpRequest()
@@ -468,7 +461,6 @@ function videoEdit(e){
   var e = e || window.event
   var elem = e.target || e.srcElement
   var vid = elem.id.split('-')[1]
-  var params = (new URL(document.location)).searchParams
 
   window.location.href = "./edit?vid=" + vid + "&ltik=" + params.get("ltik")
 }
@@ -476,7 +468,6 @@ function videoEdit(e){
 
 function getVideoList(){
     var request = new XMLHttpRequest()
-    var params = (new URL(document.location)).searchParams
     request.open('POST', "./videolist?ltik=" + params.get("ltik"), true)
   
     request.onload = async function () {
