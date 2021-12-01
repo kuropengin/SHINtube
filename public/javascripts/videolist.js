@@ -520,7 +520,8 @@ function toVideoList(){
 
 
 function classNameInit(InitData){
-  document.getElementById("class-name").innerHTML = InitData.context.label + "のコンテンツ"
+  document.getElementById("class-name").innerHTML = InitData.context.title + "のコンテンツ"
+  document.getElementById("class-name").title = InitData.context.title + "のコンテンツ"
 }
 
 function headSort(e){
