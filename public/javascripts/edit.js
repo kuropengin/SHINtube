@@ -82,15 +82,15 @@ function getVideoInfoResponse(callback){
   request.open('GET', "./video/" + params.get("vid") + "/info.json?ltik=" + params.get("ltik") + "&datte=" + new Date().getTime(), true)
 
   request.onload = function () {
-    ResponseData = JSON.parse(request.response)
+    ResponseVideoInfo = JSON.parse(request.response)
     try{
-      ResponseData.meta_data = JSON.parse(ResponseData.meta_data)
+      ResponseVideoInfo.meta_data = JSON.parse(ResponseVideoInfo.meta_data)
     }
     catch(e){
-      ResponseData.meta_data = {}
+      ResponseVideoInfo.meta_data = {}
     }
     
-    callback(ResponseData)
+    callback(ResponseVideoInfo)
   }
   request.send()
 }
@@ -282,7 +282,7 @@ function upload_video(){
         fd.append("duration", 0)
     }
   }
-  else if(!ResponseData.meta_data.duration){
+  else if(!ResponseVideoInfo.meta_data.duration){
     try{
       const up_duration = document.getElementById("now-video-preview").querySelector("video").duration
       if(up_duration){
