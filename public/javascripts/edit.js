@@ -302,8 +302,13 @@ function upload_video(){
 
   xhr.upload.addEventListener('progress', (evt) => {
     let percent = (evt.loaded / evt.total * 100).toFixed(1)
-    document.getElementById('upload-percent').textContent = percent
+    document.getElementById('upload-percent').textContent = percent + "%"
     bar.animate(percent/100)
+
+    if(percent >= 100){
+      document.getElementById('upload-percent').textContent = "処理中 しばらくお待ちください"
+    }
+
     console.log(`++ xhr.upload: progress ${percent}%`)
   });
 
@@ -313,6 +318,7 @@ function upload_video(){
   })
 
   xhr.onload = function () {
+    document.getElementById('upload-percent').textContent = "処理終了"
     if(xhr.status == 200){
       document.getElementById("upload-info").innerHTML = "反映が完了しました"
     }
@@ -369,8 +375,11 @@ function upload_list(){
 
   xhr.upload.addEventListener('progress', (evt) => {
     let percent = (evt.loaded / evt.total * 100).toFixed(1)
-    document.getElementById('upload-percent').textContent = percent
+    document.getElementById('upload-percent').textContent = percent + "%"
     bar.animate(percent/100)
+    if(percent >= 100){
+      document.getElementById('upload-percent').textContent = "処理中 しばらくお待ちください"
+    }
     console.log(`++ xhr.upload: progress ${percent}%`)
   });
 
@@ -380,6 +389,7 @@ function upload_list(){
   })
 
   xhr.onload = function () {
+    document.getElementById('upload-percent').textContent = "処理終了"
     if(xhr.status == 200){
       document.getElementById("upload-info").innerHTML = "反映が完了しました"
     }

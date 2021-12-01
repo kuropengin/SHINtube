@@ -286,10 +286,6 @@ input[type="textarea"]:focus{
     margin-top: 8px;
 }
 
-#upload-percent::after{
-    content: "%";
-}
-
 #result-area{
     width: 100%;
     display: flex;
