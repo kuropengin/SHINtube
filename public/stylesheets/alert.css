@@ -1,0 +1,20 @@
+.system-alert-area{
+    width: calc(100% - 40px);
+    margin: 10px 20px;
+    border-radius: 10px;
+    background: #9f9f9f52;
+    
+}
+
+.system-alert-title{
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 20px;
+    color: #ff4646;
+}
+
+.system-alert-info{
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0 30px;
+}
