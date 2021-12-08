@@ -175,50 +175,55 @@ function videoInfoInit(vid){
     request.open('GET', "./video/" + vid + "/info.json" + "?ltik=" + params.get("ltik"), true)
 
     request.onload = function () {
-        var infodata = JSON.parse(request.response)
-        try{
-            infodata.meta_data = JSON.parse(infodata.meta_data)
-        }
-        catch(err){
-            infodata.meta_data = {
-                "content_type" : "video"
+        if(request.status == 200){
+            var infodata = JSON.parse(request.response)
+            try{
+                infodata.meta_data = JSON.parse(infodata.meta_data)
             }
-        }
-        if(infodata.meta_data.content_type == "playlist"){
-            if(!params.get("playlist") || params.get("playlist") == params.get("video")){
-                if(infodata.meta_data.playlist.length){
-                    videoInfoInit(infodata.meta_data.playlist[0])
+            catch(err){
+                infodata.meta_data = {
+                    "content_type" : "video"
+                }
+            }
+            if(infodata.meta_data.content_type == "playlist"){
+                if(!params.get("playlist") || params.get("playlist") == params.get("video")){
+                    if(infodata.meta_data.playlist.length){
+                        videoInfoInit(infodata.meta_data.playlist[0])
+                    }
+                    else{
+                        var update_date = new Date(infodata.updated_at)
+                        var update_Year = update_date.getFullYear()
+                        var update_Month = (update_date.getMonth() + 1) < 10 ? "0" + (update_date.getMonth() + 1) : (update_date.getMonth() + 1) 
+                        var update_Date = update_date.getDate()
+                        document.getElementById("video-title").innerHTML = infodata.title
+                        document.getElementById("video-update").innerHTML += update_Year + "/" + update_Month  + "/" + update_Date
+                        document.getElementById("video-explanation").innerHTML = infodata.explanation ? infodata.explanation : "説明なし";
+                        memoInit(vid)
+                    }
                 }
                 else{
-                    var update_date = new Date(infodata.updated_at)
-                    var update_Year = update_date.getFullYear()
-                    var update_Month = (update_date.getMonth() + 1) < 10 ? "0" + (update_date.getMonth() + 1) : (update_date.getMonth() + 1) 
-                    var update_Date = update_date.getDate()
-                    document.getElementById("video-title").innerHTML = infodata.title
-                    document.getElementById("video-update").innerHTML += update_Year + "/" + update_Month  + "/" + update_Date
-                    document.getElementById("video-explanation").innerHTML = infodata.explanation ? infodata.explanation : "説明なし";
-                    memoInit(vid)
+                    videoInfoInit(params.get("video"))
                 }
+                
+                playlistInit(infodata,vid)
             }
             else{
-                videoInfoInit(params.get("video"))
+                var update_date = new Date(infodata.updated_at)
+                var update_Year = update_date.getFullYear()
+                var update_Month = (update_date.getMonth() + 1) < 10 ? "0" + (update_date.getMonth() + 1) : (update_date.getMonth() + 1) 
+                var update_Date = update_date.getDate()
+                document.getElementById("video-title").innerHTML = infodata.title
+                document.getElementById("video-update").innerHTML += update_Year + "/" + update_Month  + "/" + update_Date
+                document.getElementById("video-explanation").innerHTML = infodata.explanation ? infodata.explanation : "説明なし";
+
+                if(params.get("deeplink")){
+                    postVideoProgressInit(vid)
+                }
+                videoInit(vid)
+                memoInit(vid)
             }
-            
-            playlistInit(infodata,vid)
         }
         else{
-            var update_date = new Date(infodata.updated_at)
-            var update_Year = update_date.getFullYear()
-            var update_Month = (update_date.getMonth() + 1) < 10 ? "0" + (update_date.getMonth() + 1) : (update_date.getMonth() + 1) 
-            var update_Date = update_date.getDate()
-            document.getElementById("video-title").innerHTML = infodata.title
-            document.getElementById("video-update").innerHTML += update_Year + "/" + update_Month  + "/" + update_Date
-            document.getElementById("video-explanation").innerHTML = infodata.explanation ? infodata.explanation : "説明なし";
-
-            if(params.get("deeplink")){
-                postVideoProgressInit(vid)
-            }
-            videoInit(vid)
             memoInit(vid)
         }
     }
