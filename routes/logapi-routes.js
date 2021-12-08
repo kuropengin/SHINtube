@@ -32,13 +32,13 @@ router.post(path.join('/', ROOT_PATH, '/log'), async (req, res) => {
             else{
                 logger.log(_cid, _sid, log_escape(req.body.obj), log_escape(req.body.verb))
             }
-            res.status(200).send()
+            res.status(200).send({"status":200, "msg":"ok"})
         }
         else{
-            res.status(400).send()
+            res.status(400).send({"status":400, "msg":"verb or obj is not found"})
         }   
-    }catch(err){
-        res.status(400).send()
+    }catch(err){        
+        res.status(500).send({"status":500, "msg":err})
     }
 })
 

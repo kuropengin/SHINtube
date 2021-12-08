@@ -20,8 +20,7 @@ router.get(path.join('/', ROOT_PATH, '/deeplink'),roleguard, async (req, res) =>
   try {
     res.render('deeplink')
   } catch (err) {
-    console.error(err.message)
-    return res.status(500).send(err.message)
+    return res.status(500).send({"status":500, "msg":err})
   }
 })
 
@@ -43,8 +42,7 @@ router.post(path.join('/', ROOT_PATH, '/deeplink'), async (req, res) => {
     if (form) return res.send(form)
     return res.sendStatus(500)
   } catch (err) {
-    console.error(err.message)
-    return res.status(500).send(err.message)
+    return res.status(500).send({"status":500, "msg":err})
   }
 })
 
