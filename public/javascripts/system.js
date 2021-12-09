@@ -3,6 +3,7 @@ function systemDisplay(system){
     if(system.app_status.status){
         document.getElementById("info-app-name").innerHTML = system.app_status.name
         document.getElementById("info-app-version").innerHTML = system.app_status.version
+        document.getElementById("info-app-hostname").innerHTML = system.app_status.hostname
     }
     else{
         document.getElementById("info-app-name").innerHTML = system.app_status.msg

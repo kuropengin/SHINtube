@@ -1,11 +1,13 @@
 const request = require('request')
+const os = require('os')
 const lti = require('ltijs').Provider
 
 
 async function appCheck(){
     try{
         const app_config = require('../package.json')
-        return {"status":true, "name":app_config.name ,"version":app_config.version}
+        const host_name = os.hostname()
+        return {"status":true, "name":app_config.name ,"version":app_config.version,"hostname":host_name}
     }catch(e){
         return {"status":false,"msg":"Cannot read the set value."}
     }
