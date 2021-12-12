@@ -237,6 +237,9 @@ router.post(path.join('/', ROOT_PATH, '/upload'),roleguard, async (req, res) => 
             }
         })
     }
+    else{
+        res.status(400).send({"status":400, "msg":"video file is not found"})
+    }
 })
 
 router.get(path.join('/', ROOT_PATH, '/edit'),roleguard, async (req, res) => {
