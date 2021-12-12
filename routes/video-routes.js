@@ -213,29 +213,30 @@ router.post(path.join('/', ROOT_PATH, '/upload'),roleguard, async (req, res) => 
     }
     var cid = res.locals.context.lis.course_section_sourcedid
     
-    var options = {
-        url: BACK_DOMAIN + '/upload?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
-        method: 'POST',
-        headers: {
-            "Content-Type": "multipart/form-data"
-        },
-        formData: {
-            "in_file" : fs.createReadStream(req.files.in_file.tempFilePath)
+    if(req.files){
+        var options = {
+            url: BACK_DOMAIN + '/upload?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
+            method: 'POST',
+            headers: {
+                "Content-Type": "multipart/form-data"
+            },
+            formData: {
+                "in_file" : fs.createReadStream(req.files.in_file.tempFilePath)
+            }
         }
+        
+        request(options, function (error, response, body) {
+            fs.unlink(req.files.in_file.tempFilePath, (err) => {
+                if (err) throw err;
+            });
+            if(response.statusCode == 200){
+                res.send(body)
+            }
+            else{
+                res.status(response.statusCode).send(body)
+            }
+        })
     }
-    
-    request(options, function (error, response, body) {
-        fs.unlink(req.files.in_file.tempFilePath, (err) => {
-            if (err) throw err;
-        });
-        if(response.statusCode == 200){
-            res.send(body)
-        }
-        else{
-            res.status(response.statusCode).send(body)
-        }
-    })
-    
 })
 
 router.get(path.join('/', ROOT_PATH, '/edit'),roleguard, async (req, res) => {
@@ -518,51 +519,51 @@ const { createProxyMiddleware , responseInterceptor } = require('http-proxy-midd
 
 
 const m3u8_proxy = createProxyMiddleware({ 
-  target: BACK_DOMAIN, 
-  changeOrigin: true ,
-  selfHandleResponse: true, 
-  pathRewrite: function (path, req) {
-    var temp_url = req.url.split('?')[0];
-    var par = temp_url.slice(1).split('/');
-    try{
-        var year = req.res.locals.token.iss.split("/")[3]
-        if(isNaN(year) || year.length == 0){
-            year = "1000"
-        }
-    }
-    catch(err){
-        var year = "1000"
-    }
-    var cid = req.res.locals.context.lis.course_section_sourcedid
-    return "/video/" + year + "/" + cid + "/" + par.slice(-2)[0] + "/" + par.slice(-1)[0]
-  },
-  onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-    const response = responseBuffer.toString('utf8')
-    var ts_convert_url = ".ts?ltik=" + req.query.ltik
-    var m3u5_convert_url = ".m3u8?ltik=" + req.query.ltik
-    return response.replace(/.ts/g, ts_convert_url).replace(/.m3u8/g, m3u5_convert_url)
-  })
-});
-
-const normal_proxy = createProxyMiddleware({ 
     target: BACK_DOMAIN, 
     changeOrigin: true ,
+    selfHandleResponse: true, 
     pathRewrite: function (path, req) {
-        var temp_url = req.url.split('?')[0];
-        var par = temp_url.slice(1).split('/');
-        try{
-            var year = req.res.locals.token.iss.split("/")[3]
-            if(isNaN(year) || year.length == 0){
-                year = "1000"
-            }
-        }
-        catch(err){
-            var year = "1000"
-        }
-        var cid = req.res.locals.context.lis.course_section_sourcedid
-        return "/video/" + year + "/" + cid + "/" + par.slice(-2)[0] + "/" + par.slice(-1)[0]
-    }
-});
+      var temp_url = req.url.split('?')[0];
+      var par = temp_url.slice(1).split('/');
+      try{
+          var year = req.res.locals.token.iss.split("/")[3]
+          if(isNaN(year) || year.length == 0){
+              year = "1000"
+          }
+      }
+      catch(err){
+          var year = "1000"
+      }
+      var cid = req.res.locals.context.lis.course_section_sourcedid
+      return "/video/" + year + "/" + cid + "/" + par.slice(-2)[0] + "/" + par.slice(-1)[0]
+    },
+    onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
+      const response = responseBuffer.toString('utf8')
+      var ts_convert_url = ".ts?ltik=" + req.query.ltik
+      var m3u5_convert_url = ".m3u8?ltik=" + req.query.ltik
+      return response.replace(/.ts/g, ts_convert_url).replace(/.m3u8/g, m3u5_convert_url)
+    })
+  });
+  
+  const normal_proxy = createProxyMiddleware({ 
+      target: BACK_DOMAIN, 
+      changeOrigin: true ,
+      pathRewrite: function (path, req) {
+          var temp_url = req.url.split('?')[0];
+          var par = temp_url.slice(1).split('/');
+          try{
+              var year = req.res.locals.token.iss.split("/")[3]
+              if(isNaN(year) || year.length == 0){
+                  year = "1000"
+              }
+          }
+          catch(err){
+              var year = "1000"
+          }
+          var cid = req.res.locals.context.lis.course_section_sourcedid
+          return "/video/" + year + "/" + cid + "/" + par.slice(-2)[0] + "/" + par.slice(-1)[0]
+      }
+  });
 
 router.use(path.join('/', ROOT_PATH, '/video/*.m3u8'), m3u8_proxy)
 router.use(path.join('/', ROOT_PATH, '/video'), normal_proxy)
