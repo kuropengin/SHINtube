@@ -1,12 +1,12 @@
-var lmsProgressScore = 0
-var lmsProgressList = []
+let lmsProgressScore = 0
+let lmsProgressList = []
+let last_start = 0
 
-var playListVid = []
+let playListVid = []
 function postVideoProgressInit(vid){
-    const video = document.querySelector('video')
     var request = new XMLHttpRequest()
     request.open('GET', "./view-progress" + "?vid=" + vid + "&ltik=" + params.get("ltik"), true)
-
+    
     request.onload = function () {
         var _score = 0
         var _comment = ""
@@ -23,26 +23,29 @@ function postVideoProgressInit(vid){
                 _comment = savedProgress.scores[0].comment || ""
             }
             catch(err){}
-
+            
             if(_score < 100){
                 lmsProgressScore = _score
                 if(_comment){
                     lmsProgressList = _comment.split(',').map(ele => [parseFloat(ele.split('-')[0]), parseFloat(ele.split('-')[1])])
                     if(lmsProgressList.length){
-                        video.currentTime = lmsProgressList[0][1]
+                        player.one('play',function(){
+                            player.currentTime(lmsProgressList[0][1])
+                            last_start = lmsProgressList[0][1]
+                        })
                     }
                 }
 
-
                 window.addEventListener('beforeunload', async function(event){
-                    const video = document.querySelector('video')
-                    if(!video.paused){
+                    if(!player.paused()){
                         postVideoProgress(vid)
                     }  
                 })
-
-                video.addEventListener('pause', (event) => {
+                player.on('pause',function(){
                     postVideoProgress(vid)
+                })
+                player.on('play',function(){
+                    last_start = player.currentTime()
                 })
             }
         }
@@ -53,12 +56,20 @@ function postVideoProgressInit(vid){
 }
 
 async function postVideoProgress(vid){
-    const video = document.querySelector('video')
-
     var clientProgressList = []
-    for(var i=0; i < video.played.length; i++){
-        clientProgressList.push([video.played.start(i),video.played.end(i)])
+    for(var i=0; i < player.played().length; i++){
+        clientProgressList.push([player.played().start(i),player.played().end(i)])
     }
+
+    if(Math.floor(player.currentTime()) == Math.floor(player.duration())){
+        if(!player.played().length){
+            clientProgressList.push([last_start,player.duration()])
+        }
+        else if(clientProgressList.slice(-1)[0][1] != player.duration()){
+            clientProgressList.push([last_start,player.duration()])
+        }
+    }
+
     const allProgressList = lmsProgressList.concat(clientProgressList)
     allProgressList.sort(sortFunction)
 
@@ -82,13 +93,13 @@ async function postVideoProgress(vid){
         send_list.push(progress_one[0] + "-" + progress_one[1])
     }
 
-    let view_progress = Math.floor((view_sum / video.duration) * 100)
+    let view_progress = Math.floor((view_sum / player.duration()) * 100)
     view_progress = view_progress > 100 ? 100 : view_progress
 
     if(lmsProgressScore < view_progress){
         var sendData = {
             "vid": vid,
-            "duration": video.duration,
+            "duration": player.duration(),
             "playlist": playListVid.length ? playListVid : false,
             "score": view_progress,
             "comment": send_list.join(',')
@@ -122,16 +133,14 @@ function sortFunction(a, b) {
     }
 }
 
-
+let player
 function videoInit(vid){
-    const video = document.querySelector('video')
-
-    var _volume = localStorage.getItem("volume")
+    let _volume = localStorage.getItem("volume")
     
     if(!_volume){
         _volume = 1
     }
-    if (player) {player.dispose()} else {var player}  
+    if (player) {player.dispose()}  
     player = videojs('video-player', {
         autoplay: params.get("index")? true : false,
         loop: false,
@@ -154,11 +163,12 @@ function videoInit(vid){
         displayCurrentQuality: true
     });
 
-    video.volume = _volume
-    video.onvolumechange = function(){
-        localStorage.setItem('volume', video.volume)
-    }
+    player.volume(_volume)
+    player.on('volumechange',function(){
+        localStorage.setItem('volume', player.volume())
+    })
 
+    observarVideoInit()
     /*safariサポート待ち
     videojs.options.hls.overrideNative = true;
     videojs.options.html5.nativeAudioTracks = false;
@@ -170,11 +180,11 @@ function videoInit(vid){
 }
 
 
-function videoInfoInit(vid){
+function videoInfoInit(vid,listinit=false){
     var request = new XMLHttpRequest()
     request.open('GET', "./video/" + vid + "/info.json" + "?ltik=" + params.get("ltik"), true)
 
-    request.onload = function () {
+    request.onload = async function () {
         if(request.status == 200){
             var infodata = JSON.parse(request.response)
             try{
@@ -188,7 +198,7 @@ function videoInfoInit(vid){
             if(infodata.meta_data.content_type == "playlist"){
                 if(!params.get("playlist") || params.get("playlist") == params.get("video")){
                     if(infodata.meta_data.playlist.length){
-                        videoInfoInit(infodata.meta_data.playlist[0])
+                        videoInfoInit(infodata.meta_data.playlist[0],{"infodata":infodata,"vid":vid})
                     }
                     else{
                         var update_date = new Date(infodata.updated_at)
@@ -202,10 +212,8 @@ function videoInfoInit(vid){
                     }
                 }
                 else{
-                    videoInfoInit(params.get("video"))
+                    videoInfoInit(params.get("video"),{"infodata":infodata,"vid":vid})
                 }
-                
-                playlistInit(infodata,vid)
             }
             else{
                 var update_date = new Date(infodata.updated_at)
@@ -216,11 +224,14 @@ function videoInfoInit(vid){
                 document.getElementById("video-update").innerHTML += update_Year + "/" + update_Month  + "/" + update_Date
                 document.getElementById("video-explanation").innerHTML = infodata.explanation ? infodata.explanation : "説明なし";
 
+                await videoInit(vid)
+                memoInit(vid)
                 if(params.get("deeplink")){
                     postVideoProgressInit(vid)
                 }
-                videoInit(vid)
-                memoInit(vid)
+                if(listinit){
+                    playlistInit(listinit.infodata,listinit.vid)
+                }
             }
         }
         else{
@@ -380,7 +391,7 @@ function playlistInit(playlist_info, playlist_id=params.get("playlist")){
     }
 
     if(playlist.length > next_index){
-        video.addEventListener('ended', async function(event){
+        player.on('ended', async function(event){
             //await postVideoProgress(playlist[next_index - 1])
             if(params.get("deeplink")){
                 location.href = './watch?video=' + playlist[next_index] + '&playlist=' + playlist_id + '&deeplink=true&index=' + (next_index + 1) + '&ltik=' + params.get("ltik")

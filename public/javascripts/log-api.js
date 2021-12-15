@@ -12,7 +12,7 @@ function postLog(verb, obj=false, obj_ex=false){
     request.send(JSON.stringify({"verb":verb, "obj":obj, "obj_ex":obj_ex}))
 }
 
-function observarInit(){
+function observarWindowInit(){
     //ブラウザ関連
     postLog("access")
 
@@ -33,29 +33,28 @@ function observarInit(){
     window.addEventListener('beforeunload', (event) => {
         postLog("terminate")
     })
+}
 
-    //video関連
-    const video = document.querySelector('video')
+function observarVideoInit(){
 
-    video.addEventListener('pause', (event) => {
-        postLog("paused", false, {"position":video.currentTime})
+    player.on('pause', (event) => {
+        postLog("paused", false, {"position":player.currentTime})
     })
 
-    video.addEventListener('ended', (event) => {
+    player.on('ended', (event) => {
         postLog("complete")
     })
 
-    video.addEventListener('play', (event) => {
-        postLog("play", false, {"position":video.currentTime})
+    player.on('play', (event) => {
+        postLog("play", false, {"position":player.currentTime})
     })
 
-    video.addEventListener('seeked', (event) => {
-        postLog("skipped", false, {"position":video.currentTime})
+    player.on('seeked', (event) => {
+        postLog("skipped", false, {"position":player.currentTime})
     })    
   
 }
 
-
 window.addEventListener("load", function() {
-    observarInit()
+    observarWindowInit()
 })
