@@ -38,7 +38,7 @@ function observarWindowInit(){
 function observarVideoInit(){
 
     player.on('pause', (event) => {
-        postLog("paused", false, {"position":player.currentTime})
+        postLog("paused", false, {"position":player.currentTime()})
     })
 
     player.on('ended', (event) => {
@@ -46,11 +46,11 @@ function observarVideoInit(){
     })
 
     player.on('play', (event) => {
-        postLog("play", false, {"position":player.currentTime})
+        postLog("play", false, {"position":player.currentTime()})
     })
 
     player.on('seeked', (event) => {
-        postLog("skipped", false, {"position":player.currentTime})
+        postLog("skipped", false, {"position":player.currentTime()})
     })    
   
 }
