@@ -10,7 +10,7 @@
   width: 250px;
   height: 45px;
   background-repeat: no-repeat;
-  cursor: pointer;
+  /*cursor: pointer;*/
   z-index: 8;
 }
 

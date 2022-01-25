@@ -29,7 +29,7 @@ function hederInit(InitData) {
         document.getElementById("class-title").innerHTML = "LTI認証エラー"
     }
     document.getElementById("root-page").addEventListener('click', function(){
-        window.location.href = "./?ltik=" + params.get("ltik")
+        //window.location.href = "./?ltik=" + params.get("ltik")
     })
     document.getElementById("about-page").addEventListener('click', function(){
         window.location.href = "./about?ltik=" + params.get("ltik")
