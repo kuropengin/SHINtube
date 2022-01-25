@@ -48,9 +48,8 @@ function postVideoProgressInit(vid){
                     last_start = player.currentTime()
                 })
             }
+            document.getElementById("video-progress").innerHTML = _score + "%視聴完了"
         }
-
-        document.getElementById("video-progress").innerHTML = _score + "%視聴完了"
     }
     request.send()
 }
