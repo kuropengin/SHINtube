@@ -74,14 +74,12 @@ videofilter = new VideoFilter({
     filterword : ""
 })
 
+
 function filterInit(){
     document.getElementById("filter-btn").addEventListener("click", function(){
         document.getElementById("filter-word").focus()
     }, false);  
 }
-
-
-
 
 window.addEventListener("load", function() {
     filterInit()

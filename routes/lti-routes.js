@@ -4,8 +4,7 @@ const path = require('path')
 // Requiring Ltijs
 const lti = require('ltijs').Provider
 
-const app_config = require('../config/app_config.json')
-const ROOT_PATH = app_config.app_root_path || process.env.ROOT_PATH || "/"
+const CONFIG = require('../tool/config').getConfig()
 
 function roleguard(req, res, next){
   if(res.locals.context.roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor') != -1){
@@ -16,7 +15,7 @@ function roleguard(req, res, next){
   }
 }
 
-router.get(path.join('/', ROOT_PATH, '/deeplink'),roleguard, async (req, res) => {
+router.get(path.join('/', CONFIG.ROOT_PATH, '/deeplink'),roleguard, async (req, res) => {
   try {
     res.render('deeplink')
   } catch (err) {
@@ -24,7 +23,7 @@ router.get(path.join('/', ROOT_PATH, '/deeplink'),roleguard, async (req, res) =>
   }
 })
 
-router.post(path.join('/', ROOT_PATH, '/deeplink'), async (req, res) => {
+router.post(path.join('/', CONFIG.ROOT_PATH, '/deeplink'), async (req, res) => {
   try {
     const resource = req.body
 
@@ -46,7 +45,7 @@ router.post(path.join('/', ROOT_PATH, '/deeplink'), async (req, res) => {
   }
 })
 
-router.get(path.join('/', ROOT_PATH, '/info'), async (req, res) => {
+router.get(path.join('/', CONFIG.ROOT_PATH, '/info'), async (req, res) => {
   const token = res.locals.token
   const context = res.locals.context
 
@@ -63,7 +62,7 @@ router.get(path.join('/', ROOT_PATH, '/info'), async (req, res) => {
 })
 
 
-router.get(path.join('/', ROOT_PATH, '/test'), async (req, res) => {
+router.get(path.join('/', CONFIG.ROOT_PATH, '/test'), async (req, res) => {
   const token = res.locals.token
   const context = res.locals.context
 

@@ -1,0 +1,7 @@
+  
+{
+    "mongo_url" : "" ,
+    "db_name" : "" ,
+    "user" : "" ,
+    "pass" : "" 
+}

@@ -1,0 +1,163 @@
+<link rel='stylesheet' href='./stylesheets/videolist.css'/>
+<script type="text/javascript" src="./javascripts/videolist.js"></script>
+<div class="main-contents">
+    <%- include('./alert') %>
+    <div class="contents_header">
+        <div id="class-name" class="video-h1"></div>
+        <div class="upload-area">
+            <div id="upload-btn"><img src="./images/sub-upload.png">アップロード</div>
+        </div>
+    </div>
+
+    <div class="contents-category">
+        <div id="video-category" class="category">動画<a href="#videoCategory"></a></div>
+        <div id="list-category" class="category">再生リスト<a href="#listCategory"></a></div>
+        <div id="category-select-bar"></div>
+    </div>
+
+    <%- include('./filter') %>
+    <div id="videolist-head">
+        <div class="head-checkbox">
+            <input type="checkbox" id="all-checkbox" class="all-checkbox">
+            <label for="all-checkbox" class="checkbox-label"></label>
+        </div>
+        <div class="checkbox-selected checkbox-selected-off">
+        <div class="selected-length">0 件選択しました</div>
+            <div class="selected-action-area">
+                <div id="selected-add-list" class="selected-add-list" onclick="videoAddPlayList()">再生リストに追加</div>
+                <div id="selected-delete" class="selected-delete" onclick="videoDelete()">一括削除</div>
+            </div>
+        </div>
+        <div id="sort-video-btn" class="head-video">
+            <p>動画</p> 
+            <div class="indicator"></div>
+            <div class="sort-head-btn"></div>
+        </div>
+        <div id="sort-status-btn" class="head-status">
+            <p>状態</p>
+            <div class="indicator"></div>
+            <div class="sort-head-btn"></div>
+        </div>
+        <div id="sort-update-btn" class="head-update">
+            <p>更新日</p>
+            <div class="indicator"></div>
+            <div class="sort-head-btn"></div>
+        </div>
+        <div id="sort-create-btn" class="head-create">
+            <p>作成日</p>
+            <div class="indicator"></div>
+            <div class="sort-head-btn"></div>
+        </div>
+        <div id="sort-contributor-btn" class="head-contributor">
+            <p>投稿者</p>
+            <div class="indicator"></div>
+            <div class="sort-head-btn"></div>
+        </div>
+    </div>
+    <div id="videolist-area">
+        <div id="videolist"></div>
+        <div id="delete-overlay" class="overlay">
+            <div class="delete-area">
+                <p id="delete-area-title"></p>
+                <div class="delete-info">
+                    <img id="delete-thumbnail"></img>
+                    <div id="delete-title"></div>
+                </div>
+                <div id="delete-warning"></div>
+                <div class="delete-btn-area">
+                    <div id="delete-cancel-btn" class="delete-btn">キャンセル</div>
+                    <div id="delete-run-btn" class="delete-btn">削除</div>
+                </div>
+            </div>
+        </div>
+        <div id="playlist-overlay" class="overlay">
+            <div class="playlist-add-area">
+                <p>再生リストの選択</p>
+                <div id="playlist-list-area" class="playlist-list-area">
+                    <div id="playlist-list"></div>
+                </div>
+                <div id="playlist-new-area" class="playlist-new-area playlist-new-off">
+                    <div class="step">
+                        <div class="step-contents">
+                        <div class="input_text_title">タイトル(必須)<div id="title-non-err" class="create-playlist-err-msg"></div></div>
+                            <textarea id="upload-title" class="input_text_init" cols="50" rows="4" name="title" maxlength="40" required ></textarea>
+                            <div class="input-limit-show"><div id="title-input-limit">0</div> / 40</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-contents">
+                        <div class="input_text_title">説明</div>
+                            <textarea id="upload-explanation" class="input_text_init" cols="50" rows="4" name="explanation" maxlength="200"></textarea>
+                            <div class="input-limit-show"><div id="exp-input-limit">0</div> / 200</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="delete-btn-area">
+                    <div id="playlist-new-btn" class="playlist-btn">新規再生リスト</div>
+                    <div id="playlist-cancel-btn" class="playlist-btn">キャンセル</div>
+                    <div id="playlist-add-btn" class="playlist-btn">追加</div>
+                </div>
+            </div>
+        </div>
+        <div id="sso-overlay" class="overlay">
+            <div class="sso-area">
+                <p id="sso-area-title">SSOリンク</p>
+                <div class="sso-info">
+                    <input id="sso-url" type="url">
+                </div>
+                <div class="sso-btn-area">
+                    <div id="sso-copy-btn" class="sso-btn">リンクをコピー</div>
+                    <div id="sso-cancel-btn" class="sso-btn">閉じる</div>
+                </div>
+            </div>
+        </div>
+        <template id="template-video">
+            <input type="checkbox" class="list-checkbox" name="video-checkbox" onchange="selectedList()">
+            <div class="video_div" ontouchstart="">
+                <div class="head-checkbox">
+                    <label class="checkbox-label"></label>
+                </div>
+                <div class="head-video">
+                    <div class="head-thumbnail">
+                        <img class="head-thumbnail-img">
+                        <a class="head-thumbnail-a"></a>
+                        <div class="head-thumbnail-ps"></div>
+                    </div>
+                    <div class="head-title">
+                        <p class="head-title-p"></p>
+                        <p class="head-explanation-p"></p>
+                        <div class="operation-div">
+                            <div class="edit-operation-btn icon" title="メタデータの編集"></div>
+                            <div class="sso-operation-btn icon" title="SSOリンク"></div>
+                            <div class="delete-operation-btn icon" title="削除"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="head-status">
+                    <p class="head-status-title"></p>
+                    <p class="head-status-info"></p>
+                </div>
+                <div class="head-update">
+                    <p class="head-update-ymd"></p>
+                    <p class="head-update-hms"></p>
+                </div>
+                <div class="head-create">
+                    <p class="head-create-ymd"></p>
+                    <p class="head-create-hms"></p>
+                </div>
+                    <div class="head-contributor">
+                    <p class="head-contributor-p"></p>
+                </div>
+                
+            </div>
+        </template>
+        <template id="template-playlist">
+            <input type="checkbox" class="list-checkbox" name="playlist-checkbox">
+            <div class="playlist_div" ontouchstart="">
+                <div class="head-checkbox">
+                    <label class="checkbox-label"></label>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>

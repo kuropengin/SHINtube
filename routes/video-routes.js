@@ -7,14 +7,34 @@ const system = require('../tool/system')
 // Requiring Ltijs
 const lti = require('ltijs').Provider
 
-const backend_config = require('../config/backend_config.json')
-const BACK_DOMAIN = backend_config.backend_url || process.env.BACK_DOMAIN
+const CONFIG = require('../tool/config').getConfig()
 
-const app_config = require('../config/app_config.json')
-const ROOT_PATH = app_config.app_root_path || process.env.ROOT_PATH || "/"
+function roleCheck(roles){
+    if(roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator') != -1 ||
+    roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/system/person#Administrator') != -1){
+        return 2
+    }
+    else if(roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor') != -1){
+        return 1
+    }
+    else{
+        return 0
+    }
+}
 
-function roleguard(req, res, next){
-    if(res.locals.context.roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor') != -1){
+async function roleguard(req, res, next){
+    const role = await roleCheck(res.locals.context.roles)
+    if(role){
+        next()
+    }
+    else{
+        res.render('error', {"error":"003 : アクセス権限エラー"})
+    }
+}
+
+async function adminguard(req, res, next){
+    const role = await roleCheck(res.locals.context.roles)
+    if(role == 2){
         next()
     }
     else{
@@ -25,7 +45,7 @@ function roleguard(req, res, next){
 function getMeta(year,cid,vid){
     return new Promise(resolve => { 
         let options = {
-            url: BACK_DOMAIN + '/video/' + encodeURI(year) + '/' + encodeURI(cid) + '/' + encodeURI(vid) + '/info.json' ,
+            url: CONFIG.BACK_DOMAIN + '/video/' + encodeURI(year) + '/' + encodeURI(cid) + '/' + encodeURI(vid) + '/info.json' ,
             method: 'GET'
         }
         request(options, function (_error, _response, _body) {
@@ -46,32 +66,89 @@ function getMeta(year,cid,vid){
     })
 }
 
-router.get(path.join('/', ROOT_PATH, '/about'), async (req, res) => {
+router.get(path.join('/', CONFIG.ROOT_PATH, '/about'), async (req, res) => {
     res.render('about')
 })
 
-router.get(path.join('/', ROOT_PATH, '/TOS'), async (req, res) => {
+router.get(path.join('/', CONFIG.ROOT_PATH, '/TOS'), async (req, res) => {
     res.sendFile(path.resolve('docs/TOS.md'));
 })
 
-router.get(path.join('/', ROOT_PATH, '/videolist'),roleguard, async (req, res) => {
-    res.render('videolist');
+router.get(path.join('/', CONFIG.ROOT_PATH, '/ssourl'),adminguard, async (req, res) => {
+    res.send({"link":CONFIG.SSO_LINK,"url":CONFIG.SSO_URL})
 })
 
-router.post(path.join('/', ROOT_PATH, '/videolist'),roleguard, async (req, res) => {
+router.get(path.join('/', CONFIG.ROOT_PATH, '/allvideolist'),adminguard, async (req, res) => {
+    if(req.query["service"] && req.query["class"]){
+        res.render('listbase',{'view_type':'videolist','role':'admin'})
+    }
+    else{
+        res.render('listbase',{'view_type':'service_class','role':'admin'})
+    }
+})
+
+router.get(path.join('/', CONFIG.ROOT_PATH, '/servicelist'),adminguard, async (req, res) => {
+    const options = {
+        url: CONFIG.BACK_DOMAIN + '/api/video/servicelist',
+        method: 'GET'
+    }
+    request(options, function (error, response, body) {
+        if(response.statusCode == 200){
+            res.send(body)
+        }
+        else{
+            res.status(response.statusCode).send(body)
+        }
+    })
+})
+
+router.get(path.join('/', CONFIG.ROOT_PATH, '/classlist'),adminguard, async (req, res) => {
+    const options = {
+        url: CONFIG.BACK_DOMAIN + '/api/video/classlist?service_name=' + encodeURI(req.query["service"]),
+        method: 'GET'
+    }
+    request(options, function (error, response, body) {
+        if(response.statusCode == 200){
+            res.send(body)
+        }
+        else{
+            res.status(response.statusCode).send(body)
+        }
+    })
+})
+
+router.get(path.join('/', CONFIG.ROOT_PATH, '/videolist'),roleguard, async (req, res) => {
+    const role = await roleCheck(res.locals.context.roles)
+    if(role == 2){
+        res.render('listbase',{'view_type':'videolist','role':'admin'})
+    }
+    else{
+        res.render('listbase',{'view_type':'videolist','role':'noadmin'})
+    }
+    
+})
+
+router.get(path.join('/', CONFIG.ROOT_PATH, '/getvideolist'),roleguard, async (req, res) => {
+    let service = res.locals.token.iss.split("/")[3]
+    let cid = res.locals.context.lis.course_section_sourcedid
+    const role = await roleCheck(req.res.locals.context.roles)
+    
     try{
-        var year = res.locals.token.iss.split("/")[3]
-        if(isNaN(year) || year.length == 0){
-            year = "1000"
+        if(isNaN(service) || service.length == 0){
+            service = "1000"
         }
     }
     catch(err){
-        var year = "1000"
+        service = "1000"
     }
-    
-    var cid = res.locals.context.lis.course_section_sourcedid
-    var options = {
-        url: BACK_DOMAIN + '/linklist?year=' + year + '&cid=' + cid,
+
+    if("service" in req.query && "class" in req.query && role == 2){
+        service = req.query["service"]
+        cid = req.query["class"] 
+    } 
+
+    const options = {
+        url: CONFIG.BACK_DOMAIN + '/linklist?year=' + service + '&cid=' + cid,
         method: 'GET'
     }
     
@@ -80,26 +157,33 @@ router.post(path.join('/', ROOT_PATH, '/videolist'),roleguard, async (req, res) 
     })
 })
 
-router.post(path.join('/', ROOT_PATH, '/createplaylist'),roleguard, async (req, res) => {
-    var metadata = {
+router.post(path.join('/', CONFIG.ROOT_PATH, '/createplaylist'),roleguard, async (req, res) => {
+    let service = res.locals.token.iss.split("/")[3]
+    let cid = res.locals.context.lis.course_section_sourcedid
+    const role = await roleCheck(req.res.locals.context.roles)
+
+    const metadata = {
         "contributor_name" : res.locals.token.userInfo.name,
         "contributor_id" : res.locals.token.user,
         "content_type":"playlist",
         "playlist": req.body.playlist
     }
     try{
-        var year = res.locals.token.iss.split("/")[3]
-        if(isNaN(year) || year.length == 0){
-            year = "1000"
+        if(isNaN(service) || service.length == 0){
+            service = "1000"
         }
     }
     catch(err){
-        var year = "1000"
+        service = "1000"
     }
-    var cid = res.locals.context.lis.course_section_sourcedid
+
+    if("service" in req.query && "class" in req.query && role == 2){
+        service = req.query["service"]
+        cid = req.query["class"] 
+    } 
     
-    var options = {
-        url: BACK_DOMAIN + '/api/video/emptyfileupload?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
+    const options = {
+        url: CONFIG.BACK_DOMAIN + '/api/video/emptyfileupload?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
         method: 'POST'
     }
     
@@ -113,31 +197,38 @@ router.post(path.join('/', ROOT_PATH, '/createplaylist'),roleguard, async (req, 
     })
 })
 
-router.post(path.join('/', ROOT_PATH, '/updateplaylist'),roleguard, async (req, res) => {
-    var cid = res.locals.context.lis.course_section_sourcedid
+router.post(path.join('/', CONFIG.ROOT_PATH, '/updateplaylist'),roleguard, async (req, res) => {
+    let service = res.locals.token.iss.split("/")[3]
+    let cid = res.locals.context.lis.course_section_sourcedid
+    const role = await roleCheck(req.res.locals.context.roles)
+
     try{
-        var year = res.locals.token.iss.split("/")[3]
-        if(isNaN(year) || year.length == 0){
-            year = "1000"
+        if(isNaN(service) || service.length == 0){
+            service = "1000"
         }
     }
     catch(err){
-        var year = "1000"
+        service = "1000"
     }
 
-    var options = {
-        url: BACK_DOMAIN + '/video/' + encodeURI(year) + '/' + encodeURI(cid) + '/' + encodeURI(req.body.vid) + '/info.json' ,
+    if("service" in req.query && "class" in req.query && role == 2){
+        service = req.query["service"]
+        cid = req.query["class"] 
+    } 
+
+    const options = {
+        url: CONFIG.BACK_DOMAIN + '/video/' + encodeURI(service) + '/' + encodeURI(cid) + '/' + encodeURI(req.body.vid) + '/info.json' ,
         method: 'GET'
     }
     request(options, function (error, response, body) {
         if(response.statusCode == 200){
             
-            var temp_meta_data = JSON.parse(JSON.parse(body).meta_data)
+            let temp_meta_data = JSON.parse(JSON.parse(body).meta_data)
             temp_meta_data["content_type"] = "playlist"
             temp_meta_data["playlist"] = req.body.playlist
 
-            var _options = {
-                url: BACK_DOMAIN + '/api/video/updateinfo?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(temp_meta_data)),
+            const _options = {
+                url: CONFIG.BACK_DOMAIN + '/api/video/updateinfo?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(temp_meta_data)),
                 method: 'POST'
             }
 
@@ -156,20 +247,28 @@ router.post(path.join('/', ROOT_PATH, '/updateplaylist'),roleguard, async (req, 
     })
 })
 
-router.post(path.join('/', ROOT_PATH, '/videodelete'),roleguard, async (req, res) => {
+router.post(path.join('/', CONFIG.ROOT_PATH, '/videodelete'),roleguard, async (req, res) => {
+    let service = res.locals.token.iss.split("/")[3]
+    let cid = res.locals.context.lis.course_section_sourcedid
+    const vid = req.body.vid
+    const role = await roleCheck(req.res.locals.context.roles)
+
     try{
-        var year = res.locals.token.iss.split("/")[3]
-        if(isNaN(year) || year.length == 0){
-            year = "1000"
+        if(isNaN(service) || service.length == 0){
+            service = "1000"
         }
     }
     catch(err){
-        var year = "1000"
+        service = "1000"
     }
-    var cid = res.locals.context.lis.course_section_sourcedid
-    var vid = req.body.vid
-    var options = {
-        url: BACK_DOMAIN + '/delete?year=' + year + '&cid=' + cid + '&vid=' + vid,
+
+    if("service" in req.query && "class" in req.query && role == 2){
+        service = req.query["service"]
+        cid = req.query["class"] 
+    } 
+    
+    const options = {
+        url: CONFIG.BACK_DOMAIN + '/delete?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(vid),
         method: 'POST'
     }
     
@@ -178,44 +277,80 @@ router.post(path.join('/', ROOT_PATH, '/videodelete'),roleguard, async (req, res
     })
 })
 
-router.get(path.join('/', ROOT_PATH, '/watch'), async (req, res) => {
+router.get(path.join('/', CONFIG.ROOT_PATH, '/watch'), async (req, res) => {
     res.render('watch')
 })
 
-router.get(path.join('/', ROOT_PATH, '/system'),roleguard, async (req, res) => {
-    res.render('system')
+router.get(path.join('/', CONFIG.ROOT_PATH, '/ssowatch'), async (req, res) => {
+    if(CONFIG.SSO_LINK){
+        const config_sso_url = new URL(CONFIG.SSO_URL)
+        const permission_host = config_sso_url.host 
+        if(req.headers["host"] != permission_host){
+            res.status(403).render('error', {"error":"009 : 認可ドメイン以外からのアクセス"})
+        }
+        else{
+            res.render('watch')
+        }
+    }
+    else{
+        res.status(401).render('error', {"error":"008 : 機能が有効化されていません"})
+    }   
 })
 
-router.get(path.join('/', ROOT_PATH, '/system-check'),roleguard, async (req, res) => {
+router.get(path.join('/', CONFIG.ROOT_PATH, '/system'),roleguard, async (req, res) => {
+    const role = await roleCheck(res.locals.context.roles)
+    if(role == 2){
+        res.render('system',{'view_type':'system','role':'admin'})
+    }
+    else{
+        res.render('system',{'view_type':'system','role':'noadmin'})
+    }
+})
+
+router.get(path.join('/', CONFIG.ROOT_PATH, '/system-check'),roleguard, async (req, res) => {
     const system_list = await system.check(req, res)
     res.send(system_list)
 })
 
-router.get(path.join('/', ROOT_PATH, '/upload'),roleguard, async (req, res) => {
-    res.render('upload')
+router.get(path.join('/', CONFIG.ROOT_PATH, '/upload'),roleguard, async (req, res) => {
+    const role = await roleCheck(res.locals.context.roles)
+    if(role == 2){
+        res.render('upload',{'view_type':'upload','role':'admin'})
+    }
+    else{
+        res.render('upload',{'view_type':'upload','role':'noadmin'})
+    }
 })
 
 
-router.post(path.join('/', ROOT_PATH, '/upload'),roleguard, async (req, res) => {
-    var metadata = {
+router.post(path.join('/', CONFIG.ROOT_PATH, '/upload'),roleguard, async (req, res) => {
+    let service = res.locals.token.iss.split("/")[3]
+    let cid = res.locals.context.lis.course_section_sourcedid
+    const role = await roleCheck(req.res.locals.context.roles)
+
+    try{
+        if(isNaN(service) || service.length == 0){
+            service = "1000"
+        }
+    }
+    catch(err){
+        service = "1000"
+    }
+
+    if("service" in req.body && "class" in req.body && role == 2){
+        service = req.body["service"]
+        cid = req.body["class"]
+    }
+
+    const metadata = {
         "contributor_name" : res.locals.token.userInfo.name,
         "contributor_id" : res.locals.token.user,
         "duration" : req.body.duration
     }
-    try{
-        var year = res.locals.token.iss.split("/")[3]
-        if(isNaN(year) || year.length == 0){
-            year = "1000"
-        }
-    }
-    catch(err){
-        var year = "1000"
-    }
-    var cid = res.locals.context.lis.course_section_sourcedid
-    
+
     if(req.files){
-        var options = {
-            url: BACK_DOMAIN + '/upload?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
+        const options = {
+            url: CONFIG.BACK_DOMAIN + '/upload?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -242,32 +377,47 @@ router.post(path.join('/', ROOT_PATH, '/upload'),roleguard, async (req, res) => 
     }
 })
 
-router.get(path.join('/', ROOT_PATH, '/edit'),roleguard, async (req, res) => {
-    res.render('edit')
+router.get(path.join('/', CONFIG.ROOT_PATH, '/edit'),roleguard, async (req, res) => {
+    const role = await roleCheck(res.locals.context.roles)
+    if(role == 2){
+        res.render('edit',{'view_type':'edit','role':'admin'})
+    }
+    else{
+        res.render('edit',{'view_type':'edit','role':'noadmin'})
+    }
 })
 
 
-router.post(path.join('/', ROOT_PATH, '/edit'),roleguard, async (req, res) => {
+router.post(path.join('/', CONFIG.ROOT_PATH, '/edit'),roleguard, async (req, res) => {
+    let service = res.locals.token.iss.split("/")[3]
+    let cid = res.locals.context.lis.course_section_sourcedid
+    const role = await roleCheck(req.res.locals.context.roles)
+
     try{
-        var year = res.locals.token.iss.split("/")[3]
-        if(isNaN(year) || year.length == 0){
-            year = "1000"
+        if(isNaN(service) || service.length == 0){
+            service = "1000"
         }
     }
     catch(err){
-        var year = "1000"
+        service = "1000"
     }
-    var cid = res.locals.context.lis.course_section_sourcedid
-    var options
+
+    if("service" in req.body && "class" in req.body && role == 2){
+        service = req.body["service"]
+        cid = req.body["class"]
+    }
+
+
+    let options
 
     if(req.files){
-        var metadata = {
+        const metadata = {
             "contributor_name" : res.locals.token.userInfo.name,
             "contributor_id" : res.locals.token.user,
             "duration" : req.body.duration
         }
         options = {
-            url: BACK_DOMAIN + '/updatevideo?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
+            url: CONFIG.BACK_DOMAIN + '/updatevideo?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -281,7 +431,7 @@ router.post(path.join('/', ROOT_PATH, '/edit'),roleguard, async (req, res) => {
         let req_meta_data = await getMeta(year,cid,req.body.vid)
         req_meta_data["duration"] = req.body.duration
         options = {
-            url: BACK_DOMAIN + '/updateinfo?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(req_meta_data)),
+            url: CONFIG.BACK_DOMAIN + '/updateinfo?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(req_meta_data)),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -290,7 +440,7 @@ router.post(path.join('/', ROOT_PATH, '/edit'),roleguard, async (req, res) => {
     }
     else{
         options = {
-            url: BACK_DOMAIN + '/updateinfo?year=' + encodeURI(year) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation),
+            url: CONFIG.BACK_DOMAIN + '/updateinfo?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -316,11 +466,11 @@ router.post(path.join('/', ROOT_PATH, '/edit'),roleguard, async (req, res) => {
 
 
 
-router.get(path.join('/', ROOT_PATH, '/error'), async (req, res) => {
+router.get(path.join('/', CONFIG.ROOT_PATH, '/error'), async (req, res) => {
     res.render('error', {"error":"LTI token error"})
 })
 
-router.get(path.join('/', ROOT_PATH, '/view-progress'), async (req, res) => {
+router.get(path.join('/', CONFIG.ROOT_PATH, '/view-progress'), async (req, res) => {
     try {
         const view_vid = req.query.vid
         const idtoken = res.locals.token
@@ -351,7 +501,7 @@ router.get(path.join('/', ROOT_PATH, '/view-progress'), async (req, res) => {
     }
 })
 
-router.post(path.join('/', ROOT_PATH, '/view-progress'), async (req, res) => {
+router.post(path.join('/', CONFIG.ROOT_PATH, '/view-progress'), async (req, res) => {
     try {
         const idtoken = res.locals.token
         const nowLmsProgress = await lti.Grade.getScores(idtoken, idtoken.platformContext.endpoint.lineitem, { userId: idtoken.user })     
@@ -500,12 +650,12 @@ router.post(path.join('/', ROOT_PATH, '/view-progress'), async (req, res) => {
     }
 })
 
-router.get(path.join('/', ROOT_PATH, "/return"), async (req, res) => {
+router.get(path.join('/', CONFIG.ROOT_PATH, "/return"), async (req, res) => {
     var redirect_url = req.res.locals.token.iss + "/course/view.php?id=" + req.res.locals.context.context.id
     res.redirect(redirect_url)
 });
 
-router.get(path.join('/', ROOT_PATH, '/logout'), async (req, res) => {
+router.get(path.join('/', CONFIG.ROOT_PATH, '/logout'), async (req, res) => {
     var cookie_list = req.headers.cookie.split(";")
     var redirect_url = req.res.locals.token.iss + "/course/view.php?id=" + req.res.locals.context.context.id
     for(var cookie of cookie_list){
@@ -520,55 +670,140 @@ router.get(path.join('/', ROOT_PATH, '/logout'), async (req, res) => {
 
 const { createProxyMiddleware , responseInterceptor } = require('http-proxy-middleware')
 
-
-const m3u8_proxy = createProxyMiddleware({ 
-    target: BACK_DOMAIN, 
+const sso_m3u8_proxy = createProxyMiddleware({ 
+    target: CONFIG.BACK_DOMAIN, 
     changeOrigin: true ,
     selfHandleResponse: true, 
-    pathRewrite: function (path, req) {
-      var temp_url = req.url.split('?')[0];
-      var par = temp_url.slice(1).split('/');
-      try{
-          var year = req.res.locals.token.iss.split("/")[3]
-          if(isNaN(year) || year.length == 0){
-              year = "1000"
-          }
-      }
-      catch(err){
-          var year = "1000"
-      }
-      var cid = req.res.locals.context.lis.course_section_sourcedid
-      return "/video/" + year + "/" + cid + "/" + par.slice(-2)[0] + "/" + par.slice(-1)[0]
+    pathRewrite: async function (path, req) {
+        const service = req.query["service"]
+        const cid = req.query["class"] 
+
+        const temp_url = req.url.split('?')[0]
+        const par = temp_url.slice(1).split('/')
+        const vid = par.slice(-2)[0]
+
+        return "/video/" + service + "/" + cid + "/" + vid + "/" + par.slice(-1)[0]
     },
     onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-      const response = responseBuffer.toString('utf8')
-      var ts_convert_url = ".ts?ltik=" + req.query.ltik
-      var m3u5_convert_url = ".m3u8?ltik=" + req.query.ltik
-      return response.replace(/.ts/g, ts_convert_url).replace(/.m3u8/g, m3u5_convert_url)
-    })
-  });
-  
-  const normal_proxy = createProxyMiddleware({ 
-      target: BACK_DOMAIN, 
-      changeOrigin: true ,
-      pathRewrite: function (path, req) {
-          var temp_url = req.url.split('?')[0];
-          var par = temp_url.slice(1).split('/');
-          try{
-              var year = req.res.locals.token.iss.split("/")[3]
-              if(isNaN(year) || year.length == 0){
-                  year = "1000"
-              }
-          }
-          catch(err){
-              var year = "1000"
-          }
-          var cid = req.res.locals.context.lis.course_section_sourcedid
-          return "/video/" + year + "/" + cid + "/" + par.slice(-2)[0] + "/" + par.slice(-1)[0]
-      }
-  });
+        const response = responseBuffer.toString('utf8')
+        const ts_convert_url = ".ts?service=" + req.query["service"] + "&class=" + req.query["class"]
+        const m3u8_convert_url = ".m3u8?service=" + req.query["service"] + "&class=" + req.query["class"]
 
-router.use(path.join('/', ROOT_PATH, '/video/*.m3u8'), m3u8_proxy)
-router.use(path.join('/', ROOT_PATH, '/video'), normal_proxy)
+        return response.replace(/.ts/g, ts_convert_url).replace(/.m3u8/g, m3u8_convert_url)
+    })
+});
+
+const sso_normal_proxy = createProxyMiddleware({ 
+    target: CONFIG.BACK_DOMAIN, 
+    changeOrigin: true ,
+    pathRewrite: async function (path, req) {
+
+        const service = req.query["service"]
+        const cid = req.query["class"] 
+
+        const temp_url = req.url.split('?')[0]
+        const par = temp_url.slice(1).split('/')
+        const vid = par.slice(-2)[0]
+
+        return "/video/" + service + "/" + cid + "/" + vid + "/" + par.slice(-1)[0]
+    }
+});
+
+const m3u8_proxy = createProxyMiddleware({ 
+    target: CONFIG.BACK_DOMAIN, 
+    changeOrigin: true ,
+    selfHandleResponse: true, 
+    pathRewrite: async function (path, req) {
+        const temp_url = req.url.split('?')[0]
+        const par = temp_url.slice(1).split('/')
+        const role = await roleCheck(req.res.locals.context.roles)
+        
+        let service = req.res.locals.token.iss.split("/")[3]
+        let cid = req.res.locals.context.lis.course_section_sourcedid
+        try{
+            if(isNaN(service) || service.length == 0){
+                service = "1000"
+            }
+        }
+        catch(err){
+            service = "1000"
+        }
+        if("service" in req.query && "class" in req.query && role == 2){
+            service = req.query["service"]
+            cid = req.query["class"] 
+        } 
+        
+        return "/video/" + service + "/" + cid + "/" + par.slice(-2)[0] + "/" + par.slice(-1)[0]
+    },
+    onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
+        const response = responseBuffer.toString('utf8')
+        const role = await roleCheck(req.res.locals.context.roles)
+        let ts_convert_url = ".ts?ltik=" + req.query.ltik
+        let m3u8_convert_url = ".m3u8?ltik=" + req.query.ltik
+
+        if("service" in req.query && "class" in req.query && role == 2){
+            ts_convert_url += "&service=" + req.query["service"] + "&class=" + req.query["class"]
+            m3u8_convert_url += "&service=" + req.query["service"] + "&class=" + req.query["class"]
+        }
+
+        return response.replace(/.ts/g, ts_convert_url).replace(/.m3u8/g, m3u8_convert_url)
+    })
+});
+  
+const normal_proxy = createProxyMiddleware({ 
+    target: CONFIG.BACK_DOMAIN, 
+    changeOrigin: true ,
+    pathRewrite: async function (path, req) {
+        const temp_url = req.url.split('?')[0]
+        const par = temp_url.slice(1).split('/')
+        const role = await roleCheck(req.res.locals.context.roles)
+
+        let service = req.res.locals.token.iss.split("/")[3]
+        let cid = req.res.locals.context.lis.course_section_sourcedid
+        try{
+            if(isNaN(service) || service.length == 0){
+                service = "1000"
+            }
+        }
+        catch(err){
+            service = "1000"
+        }
+
+        if("service" in req.query && "class" in req.query && role == 2){
+            service = req.query["service"]
+            cid = req.query["class"] 
+        } 
+
+        return "/video/" + service + "/" + cid + "/" + par.slice(-2)[0] + "/" + par.slice(-1)[0]
+    }
+});
+
+function ssoCheck(req,res,next){
+    
+    if(CONFIG.SSO_LINK){
+        const config_sso_url = new URL(CONFIG.SSO_URL)
+        const permission_host = config_sso_url.host 
+        if(req.headers["host"] != permission_host){
+            res.status(403).send({"status":403, "msg":"Access from non-authorized domains"})
+        }
+
+        if("service" in req.query && "class" in req.query){
+            next()
+        }
+        else{
+            res.status(400).send({"status":400, "msg":"service or class, vid not found"})
+        }
+    }
+    else{
+        res.status(423).send({"status":423, "msg":"The sso link is not activated"})
+    }
+}
+
+router.use(path.join('/', CONFIG.ROOT_PATH, '/ssovideo/*.m3u8'), ssoCheck, sso_m3u8_proxy)
+router.use(path.join('/', CONFIG.ROOT_PATH, '/ssovideo'), ssoCheck, sso_normal_proxy)
+
+router.use(path.join('/', CONFIG.ROOT_PATH, '/video/*.m3u8'), m3u8_proxy)
+router.use(path.join('/', CONFIG.ROOT_PATH, '/video'), normal_proxy)
+
 
 module.exports = router

@@ -136,6 +136,10 @@ function sortFunction(a, b) {
 let player
 function videoInit(vid){
     let _volume = localStorage.getItem("volume")
+    let request_path = "video"
+    if(sso == true){
+        request_path = "ssovideo"
+    }
     
     if(!_volume){
         _volume = 1
@@ -148,7 +152,8 @@ function videoInit(vid){
         playsinline : true,
         preload: 'metadata',
         playbackRates: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
-        poster: './video/' + vid + '/thumbnail_720.jpg?ltik=' + params.get("ltik"),
+        poster: './' + request_path + '/' + vid + '/thumbnail_720.jpg?ltik=' + params.get("ltik") + 
+        (params.get("service")? "&service=" + params.get("service") : "") + (params.get("class")? "&class=" + params.get("class") : ""),
         userActions: {
             hotkeys: true
         }
@@ -156,7 +161,8 @@ function videoInit(vid){
 
     player.src({
         type: 'application/x-mpegURL',
-        src: "./video/" + vid + "/playlist.m3u8" + "?ltik=" + params.get("ltik")
+        src: "./" + request_path + "/" + vid + "/playlist.m3u8" + "?ltik=" + params.get("ltik") + 
+        (params.get("service")? "&service=" + params.get("service") : "") + (params.get("class")? "&class=" + params.get("class") : "")
     });
 
     player.hlsQualitySelector({
@@ -182,7 +188,13 @@ function videoInit(vid){
 
 function videoInfoInit(vid,listinit=false){
     var request = new XMLHttpRequest()
-    request.open('GET', "./video/" + vid + "/info.json" + "?ltik=" + params.get("ltik"), true)
+    let request_path = "video"
+    if(sso == true){
+        request_path = "ssovideo"
+    }
+    request.open('GET', "./" + request_path + "/" + vid + "/info.json" + "?ltik=" + params.get("ltik") + 
+    (params.get("service")? "&service=" + params.get("service") : "") + 
+    (params.get("class")? "&class=" + params.get("class") : "") , true)
 
     request.onload = async function () {
         if(request.status == 200){
@@ -235,6 +247,7 @@ function videoInfoInit(vid,listinit=false){
             }
         }
         else{
+            document.getElementById("video-title").innerHTML = "この動画は再生できません"
             memoInit(vid)
         }
     }
@@ -339,6 +352,13 @@ function playlistInit(playlist_info, playlist_id=params.get("playlist")){
 
     playListVid = []
 
+    let request_path = "video"
+    let watch_path = "watch"
+    if(sso == true){
+        request_path = "ssovideo"
+        watch_path = "ssowatch"
+    }
+
     playlist.forEach(function(playlist_vid, index){
         playListVid.push(playlist_vid)
         const clone = document.importNode(playlist_content, true)
@@ -355,7 +375,9 @@ function playlistInit(playlist_info, playlist_id=params.get("playlist")){
         index_div.innerHTML = index + 1
 
         const thumbnail_img = clone.querySelector('.playlist-content-thumbnail-img')
-        thumbnail_img.src = './video/' + playlist_vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
+        thumbnail_img.src = './' + request_path + '/' + playlist_vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik") + 
+        (params.get("service")? "&service=" + params.get("service") : "") + 
+        (params.get("class")? "&class=" + params.get("class") : "")
         thumbnail_img.onerror = function(){
             this.src = './images/no_thumbnail.jpg'
         }
@@ -372,11 +394,12 @@ function playlistInit(playlist_info, playlist_id=params.get("playlist")){
 
         const a_div = clone.querySelector('.playlist-content-a')
         if(params.get("deeplink")){
-            a_div.href = './watch?video=' + playlist_vid + '&playlist=' + playlist_id + '&deeplink=true&index=' + (index + 1) + '&ltik=' + params.get("ltik")
+            a_div.href = './' + watch_path + '?video=' + playlist_vid + '&playlist=' + playlist_id + '&deeplink=true&index=' + (index + 1) + '&ltik=' + params.get("ltik")
         }
         else{
-            a_div.href = './watch?video=' + playlist_vid + '&playlist=' + playlist_id + '&index=' + (index + 1) + '&ltik=' + params.get("ltik")
+            a_div.href = './' + watch_path + '?video=' + playlist_vid + '&playlist=' + playlist_id + '&index=' + (index + 1) + '&ltik=' + params.get("ltik")
         }
+        a_div.href += (params.get("service")? "&service=" + params.get("service") : "") + (params.get("class")? "&class=" + params.get("class") : "")
         
 
         list_element.appendChild(clone)
@@ -394,10 +417,12 @@ function playlistInit(playlist_info, playlist_id=params.get("playlist")){
         player.on('ended', async function(event){
             //await postVideoProgress(playlist[next_index - 1])
             if(params.get("deeplink")){
-                location.href = './watch?video=' + playlist[next_index] + '&playlist=' + playlist_id + '&deeplink=true&index=' + (next_index + 1) + '&ltik=' + params.get("ltik")
+                location.href = './' + watch_path + '?video=' + playlist[next_index] + '&playlist=' + playlist_id + '&deeplink=true&index=' + (next_index + 1) + '&ltik=' + params.get("ltik") + 
+                (params.get("service")? "&service=" + params.get("service") : "") + (params.get("class")? "&class=" + params.get("class") : "")
             }
             else{
-                location.href = './watch?video=' + playlist[next_index] + '&playlist=' + playlist_id + '&index=' + (next_index + 1) + '&ltik=' + params.get("ltik")
+                location.href = './' + watch_path + '?video=' + playlist[next_index] + '&playlist=' + playlist_id + '&index=' + (next_index + 1) + '&ltik=' + params.get("ltik") + 
+                (params.get("service")? "&service=" + params.get("service") : "") + (params.get("class")? "&class=" + params.get("class") : "")
             }
         })
     }
@@ -406,8 +431,16 @@ function playlistInit(playlist_info, playlist_id=params.get("playlist")){
 
 
 function playlistVideoInfo(vid){
+    let request_path = "video"
+    if(sso == true){
+        request_path = "ssovideo"
+    }
+
     var request = new XMLHttpRequest()
-    request.open('GET', "./video/" + vid + "/info.json" + "?ltik=" + params.get("ltik"), true)
+    request.open('GET', "./" + request_path + "/" + vid + "/info.json" + "?ltik=" + params.get("ltik") +
+    (params.get("service")? "&service=" + params.get("service") : "") + 
+    (params.get("class")? "&class=" + params.get("class") : ""), true)
+    
 
     request.onload = function () {
         if(request.status == 200){
@@ -443,7 +476,12 @@ function playlistVideoInfo(vid){
 }
 
 
+let sso = false
 window.addEventListener("load", function() {
+    const now_path = location.pathname.split("/").slice(-1)[0]
+    if(now_path == "ssowatch"){
+        sso = true
+    }
     videoInfoInit(params.get("playlist") || params.get("video"))
 })
     

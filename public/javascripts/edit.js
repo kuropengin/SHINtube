@@ -79,7 +79,10 @@ document.getElementById('drag-area').addEventListener('drop', drop_load_video)
 
 function getVideoInfoResponse(callback){
   let request = new XMLHttpRequest()
-  request.open('GET', "./video/" + params.get("vid") + "/info.json?ltik=" + params.get("ltik") + "&datte=" + new Date().getTime(), true)
+  request.open('GET', "./video/" + params.get("vid") + "/info.json?ltik=" + params.get("ltik") + 
+  (params.get("service")? "&service=" + params.get("service") : "") + 
+  (params.get("class")? "&class=" + params.get("class") : "") + 
+  "&datte=" + new Date().getTime(), true)
 
   request.onload = function () {
     ResponseVideoInfo = JSON.parse(request.response)
@@ -130,12 +133,14 @@ function valueInit(InitData){
         controls: true,
         preload: 'auto',
         playbackRates: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
-        poster: './video/' + params.get("vid") + '/thumbnail_720.jpg?ltik=' + params.get("ltik")
+        poster: './video/' + params.get("vid") + '/thumbnail_720.jpg?ltik=' + params.get("ltik") + 
+        (params.get("service")? "&service=" + params.get("service") : "") + (params.get("class")? "&class=" + params.get("class") : "")
       })
 
       player.src({
         type: 'application/x-mpegURL',
-        src: "./video/" + params.get("vid") + "/playlist.m3u8" + "?ltik=" + params.get("ltik")
+        src: "./video/" + params.get("vid") + "/playlist.m3u8" + "?ltik=" + params.get("ltik") + 
+        (params.get("service")? "&service=" + params.get("service") : "") + (params.get("class")? "&class=" + params.get("class") : "")
       })
 
       player.hlsQualitySelector({
@@ -150,7 +155,12 @@ function valueInit(InitData){
 
     document.getElementById("upload-btn").addEventListener("click", upload_video, false)
     document.getElementById("cancel-btn").addEventListener("click", function(){
-      window.location.href = "./videolist?ltik=" + params.get("ltik")
+      if(params.get("service") && params.get("class")){
+        window.location.href = "./allvideolist?ltik=" + params.get("ltik") + "&service=" + params.get("service") + "&class=" + params.get("class")
+      }
+      else{
+        window.location.href = "./videolist?ltik=" + params.get("ltik")
+      }
     }, false)
   }
   else if(edit_content_type == "playlist"){
@@ -168,7 +178,12 @@ function valueInit(InitData){
 
     document.getElementById("upload-btn").addEventListener("click", upload_list, false)
     document.getElementById("cancel-btn").addEventListener("click", function(){
-      window.location.href = "./videolist?ltik=" + params.get("ltik") + "#listCategory"
+      if(params.get("service") && params.get("class")){
+        window.location.href = "./allvideolist?ltik=" + params.get("ltik") + "&service=" + params.get("service") + "&class=" + params.get("class") + "#listCategory"
+      }
+      else{
+        window.location.href = "./videolist?ltik=" + params.get("ltik") + "#listCategory"
+      }
     }, false)
   }
 
@@ -193,7 +208,8 @@ function playlistInit(playlist_info, playlist_id=params.get("playlist")){
       index_div.innerHTML = index + 1
 
       const thumbnail_img = clone.querySelector('.playlist-content-thumbnail-img')
-      thumbnail_img.src = './video/' + playlist_vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
+      thumbnail_img.src = './video/' + playlist_vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik") + 
+      (params.get("service")? "&service=" + params.get("service") : "") + (params.get("class")? "&class=" + params.get("class") : "")
       thumbnail_img.onerror = function(){
           this.src = './images/no_thumbnail.jpg'
       }
@@ -215,7 +231,9 @@ function playlistInit(playlist_info, playlist_id=params.get("playlist")){
 
 function playlistVideoInfo(vid){
   let request = new XMLHttpRequest()
-  request.open('GET', "./video/" + vid + "/info.json" + "?ltik=" + params.get("ltik"), true)
+  request.open('GET', "./video/" + vid + "/info.json" + "?ltik=" + params.get("ltik") + 
+  (params.get("service")? "&service=" + params.get("service") : "") + 
+  (params.get("class")? "&class=" + params.get("class") : ""), true)
 
   request.onload = function () {
       if(request.status == 200){
@@ -297,8 +315,15 @@ function upload_video(){
     }
   }
 
+  if(params.get("service")){
+    fd.append("service", params.get("service"))
+  }
+  if(params.get("class")){
+    fd.append("class", params.get("class"))
+  }
+
   let xhr = new XMLHttpRequest()
-  xhr.open('post', "./edit" + "?ltik=" + params.get("ltik"), true)
+  xhr.open('POST', "./edit" + "?ltik=" + params.get("ltik"), true)
 
   xhr.upload.addEventListener('progress', (evt) => {
     let percent = (evt.loaded / evt.total * 100).toFixed(1)
@@ -328,7 +353,12 @@ function upload_video(){
 
     document.getElementById("back-btn").classList.toggle("lock-btn")
     document.getElementById("back-btn").addEventListener('click', function(){
-      window.location.href = "./videolist?ltik=" + params.get("ltik")
+      if(params.get("service") && params.get("class")){
+        window.location.href = "./allvideolist?ltik=" + params.get("ltik") + "&service=" + params.get("service") + "&class=" + params.get("class")
+      }
+      else{
+        window.location.href = "./videolist?ltik=" + params.get("ltik")
+      }
     })
 
     document.getElementById("reedit-btn").classList.toggle("lock-btn")
@@ -399,7 +429,12 @@ function upload_list(){
 
     document.getElementById("back-btn").classList.toggle("lock-btn")
     document.getElementById("back-btn").addEventListener('click', function(){
-      window.location.href = "./videolist?ltik=" + params.get("ltik") + "#listCategory"
+      if(params.get("service") && params.get("class")){
+        window.location.href = "./allvideolist?ltik=" + params.get("ltik") + "&service=" + params.get("service") + "&class=" + params.get("class") + "#listCategory"
+      }
+      else{
+        window.location.href = "./videolist?ltik=" + params.get("ltik") + "#listCategory"
+      }
     })
 
     document.getElementById("reedit-btn").classList.toggle("lock-btn")

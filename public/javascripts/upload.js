@@ -115,6 +115,13 @@ function upload_video(){
         fd.append("duration", 0)
     }
 
+    if(params.get("service")){
+        fd.append("service", params.get("service"))
+    }
+    if(params.get("class")){
+        fd.append("class", params.get("class"))
+    }
+
     let xhr = new XMLHttpRequest()
     xhr.open('post', "./upload" + "?ltik=" + params.get("ltik"), true)
 
@@ -143,7 +150,12 @@ function upload_video(){
         }
         document.getElementById("back-btn").classList.toggle("lock-btn")
         document.getElementById("back-btn").addEventListener('click', function(){
-            window.location.href = "./videolist?ltik=" + params.get("ltik")
+            if(params.get("service") && params.get("class")){
+                window.location.href = "./allvideolist?ltik=" + params.get("ltik") + "&service=" + params.get("service") + "&class=" + params.get("class")
+            }
+            else{
+                window.location.href = "./videolist?ltik=" + params.get("ltik")
+            }
         })
     }
 
@@ -154,7 +166,12 @@ function upload_video(){
 }
 document.getElementById("upload-btn").addEventListener("click", upload_video, false)
 document.getElementById("cancel-btn").addEventListener("click", function(){
-    window.location.href = "./videolist?ltik=" + params.get("ltik")
+    if(params.get("service") && params.get("class")){
+        window.location.href = "./allvideolist?ltik=" + params.get("ltik") + "&service=" + params.get("service") + "&class=" + params.get("class")
+    }
+    else{
+        window.location.href = "./videolist?ltik=" + params.get("ltik")
+    }
 }, false)
 
 function select_file_info_show(file){

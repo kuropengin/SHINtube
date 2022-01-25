@@ -1,5 +1,6 @@
-var video_dict = {}
-var selectVid = []
+let video_dict = {}
+let selectVid = []
+let SSO = false
 
 function resolutionSort(a, b) {
   return parseInt(a) - parseInt(b)
@@ -18,8 +19,8 @@ function video_list_draw(video_view_list){
   document.getElementById("videolist-area").prepend(video_list_div)
 
   const video_content = document.querySelector('#template-video').content
-
   const selected_category = location.hash == "#listCategory" ? "playlist" : "video" 
+  const now_path = location.pathname.split("/").slice(-1)[0]
 
   for (const element in video_view_list) {
     if(video_view_list[element].content_type != selected_category){
@@ -129,46 +130,49 @@ function video_list_draw(video_view_list){
     const edit_div = clone.querySelector('.edit-operation-btn')
     edit_div.setAttribute("id","edit-" + video_view_list[element].vid)
     if(video_view_list[element].content_type == "playlist"){
-      edit_div.innerHTML = "再生リストの編集"
-      edit_div.setAttribute("class","operation-btn status-ed")
       edit_div.onclick = videoEdit
     }
     else{
       if(video_view_list[element].encode_error.length){
-        edit_div.setAttribute("class","operation-btn edit-lock")
+        edit_div.setAttribute("class","hidden-icon")
       }
       else if(video_view_list[element].encode_tasks.length){
-        edit_div.setAttribute("class","operation-btn status-ed")
         edit_div.onclick = videoEdit
       }
       else if(video_view_list[element].resolution.length == 0 && video_view_list[element].encode_tasks.length == 0){
-        edit_div.setAttribute("class","operation-btn edit-lock")
+        edit_div.setAttribute("class","hidden-icon")
       }
       else{
-        edit_div.setAttribute("class","operation-btn status-ed")
         edit_div.onclick = videoEdit
       }
     }
 
+    const sso_div = clone.querySelector('.sso-operation-btn')
+    if(SSO.link){  
+      sso_div.setAttribute("id","sso-" + video_view_list[element].vid)
+      sso_div.onclick = ssoLinkOverlay
+    }
+    else{
+      sso_div.setAttribute("class","hidden-icon")
+    }
+
+
     const delete_div = clone.querySelector('.delete-operation-btn')
     delete_div.setAttribute("id","delete-" + video_view_list[element].vid)
     if(video_view_list[element].content_type == "playlist"){
-      delete_div.setAttribute("class","operation-btn status-now")
       delete_div.onclick = videoDelete
     }
     else{
       if(video_view_list[element].encode_error.length){
-        delete_div.setAttribute("class","operation-btn status-now")
         delete_div.onclick = videoDelete
       }
       else if(video_view_list[element].encode_tasks.length){
-        delete_div.setAttribute("class","operation-btn delete-lock")
+        delete_div.setAttribute("class","hidden-icon")
       }
       else if(video_view_list[element].resolution.length == 0 && video_view_list[element].encode_tasks.length == 0){
-        delete_div.setAttribute("class","operation-btn delete-lock")
+        delete_div.setAttribute("class","hidden-icon")
       }
       else{
-        delete_div.setAttribute("class","operation-btn status-now")
         delete_div.onclick = videoDelete
       }
     }
@@ -178,6 +182,11 @@ function video_list_draw(video_view_list){
       contributor_div.innerHTML = video_view_list[element].contributor_name
       contributor_div.setAttribute("id","contributor-" + video_view_list[element].contributor_id)
     }catch(e){}
+
+    if(now_path == "allvideolist"){
+      thumbnail_img.src += "&service=" + params.get("service") + "&class=" + params.get("class")
+      thumbnail_a.href += "&service=" + params.get("service") + "&class=" + params.get("class")
+    }
     
     video_list_div.appendChild(clone)
   }
@@ -186,8 +195,13 @@ function video_list_draw(video_view_list){
 }
 
 function uploadInit(){
-  var upload_a = document.createElement('a')
-  upload_a.href = './upload?&ltik=' + params.get("ltik")
+  const upload_a = document.createElement('a')
+  const now_path = location.pathname.split("/").slice(-1)[0]
+
+  upload_a.href = './upload?ltik=' + params.get("ltik")
+  if(now_path == "allvideolist"){
+    upload_a.href += "&service=" + params.get("service") + "&class=" + params.get("class")
+  }
 
   document.getElementById("upload-btn").appendChild(upload_a)
 }
@@ -240,33 +254,45 @@ function play_list_draw(list){
 function addPlayList(){
   const add_play_list = document.getElementsByName("playlist-checkbox")
   const add_play_list_video = selectedList()
+  const now_path = location.pathname.split("/").slice(-1)[0]
+
+  let xhr,send_json,_id
 
   add_play_list.forEach(function(target){
     if(target.checked){
-      var xhr = new XMLHttpRequest()
-      var send_json = {
+      xhr = new XMLHttpRequest()
+      send_json = {
         "title": target.value,
         "explanation": target.title,
         "playlist" : target.playlist
       }
 
-      var _id = target.id.split("-")
       if( _id[1] == "new" ){
-        xhr.open('post', "./createplaylist?ltik=" + params.get("ltik"), true)
+        if(now_path == "allvideolist"){
+          xhr.open('POST', "./createplaylist?service=" + params.get("service") + "&class=" + params.get("class") + "&ltik=" + params.get("ltik"), true)
+        }
+        else{
+          xhr.open('POST', "./createplaylist?ltik=" + params.get("ltik"), true)
+        }
         send_json["playlist"] = add_play_list_video
       }
       else{
-        xhr.open('post', "./updateplaylist?ltik=" + params.get("ltik"), true)
+        if(now_path == "allvideolist"){
+          xhr.open('POST', "./updateplaylist?service=" + params.get("service") + "&class=" + params.get("class") + "&ltik=" + params.get("ltik"), true)
+        }
+        else{
+          xhr.open('POST', "./updateplaylist?ltik=" + params.get("ltik"), true)
+        }
         send_json["playlist"] = [...new Set(send_json["playlist"].concat(add_play_list_video))]
         send_json["vid"] = _id[1]
       }
 
       xhr.onload = async function () {
         if(xhr.status == 200){
-          var update_list = JSON.parse(xhr.response)
+          const update_list = JSON.parse(xhr.response)
 
           if(video_dict[update_list.vid]){
-            var temp_meta = JSON.parse(video_dict[update_list.vid].meta_data)
+            let temp_meta = JSON.parse(video_dict[update_list.vid].meta_data)
             temp_meta.playlist = update_list.playlist
             video_dict[update_list.vid].meta_data = JSON.stringify(temp_meta)
             video_dict[update_list.vid].updated_at = new Date()
@@ -391,12 +417,8 @@ function videoDelete(e){
 
 
   document.getElementById("delete-overlay").classList.add("delete-overlay-on")
-  if(selected_category == "playlist"){
-    document.getElementById("delete-thumbnail").src = document.getElementById("video-" + vid).getElementsByTagName("img")[0].src
-  }
-  else{
-    document.getElementById("delete-thumbnail").src = './video/' + vid + '/' + 'thumbnail_360.jpg?ltik=' + params.get("ltik")
-  }
+  document.getElementById("delete-thumbnail").src = document.getElementById("video-" + vid).getElementsByTagName("img")[0].src
+  
   document.getElementById("delete-thumbnail").onerror = function(){
     this.src='./images/no_thumbnail.jpg'
   }
@@ -423,10 +445,17 @@ function deleteCancel(){
 }
 
 function deleteRun(){
+  const now_path = location.pathname.split("/").slice(-1)[0]
+  let send_json,xhr
   selectVid.forEach(function(delete_vid){
-    var send_json = {"vid":delete_vid}
-    var xhr = new XMLHttpRequest()
-    xhr.open('post', "./videodelete?ltik=" + params.get("ltik"), true)
+    send_json = {"vid":delete_vid}
+    xhr = new XMLHttpRequest()
+    if(now_path == "allvideolist"){
+      xhr.open('POST', "./videodelete?service=" + params.get("service") + "&class=" + params.get("class") + "&ltik=" + params.get("ltik"), true)
+    }
+    else{
+      xhr.open('POST', "./videodelete?ltik=" + params.get("ltik"), true)
+    }
     xhr.setRequestHeader('Content-Type', 'application/json')
     xhr.send(JSON.stringify(send_json))
 
@@ -458,26 +487,76 @@ function deleteList(list){
 }
 
 function videoEdit(e){
-  var e = e || window.event
-  var elem = e.target || e.srcElement
-  var vid = elem.id.split('-')[1]
+  e = e || window.event
+  const elem = e.target || e.srcElement
+  const vid = elem.id.split('-')[1]
+  const now_path = location.pathname.split("/").slice(-1)[0]
 
-  window.location.href = "./edit?vid=" + vid + "&ltik=" + params.get("ltik")
+  if(now_path == "allvideolist"){
+    window.location.href = "./edit?vid=" + vid + "&ltik=" + params.get("ltik") + "&service=" + params.get("service") + "&class=" + params.get("class")
+  }
+  else{
+    window.location.href = "./edit?vid=" + vid + "&ltik=" + params.get("ltik")
+  }
 }
 
+function ssoLinkOverlay(e){
+  e = e || window.event
+  const elem = e.target || e.srcElement
+  const vid = elem.id.split('-')[1]
 
-function getVideoList(){
-    var request = new XMLHttpRequest()
-    request.open('POST', "./videolist?ltik=" + params.get("ltik"), true)
+  document.getElementById("sso-overlay").classList.add("delete-overlay-on")
+  document.getElementById("sso-url").value = SSO.url + "/ssowatch?service=" + params.get("service") + "&class=" + params.get("class") + "&video=" + vid
   
+  document.getElementById("sso-cancel-btn").onclick = ssoLinkClose
+  document.getElementById("sso-copy-btn").onclick = ssoLinkCopy
+}
+
+function ssoLinkCopy(){
+  navigator.clipboard.writeText(document.getElementById("sso-url").value)
+}
+
+function ssoLinkClose(){
+  document.getElementById("sso-overlay").classList.remove("delete-overlay-on")
+}
+
+function getSsoUrl(){
+  const request = new XMLHttpRequest()
+  const now_path = location.pathname.split("/").slice(-1)[0]
+  if(now_path == "allvideolist"){
+    request.open('GET', "./ssourl?ltik=" + params.get("ltik"), true)
+
     request.onload = async function () {
-      video_dict = JSON.parse(request.response)
-      
-      videofilter.updateOrigin = await toVideoList()
-      video_list_draw(videofilter.VideoList())
-      document.getElementById("filter-word").addEventListener('input', redraw_video_list)
+      if(request.status == 200){
+        SSO = JSON.parse(request.response)
+        getVideoList()
+      }
     }
     request.send()
+  }
+  else{
+    getVideoList()
+  }
+}
+
+function getVideoList(){
+  const request = new XMLHttpRequest()
+  const now_path = location.pathname.split("/").slice(-1)[0]
+  if(now_path == "allvideolist"){
+    request.open('GET', "./getvideolist?service=" + params.get("service") + "&class=" + params.get("class") + "&ltik=" + params.get("ltik"), true)
+  }
+  else{
+    request.open('GET', "./getvideolist?ltik=" + params.get("ltik"), true)
+  }
+  
+  request.onload = async function () {
+    video_dict = JSON.parse(request.response)
+    
+    videofilter.updateOrigin = await toVideoList()
+    video_list_draw(videofilter.VideoList())
+    document.getElementById("filter-word").addEventListener('input', redraw_video_list)
+  }
+  request.send()
 }
 
 function toVideoList(){
@@ -520,8 +599,33 @@ function toVideoList(){
 
 
 function classNameInit(InitData){
-  document.getElementById("class-name").innerHTML = InitData.context.title + "のコンテンツ"
-  document.getElementById("class-name").title = InitData.context.title + "のコンテンツ"
+  const now_path = location.pathname.split("/").slice(-1)[0]
+  const classNameElement = document.getElementById("class-name")
+  if(now_path == "allvideolist"){
+    const service_a = document.createElement('a')
+    service_a.innerHTML = "サービス名"
+    service_a.href = './allvideolist?ltik=' + params.get("ltik")
+
+    const class_a = document.createElement('a')
+    class_a.innerHTML = params.get("service")
+    class_a.href = './allvideolist?service=' + params.get("service") + '&ltik=' + params.get("ltik")
+
+    const split_p1 = document.createElement('p')
+    split_p1.innerHTML = " > "
+    const split_p2 = document.createElement('p')
+    split_p2.innerHTML = " > " + params.get("class")
+
+    classNameElement.appendChild(service_a)
+    classNameElement.appendChild(split_p1)
+    classNameElement.appendChild(class_a)
+    classNameElement.appendChild(split_p2)
+
+    classNameElement.title = "サービス名 > " + params.get("service") + " > " +  params.get("class")
+  }
+  else{
+    classNameElement.innerHTML = InitData.context.title + "のコンテンツ"
+    classNameElement.title = InitData.context.title + "のコンテンツ"
+  }
 }
 
 function headSort(e){
@@ -603,7 +707,6 @@ function categoryChange(){
 }
 
 function categoryInit(){
-
   window.addEventListener("hashchange", function(){
     categoryChange()
     video_list_draw(videofilter.VideoList())
@@ -642,11 +745,11 @@ function selectedList(){
 }
 
 window.addEventListener("load", function() {
-    categoryInit()
-    checkboxInit()
-    getLtiInfoResponse(classNameInit)
-    getVideoList()
-    uploadInit()
-    headSortInit()
+  getSsoUrl()
+  categoryInit()
+  checkboxInit()
+  getLtiInfoResponse(classNameInit)
+  uploadInit()
+  headSortInit()
 })
 

@@ -2,14 +2,22 @@
 <script type="text/javascript" src="./javascripts/side-menu.js"></script>
 <div class="side-contents">
     <div class="side-menu-start">
+        <% if(role == 'admin'){ %>
+        <div id="sub-admin-btn" class="side-menu">
+            <div class="side-menu-image side-menu-image-admin"></div>
+            <div class="side-menu-title">管理画面</div>
+        </div>
+        <% } %>
         <div id="sub-contents-btn" class="side-menu">
             <div class="side-menu-image side-menu-image-all"></div>
             <div class="side-menu-title">コンテンツ一覧</div>
         </div>
+        <% if(view_type != 'service_class'){ %>
         <div id="sub-upload-btn" class="side-menu">
             <div class="side-menu-image side-menu-image-upload"></div>
             <div class="side-menu-title">アップロード</div>
         </div>
+        <% } %>
         <div class="side-menu">
             <div class="side-menu-image side-menu-image-manual"></div>
             <div class="side-menu-title">利用マニュアル</div>

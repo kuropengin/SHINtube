@@ -14,45 +14,49 @@ function postLog(verb, obj=false, obj_ex=false){
 
 function observarWindowInit(){
     //ブラウザ関連
-    postLog("access")
+    const now_path = location.pathname.split("/").slice(-1)[0]
+    if(now_path == "watch"){
+        postLog("access")
 
-    lastcheck = document.hasFocus();
-    setInterval( function () {
-        let check = document.hasFocus() ;
-        if ( lastcheck !== check ) {
-            lastcheck = check;
-            if(check){
-                postLog("active")
+        lastcheck = document.hasFocus();
+        setInterval( function () {
+            let check = document.hasFocus() ;
+            if ( lastcheck !== check ) {
+                lastcheck = check;
+                if(check){
+                    postLog("active")
+                }
+                else{
+                    postLog("inactive")
+                }
             }
-            else{
-                postLog("inactive")
-            }
-        }
-    }, 300 );
+        }, 300 );
 
-    window.addEventListener('beforeunload', (event) => {
-        postLog("terminate")
-    })
+        window.addEventListener('beforeunload', (event) => {
+            postLog("terminate")
+        })
+    }
 }
 
 function observarVideoInit(){
+    const now_path = location.pathname.split("/").slice(-1)[0]
+    if(now_path == "watch"){
+        player.on('pause', (event) => {
+            postLog("paused", false, {"position":player.currentTime()})
+        })
 
-    player.on('pause', (event) => {
-        postLog("paused", false, {"position":player.currentTime()})
-    })
+        player.on('ended', (event) => {
+            postLog("complete")
+        })
 
-    player.on('ended', (event) => {
-        postLog("complete")
-    })
+        player.on('play', (event) => {
+            postLog("play", false, {"position":player.currentTime()})
+        })
 
-    player.on('play', (event) => {
-        postLog("play", false, {"position":player.currentTime()})
-    })
-
-    player.on('seeked', (event) => {
-        postLog("skipped", false, {"position":player.currentTime()})
-    })    
-  
+        player.on('seeked', (event) => {
+            postLog("skipped", false, {"position":player.currentTime()})
+        })
+    }   
 }
 
 window.addEventListener("load", function() {

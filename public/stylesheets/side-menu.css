@@ -71,6 +71,10 @@
     filter: var(--default_icon_filter);
 }
 
+.side-menu-image-admin{
+    background-image: url(../images/sub-admin.png);
+}
+
 .side-menu-image-all{
     background-image: url(../images/sub-all.png);
 }

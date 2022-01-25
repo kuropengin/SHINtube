@@ -1,0 +1,22 @@
+<link rel='stylesheet' href='./stylesheets/adminlist.css'/>
+<script type="text/javascript" src="./javascripts/adminlist.js"></script>
+<div class="main-contents">
+    <%- include('./alert') %>
+    <div class="contents_header">
+        <div id="contents-name" class="contents-h1">サービス一覧</div>
+        <div class="upload-area">
+            <div id="upload-btn"><img src="./images/sub-upload.png">新規作成</div>
+        </div>
+    </div>
+    <%- include('./filter') %>
+    <div id="contents-list-area">
+        <div id="contents-list"></div>
+    </div>
+    <template id="template-contents">
+        <div class="content_div" ontouchstart="">
+            <div class="content_img"></div>
+            <div class="content_title"></div>
+            <a class="content_a"></a>
+        </div>
+    </template>
+</div>

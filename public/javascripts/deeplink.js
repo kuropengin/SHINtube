@@ -1,6 +1,6 @@
 function getVideoList(){
     var request = new XMLHttpRequest()
-    request.open('POST', "./videolist?ltik=" + params.get("ltik"), true)
+    request.open('GET', "./getvideolist?ltik=" + params.get("ltik"), true)
 
     request.onload = function () {
         document.getElementById("deeplinkPOST").action += "?ltik=" + params.get('ltik')
