@@ -61,7 +61,7 @@ function ThemeModeChange(mode) {
         root.style.setProperty('--overlay_back_color',"rgba(68, 68, 68, 0.2)")
         root.style.setProperty('--overlay_content_back_color',"#FFF")
         root.style.setProperty('--overlay_content_info_back_color',"#ececec")
-        root.style.setProperty('--overlay_content_btn__color',"#0000ff")
+        root.style.setProperty('--overlay_content_btn_color',"#0000ff")
     }
     else{
         document.body.classList.add("dark-theme-body")
@@ -81,7 +81,7 @@ function ThemeModeChange(mode) {
         root.style.setProperty('--overlay_back_color',"rgba(0, 0, 0, 0.5)")
         root.style.setProperty('--overlay_content_back_color',"#202020")
         root.style.setProperty('--overlay_content_info_back_color',"#353535")
-        root.style.setProperty('--overlay_content_btn__color',"#87b7ff")
+        root.style.setProperty('--overlay_content_btn_color',"#87b7ff")
     }
 }
 

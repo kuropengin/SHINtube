@@ -781,13 +781,18 @@ input[type="textarea"]:focus{
 .delete-btn, .playlist-btn, .sso-btn{
     padding: 5px 20px;
     border-radius: 8px;
-    color: var(--overlay_content_btn__color);
+    color: var(--overlay_content_btn_color);
     cursor: pointer;
     user-select: none;
 }
 
 .delete-btn:hover, .playlist-btn:hover, .sso-btn:hover{
     background: rgba(0, 114, 255, 0.1);
+}
+
+.delete-btn-lock{
+    color: #5a5a5a;
+    cursor: not-allowed;
 }
 
 #delete-title, #sso-url{
@@ -808,8 +813,35 @@ input[type="textarea"]:focus{
     outline: none;
 }
 
-
 .playlist-new-off{
+    display: none;
+}
+
+#delete-another-contributor{
+    width: calc(100% - 40px);
+    margin: 0 20px;
+    display: flex;
+    align-items: center;
+}
+
+#delete-another-contributor .checkbox-label{
+    width: 22px;
+    height: 22px;
+}
+
+#delete-another-contributor p{
+    font-size: 14px;
+    color: #fa1d1d;
+    margin: 0;
+}
+
+#another-contributor-name{
+    padding: 0 20px;
+    font-size: 14px;
+    margin: 0;
+}
+
+.another-contributor-check-off{
     display: none;
 }
 

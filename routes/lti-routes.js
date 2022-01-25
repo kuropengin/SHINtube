@@ -52,6 +52,7 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/info'), async (req, res) => {
   const info = { }
   if (token.userInfo) {
     if (token.userInfo.name) info.name = token.userInfo.name
+    if (token.user) info.uid = token.user
     if (token.userInfo.email) info.email = token.userInfo.email
   }
 

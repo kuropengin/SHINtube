@@ -1,6 +1,7 @@
 let video_dict = {}
 let selectVid = []
 let SSO = false
+let userId
 
 function resolutionSort(a, b) {
   return parseInt(a) - parseInt(b)
@@ -180,7 +181,8 @@ function video_list_draw(video_view_list){
     const contributor_div = clone.querySelector('.head-contributor-p')
     try{
       contributor_div.innerHTML = video_view_list[element].contributor_name
-      contributor_div.setAttribute("id","contributor-" + video_view_list[element].contributor_id)
+      contributor_div.setAttribute("id", "contributor-" + video_view_list[element].vid)
+      contributor_div.setAttribute("title", video_view_list[element].contributor_id)
     }catch(e){}
 
     if(now_path == "allvideolist"){
@@ -415,6 +417,15 @@ function videoDelete(e){
     var vid = selectVid[0]
   }
 
+  let contributor_check = false
+  let another_contributor_list = []
+  for(const cvid of selectVid){
+    if(document.getElementById("contributor-" + cvid).title != userId){
+      contributor_check = true
+      another_contributor_list.push(document.getElementById("contributor-" + cvid).innerHTML)
+    }
+  }
+
 
   document.getElementById("delete-overlay").classList.add("delete-overlay-on")
   document.getElementById("delete-thumbnail").src = document.getElementById("video-" + vid).getElementsByTagName("img")[0].src
@@ -435,9 +446,34 @@ function videoDelete(e){
     }
   }
 
+  if(contributor_check){
+    document.getElementById("delete-another-contributor-area").classList.remove("another-contributor-check-off")
+    document.getElementById("another-contributor-check").checked = false
+    document.getElementById("delete-run-btn").classList.add("delete-btn-lock")
+    document.getElementById("delete-run-btn").onclick = ""
+    document.getElementById("another-contributor-name").innerHTML = "投稿者：" + [...new Set(another_contributor_list)].join(" ")
+  }
+  else{
+    document.getElementById("delete-another-contributor-area").classList.add("another-contributor-check-off")
+    document.getElementById("another-contributor-check").checked = true
+    document.getElementById("delete-run-btn").classList.remove("delete-btn-lock")
+    document.getElementById("delete-run-btn").onclick = deleteRun
+  }
+
   document.getElementById("delete-cancel-btn").onclick = deleteCancel
-  document.getElementById("delete-run-btn").onclick = deleteRun
 }
+
+function contributorCheck(){
+  if(document.getElementById("another-contributor-check").checked){
+    document.getElementById("delete-run-btn").classList.remove("delete-btn-lock")
+    document.getElementById("delete-run-btn").onclick = deleteRun
+  }
+  else{
+    document.getElementById("delete-run-btn").classList.add("delete-btn-lock")
+    document.getElementById("delete-run-btn").onclick = ""
+  }
+}
+
 
 function deleteCancel(){
   document.getElementById("delete-overlay").classList.remove("delete-overlay-on")
@@ -599,6 +635,7 @@ function toVideoList(){
 
 
 function classNameInit(InitData){
+  userId = InitData.uid
   const now_path = location.pathname.split("/").slice(-1)[0]
   const classNameElement = document.getElementById("class-name")
   if(now_path == "allvideolist"){
@@ -723,6 +760,8 @@ function checkboxInit(){
     })
     selectedList()
   }, false)
+
+  document.getElementById("another-contributor-check").addEventListener("change",contributorCheck,false)
 }
 
 function selectedList(){
