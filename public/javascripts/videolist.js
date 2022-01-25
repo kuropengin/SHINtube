@@ -482,8 +482,10 @@ function deleteCancel(){
 
 function deleteRun(){
   const now_path = location.pathname.split("/").slice(-1)[0]
-  let send_json,xhr
-  selectVid.forEach(function(delete_vid){
+  let send_json
+  let xhr
+  const deleteVidList = selectVid
+  deleteVidList.forEach(function(delete_vid){
     send_json = {"vid":delete_vid}
     xhr = new XMLHttpRequest()
     if(now_path == "allvideolist"){
@@ -505,7 +507,7 @@ function deleteRun(){
       }
     }
   })
-  document.getElementById("delete-overlay").classList.toggle("delete-overlay-on")
+  deleteCancel()
 }
 
 function deleteList(list){
