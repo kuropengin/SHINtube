@@ -192,8 +192,8 @@ document.getElementById("re-select-btn").addEventListener("click", re_select_fil
 
 
 function title_limit_change(){
-    if(document.getElementById("upload-title").value.length > 40){
-        document.getElementById("upload-title").value = document.getElementById("upload-title").value.slice(0,40)
+    if(document.getElementById("upload-title").value.length > 50){
+        document.getElementById("upload-title").value = document.getElementById("upload-title").value.slice(0,50)
     }
     document.getElementById("title-input-limit").innerHTML = document.getElementById("upload-title").value.length
 }

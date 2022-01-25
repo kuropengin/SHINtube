@@ -159,10 +159,12 @@ input[type="textarea"]:focus{
 }
 
 #input_file_name{
-    width: 100%;
+    margin: 0 20px;
+    width: calc(100% - 40px);
     text-align: center;
     font-size: 24px;
     font-weight: bold;
+    word-wrap: break-word;
 }
 
 .select-file-title{
