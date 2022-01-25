@@ -152,7 +152,7 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/getvideolist'),roleguard, async (r
     } 
 
     const options = {
-        url: CONFIG.BACK_DOMAIN + '/linklist?year=' + service + '&cid=' + cid,
+        url: CONFIG.BACK_DOMAIN + '/api/video/linklist?year=' + service + '&cid=' + cid,
         method: 'GET'
     }
     
@@ -272,8 +272,8 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/videodelete'),roleguard, async (r
     } 
     
     const options = {
-        url: CONFIG.BACK_DOMAIN + '/delete?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(vid),
-        method: 'POST'
+        url: CONFIG.BACK_DOMAIN + '/api/video/delete?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(vid),
+        method: 'DELETE'
     }
     
     request(options, function (error, response, body) {
@@ -354,7 +354,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/upload'),roleguard, async (req, r
 
     if(req.files){
         const options = {
-            url: CONFIG.BACK_DOMAIN + '/upload?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
+            url: CONFIG.BACK_DOMAIN + '/api/video/upload?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -421,7 +421,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/edit'),roleguard, async (req, res
             "duration" : req.body.duration
         }
         options = {
-            url: CONFIG.BACK_DOMAIN + '/updatevideo?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
+            url: CONFIG.BACK_DOMAIN + '/api/video/updatevideo?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -435,7 +435,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/edit'),roleguard, async (req, res
         let req_meta_data = await getMeta(year,cid,req.body.vid)
         req_meta_data["duration"] = req.body.duration
         options = {
-            url: CONFIG.BACK_DOMAIN + '/updateinfo?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(req_meta_data)),
+            url: CONFIG.BACK_DOMAIN + '/api/video/updateinfo?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(req_meta_data)),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -444,7 +444,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/edit'),roleguard, async (req, res
     }
     else{
         options = {
-            url: CONFIG.BACK_DOMAIN + '/updateinfo?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation),
+            url: CONFIG.BACK_DOMAIN + '/api/video/updateinfo?year=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
