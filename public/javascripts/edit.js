@@ -24,6 +24,7 @@ async function show_input_video_preview(input_video_file) {
 
 async function load_video({ target: { files } }) {
     input_video_file = files[0]
+    upload_alert()
     await show_input_video_preview(input_video_file)
     if(input_video_file){
       select_file_info_show(input_video_file.name)
@@ -32,10 +33,34 @@ async function load_video({ target: { files } }) {
 
 async function drop_load_video({ dataTransfer: { files } }) {
     input_video_file = files[0]
+    upload_alert()
     await show_input_video_preview(input_video_file)
     if(input_video_file){
       select_file_info_show(input_video_file.name)
     }
+}
+
+function getUploadAlert() {
+  let request = new XMLHttpRequest()
+  request.open('GET', "./UploadAlert", true)
+
+  request.onload = function () {
+      document.getElementById('alert-close-btn').addEventListener("click", upload_alert, false)
+      if(request.status == 200){
+          document.getElementById("upload-alert-md").innerHTML = marked.parse(request.response,{breaks: true})
+      }
+      else{
+          document.getElementById("upload-alert-md").innerHTML = "取得できませんでした"
+      }
+  }
+  request.send()
+}
+
+function upload_alert(){
+  document.getElementById('upload-alert-overlay').classList.toggle('on-overlay')
+  if(document.getElementById("upload-alert-md").innerHTML == ""){
+      getUploadAlert()
+  }
 }
 
 const fileArea = document.getElementById('drag-area')

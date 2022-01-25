@@ -74,6 +74,10 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/TOS'), async (req, res) => {
     res.sendFile(path.resolve('docs/TOS.md'));
 })
 
+router.get(path.join('/', CONFIG.ROOT_PATH, '/UploadAlert'), async (req, res) => {
+    res.sendFile(path.resolve('docs/UploadAlert.md'));
+})
+
 router.get(path.join('/', CONFIG.ROOT_PATH, '/ssourl'),adminguard, async (req, res) => {
     res.send({"link":CONFIG.SSO_LINK,"url":CONFIG.SSO_URL})
 })

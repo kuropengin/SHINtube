@@ -118,7 +118,8 @@ lti.whitelist(lti.appRoute(),
   {route: new RegExp(/^\/ssovideo/), method: 'get'},
   {route: path.join('/', CONFIG.ROOT_PATH, '/error'), method: 'get'},
   {route: path.join('/', CONFIG.ROOT_PATH, '/about'), method: 'get'},
-  {route: path.join('/', CONFIG.ROOT_PATH, '/TOS'), method: 'get' }
+  {route: path.join('/', CONFIG.ROOT_PATH, '/TOS'), method: 'get' },
+  {route: path.join('/', CONFIG.ROOT_PATH, '/UploadAlert'), method: 'get' }
 )
 
 
