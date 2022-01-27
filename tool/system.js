@@ -21,7 +21,7 @@ async function backapiCheck(BACK_URL){
 
     return new Promise((resolve, reject) => {
         request(options, function (error, response, body) {
-            if(response.statusCode == 200){
+            if(response !== undefined && response.statusCode == 200){
                 resolve({"status":true,"msg":"Successfully communicated with the backend."})
             }
             else{
@@ -39,7 +39,7 @@ async function backfileCheck(BACK_URL){
 
     return new Promise((resolve, reject) => {
         request(options, function (error, response, body) {
-            if(response.statusCode == 200){
+            if(response !== undefined && response.statusCode == 200){
                 resolve({"status":true,"msg":"Successfully communicated with the backend."})
             }
             else{

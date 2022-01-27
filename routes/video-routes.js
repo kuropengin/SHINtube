@@ -50,7 +50,7 @@ function getMeta(year,cid,vid){
         }
         request(options, function (_error, _response, _body) {
             var temp_meta_data = {}
-            if(_response.statusCode == 200){
+            if(_response !== undefined && _response.statusCode == 200){
                 try{
                     temp_meta_data = JSON.parse(JSON.parse(_body).meta_data)
                 }
@@ -97,11 +97,16 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/servicelist'),adminguard, async (r
         method: 'GET'
     }
     request(options, function (error, response, body) {
-        if(response.statusCode == 200){
+        if(response !== undefined && response.statusCode == 200){
             res.send(body)
         }
         else{
-            res.status(response.statusCode).send(body)
+            try{
+                res.status(response.statusCode).send(body)
+            }
+            catch(e){
+                res.status(500).send("Failed to communicate with the backend.")
+            }
         }
     })
 })
@@ -112,11 +117,16 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/classlist'),adminguard, async (req
         method: 'GET'
     }
     request(options, function (error, response, body) {
-        if(response.statusCode == 200){
+        if(response !== undefined && response.statusCode == 200){
             res.send(body)
         }
         else{
-            res.status(response.statusCode).send(body)
+            try{
+                res.status(response.statusCode).send(body)
+            }
+            catch(e){
+                res.status(500).send("Failed to communicate with the backend.")
+            }
         }
     })
 })
@@ -192,11 +202,16 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/createplaylist'),roleguard, async
     }
     
     request(options, function (error, response, body) {
-        if(response.statusCode == 200){
+        if(response !== undefined && response.statusCode == 200){
             res.send(body)
         }
         else{
-            res.status(response.statusCode).send(body)
+            try{
+                res.status(response.statusCode).send(body)
+            }
+            catch(e){
+                res.status(500).send("Failed to communicate with the backend.")
+            }
         }
     })
 })
@@ -225,7 +240,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/updateplaylist'),roleguard, async
         method: 'GET'
     }
     request(options, function (error, response, body) {
-        if(response.statusCode == 200){
+        if(response !== undefined && response.statusCode == 200){
             
             let temp_meta_data = JSON.parse(JSON.parse(body).meta_data)
             temp_meta_data["content_type"] = "playlist"
@@ -246,7 +261,12 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/updateplaylist'),roleguard, async
             })   
         }
         else{
-            res.status(response.statusCode).send(body)
+            try{
+                res.status(response.statusCode).send(body)
+            }
+            catch(e){
+                res.status(500).send("Failed to communicate with the backend.")
+            }
         }
     })
 })
@@ -277,7 +297,17 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/videodelete'),roleguard, async (r
     }
     
     request(options, function (error, response, body) {
-        res.send(body)
+        if(response !== undefined && response.statusCode == 200){
+            res.send(body)
+        }
+        else{
+            try{
+                res.status(response.statusCode).send(body)
+            }
+            catch(e){
+                res.status(500).send("Failed to communicate with the backend.")
+            }
+        }
     })
 })
 
@@ -367,12 +397,17 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/upload'),roleguard, async (req, r
         request(options, function (error, response, body) {
             fs.unlink(req.files.in_file.tempFilePath, (err) => {
                 if (err) throw err;
-            });
-            if(response.statusCode == 200){
+            })
+            if(response !== undefined && response.statusCode == 200){
                 res.send(body)
             }
             else{
-                res.status(response.statusCode).send(body)
+                try{
+                    res.status(response.statusCode).send(body)
+                }
+                catch(e){
+                    res.status(500).send("Failed to communicate with the backend.")
+                }
             }
         })
     }
@@ -456,13 +491,18 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/edit'),roleguard, async (req, res
         if(req.files){
             fs.unlink(req.files.in_file.tempFilePath, (err) => {
                 if (err) throw err;
-            });
+            })
         }
-        if(response.statusCode == 200){
+        if(response !== undefined && response.statusCode == 200){
             res.send(body)
         }
         else{
-            res.status(response.statusCode).send(body)
+            try{
+                res.status(response.statusCode).send(body)
+            }
+            catch(e){
+                res.status(500).send("Failed to communicate with the backend.")
+            }
         }
     })
     
