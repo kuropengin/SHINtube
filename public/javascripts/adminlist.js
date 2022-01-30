@@ -169,6 +169,10 @@ function inputLimitCheck(target, result, maxlimit){
     document.getElementById(result).textContent = document.getElementById(target).value.length
 }
 
+function inputFocus(target){
+    document.getElementById(target).focus()
+}
+
 window.addEventListener("load", function() {
     contentsfilter = new VideoFilter({
         order : [{key: "title", reverse: false}],
