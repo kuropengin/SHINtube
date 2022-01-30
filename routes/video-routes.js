@@ -78,6 +78,26 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/UploadAlert'), async (req, res) =>
     res.sendFile(path.resolve('docs/UploadAlert.md'));
 })
 
+router.post(path.join('/', CONFIG.ROOT_PATH, '/newserviceclass'),adminguard, async (req, res) => {
+    const options = {
+        url: CONFIG.BACK_DOMAIN + '/api/video/directory?service_name=' + encodeURI(req.query["service"]) + (("class" in req.query)? '&cid=' + encodeURI(req.query["class"]) : ""),
+        method: 'POST'
+    }
+    request(options, function (error, response, body) {
+        if(response !== undefined && response.statusCode == 200){
+            res.send(body)
+        }
+        else{
+            try{
+                res.status(response.statusCode).send(body)
+            }
+            catch(e){
+                res.status(500).send("Failed to communicate with the backend.")
+            }
+        }
+    })
+})
+
 router.get(path.join('/', CONFIG.ROOT_PATH, '/ssourl'),adminguard, async (req, res) => {
     res.send({"link":CONFIG.SSO_LINK,"url":CONFIG.SSO_URL})
 })

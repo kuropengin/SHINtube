@@ -12,6 +12,40 @@
     <div id="contents-list-area">
         <div id="contents-list"></div>
     </div>
+    <div id="new-service-class-overlay" class="overlay">
+        <div class="overlay-area">
+            <p class="overlay-title">新規作成</p>
+            <div class="overlay-info">
+                <div class="overlay-step">
+                    <div class="overlay-step-contents">
+                        <div class="overlay-input-title">サービス名
+                            <div id="new-service-err" class="overlay-step-err-msg"></div>
+                        </div>
+                         <textarea id="new-service-input" class="overlay-input-text" rows="1" name="title" maxlength="40" required=""></textarea>
+                        <div class="input-limit-show">
+                            <div id="new-service-input-limit-now" class="input-limit-value"></div> / <div id="new-service-input-limit-max" class="input-limit-value"></div>
+                        </div> 
+                    </div>
+                </div>
+                <div class="overlay-step">
+                    <div class="overlay-step-contents">
+                        <div class="overlay-input-title">授業コード
+                            <div id="new-class-err" class="overlay-step-err-msg"></div>
+                        </div>
+                         <textarea id="new-class-input" class="overlay-input-text" rows="1" name="title" maxlength="40" required=""></textarea>
+                        <div class="input-limit-show">
+                            <div id="new-class-input-limit-now" class="input-limit-value"></div> / <div id="new-class-input-limit-max" class="input-limit-value"></div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+            <div id="new-service-class-err" class="overlay-err-msg"></div>
+            <div class="overlay-btn-area">
+                <div id="new-service-class-cancel-btn" class="overlay-btn">閉じる</div>
+                <div id="new-service-class-add-btn" class="overlay-btn">作成</div>
+            </div>
+        </div>
+    </div>
     <template id="template-contents">
         <div class="content_div" ontouchstart="">
             <div class="content_img"></div>
