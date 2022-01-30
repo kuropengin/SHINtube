@@ -643,7 +643,7 @@ function classNameInit(InitData){
   const classNameElement = document.getElementById("class-name")
   if(now_path == "allvideolist"){
     const service_a = document.createElement('a')
-    service_a.innerHTML = "サービス名"
+    service_a.innerHTML = "サービス一覧"
     service_a.href = './allvideolist?ltik=' + params.get("ltik")
 
     const class_a = document.createElement('a')
@@ -660,7 +660,7 @@ function classNameInit(InitData){
     classNameElement.appendChild(class_a)
     classNameElement.appendChild(split_p2)
 
-    classNameElement.title = "サービス名 > " + params.get("service") + " > " +  params.get("class")
+    classNameElement.title = "サービス一覧 > " + params.get("service") + " > " +  params.get("class")
   }
   else{
     classNameElement.innerHTML = InitData.context.title + "のコンテンツ"

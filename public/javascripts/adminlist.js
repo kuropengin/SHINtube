@@ -64,7 +64,7 @@ function contentsTitleInit(){
         const contentsNameElement = document.getElementById("contents-name")
         contentsNameElement.innerHTML = ""
         const service_a = document.createElement('a')
-        service_a.innerHTML = "サービス名"
+        service_a.innerHTML = "サービス一覧"
         service_a.href = './allvideolist?ltik=' + params.get("ltik")
     
         const split_p1 = document.createElement('p')
@@ -73,7 +73,7 @@ function contentsTitleInit(){
         contentsNameElement.appendChild(service_a)
         contentsNameElement.appendChild(split_p1)
 
-        contentsNameElement.title = "サービス名 > " + params.get("service")
+        contentsNameElement.title = "サービス一覧 > " + params.get("service")
     }
 }
 
