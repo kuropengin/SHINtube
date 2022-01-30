@@ -269,6 +269,7 @@ function addPlayList(){
         "playlist" : target.playlist
       }
 
+      const _id = target.id.split("-")
       if( _id[1] == "new" ){
         if(now_path == "allvideolist"){
           xhr.open('POST', "./createplaylist?service=" + params.get("service") + "&class=" + params.get("class") + "&ltik=" + params.get("ltik"), true)
