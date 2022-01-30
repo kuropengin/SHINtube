@@ -134,20 +134,26 @@ function newServiceClassAdd(sid, cid){
     request.open('POST', './newserviceclass?service=' + encodeURI(sid) + ((cid.length)?'&class=' + encodeURI(cid) : '') + "&ltik=" + params.get("ltik"), true)
  
     request.onload = async function () {
-        if(request.status == 200){
-            if(!params.get("service")){
-                if(contents_list.indexOf(sid) == -1){
-                    contents_list.push(sid)
+        if(request.status == 200 ){
+            const resJson = JSON.parse(request.response)
+            if(resJson.Result == "OK"){
+                if(!params.get("service")){
+                    if(contents_list.indexOf(sid) == -1){
+                        contents_list.push(sid)
+                    }
                 }
+                else{
+                    if(contents_list.indexOf(cid) == -1){
+                        contents_list.push(cid)
+                    }
+                }
+                contentsfilter.updateOrigin = await toContentsList()
+                contentsListDraw(contentsfilter.VideoList())
+                newServiceClassCancel()
             }
             else{
-                if(contents_list.indexOf(cid) == -1){
-                    contents_list.push(cid)
-                }
+                document.getElementById("new-service-class-err").textContent = "作成に失敗しました：" +  resJson.Detail
             }
-            contentsfilter.updateOrigin = await toContentsList()
-            contentsListDraw(contentsfilter.VideoList())
-            newServiceClassCancel()
         }
         else{
             document.getElementById("new-service-class-err").textContent = "作成に失敗しました"
