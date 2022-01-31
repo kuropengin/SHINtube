@@ -113,15 +113,27 @@ function newServiceClassCancel(){
 }
 
 function newServiceClassCheck(){
+    document.getElementById("new-service-err").textContent = ""
+    document.getElementById("new-class-err").textContent = ""
     let checkFlag = true
     if(!document.getElementById("new-service-input").value.length){
-        document.getElementById("new-service-err").textContent = "必須"
+        document.getElementById("new-service-err").textContent = "入力されていません"
         checkFlag = false
     }
     if(params.get("service") && !document.getElementById("new-class-input").value.length){
-        document.getElementById("new-class-err").textContent = "必須"
+        document.getElementById("new-class-err").textContent = "入力されていません"
         checkFlag = false
     }
+
+    if(document.getElementById("new-service-input").value.indexOf("/") !== -1){
+        document.getElementById("new-service-err").textContent = '使用できない文字が含まれています："/"'
+        checkFlag = false
+    }
+    if(document.getElementById("new-class-input").value.indexOf("/") !== -1){
+        document.getElementById("new-class-err").textContent = '使用できない文字が含まれています："/"'
+        checkFlag = false
+    }
+
 
     if(checkFlag){
         newServiceClassAdd(document.getElementById("new-service-input").value, document.getElementById("new-class-input").value)
