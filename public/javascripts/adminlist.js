@@ -19,7 +19,7 @@ function contentsListDraw(list){
 
         const title_div = clone.querySelector('.content_title')
         title_div.innerHTML = list[element].title
-
+        
         const a_div = clone.querySelector('.content_a')
         if(!params.get("service")){
             a_div.href = "./allvideolist?service=" + list[element].title + "&ltik=" + params.get("ltik")
