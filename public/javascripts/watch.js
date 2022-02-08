@@ -248,6 +248,9 @@ function videoInfoInit(vid,listinit=false){
         else{
             document.getElementById("video-title").innerHTML = "この動画は再生できません"
             memoInit(vid)
+            if(listinit){
+                playlistInit(listinit.infodata,listinit.vid)
+            }
         }
     }
     request.send()
