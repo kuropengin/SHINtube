@@ -53,6 +53,22 @@ lti.app.use(fileUpload({
 
 lti.onConnect((token, req, res) => {
   try{
+    if(!res.locals.token.iss.split("/")[3]){
+      return res.status(401).render('error', {"error":"010 : プラットフォームID取得エラー"})
+    }
+  }
+  catch(err){
+    return res.status(401).render('error', {"error":"001 : LTI認証エラー"})
+  }
+  try{
+    if(!res.locals.context.lis.course_section_sourcedid){
+      return res.status(401).render('error', {"error":"011 : 授業コード取得エラー"})
+    }
+  }
+  catch(err){
+    return res.status(401).render('error', {"error":"001 : LTI認証エラー"})
+  }
+  try{
     if(res.locals.context.roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator') != -1 ||
       res.locals.context.roles.indexOf('http://purl.imsglobal.org/vocab/lis/v2/system/person#Administrator') != -1){
       return lti.redirect(res, path.join('/', CONFIG.ROOT_PATH, '/allvideolist'), { newResource: true })
