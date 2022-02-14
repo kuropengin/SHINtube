@@ -111,6 +111,9 @@
 .content_title{
     font-size: 16px;
     font-weight: 600;
+    width: calc(100% - 80px);
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
 }
 

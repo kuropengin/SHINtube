@@ -41,6 +41,7 @@ function contentsListDraw(list){
         else{
             a_div.href = "./allvideolist?service=" + params.get("service") + "&class=" + list[element].title + "&ltik=" + params.get("ltik")
         }
+        a_div.title = list[element].title
 
         const menu_id = clone.querySelector('.content_menu')
         menu_id.setAttribute("id","menu-id-" + list[element].title)
