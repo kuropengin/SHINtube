@@ -17,7 +17,11 @@
       <% } else { %>
         <%- include('./common/videolist') %>
       <% } %>
+      <% if (role === 'admin') { %>
+        <%- include('./common/copy-overlay') %>
+      <% } %>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   </body>
 
 </html>

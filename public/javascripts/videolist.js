@@ -94,6 +94,7 @@ function video_list_draw(video_view_list){
       status_div.innerHTML = video_view_list[element].playlist.length
     }
     else{
+      console.log(video_view_list[element].status)
       if(video_view_list[element].encode_error.length){
         status_div.innerHTML = "<span class='head-status-red'>●</span>エンコードエラー"
         status_div.title = "動画を削除して再度エンコードを行うか、管理者までお問い合わせください"
@@ -107,6 +108,10 @@ function video_list_draw(video_view_list){
       else if(video_view_list[element].resolution.length == 0 && video_view_list[element].encode_tasks.length == 0){
         status_div.innerHTML = "<span class='head-status-yellow'>●</span>処理中"
         status_div.title = "エンコード開始までしばらくお待ちください"
+      }
+      else if(video_view_list[element].status == 3){
+        status_div.innerHTML = "<span class='head-status-yellow'>●</span>複製中"
+        status_div.title = "複製完了までしばらくお待ちください"
       }
       else{
         status_div.innerHTML = "<span class='head-status-green'>●</span>エンコード済み"
@@ -148,6 +153,21 @@ function video_list_draw(video_view_list){
       }
     }
 
+    const copy_btn_div = clone.querySelector('.copy-operation-btn')
+    if(now_path == "allvideolist"){
+      if(video_view_list[element].status == 4){
+        copy_btn_div.onclick = function(e){
+          copyOverlay(video_view_list[element].vid)
+        }
+      }
+      else{
+        copy_btn_div.setAttribute("class","hidden-icon")
+      }
+    }
+    else{
+      copy_btn_div.setAttribute("class","hidden-icon")
+    }
+
     const sso_div = clone.querySelector('.sso-operation-btn')
     if(SSO.link){  
       sso_div.setAttribute("id","sso-" + video_view_list[element].vid)
@@ -171,6 +191,9 @@ function video_list_draw(video_view_list){
         delete_div.setAttribute("class","hidden-icon")
       }
       else if(video_view_list[element].resolution.length == 0 && video_view_list[element].encode_tasks.length == 0){
+        delete_div.setAttribute("class","hidden-icon")
+      }
+      else if(video_view_list[element].status == 3){
         delete_div.setAttribute("class","hidden-icon")
       }
       else{
@@ -209,7 +232,7 @@ function uploadInit(){
 }
 
 function videoAddPlayList(){
-  document.getElementById("playlist-overlay").classList.add("delete-overlay-on")
+  document.getElementById("playlist-overlay").classList.add("overlay-on")
   document.getElementById("playlist-add-btn").onclick = addPlayList
   document.getElementById("playlist-new-btn").onclick = newPlayList
   document.getElementById("playlist-cancel-btn").onclick = addPlayListCancel
@@ -384,7 +407,7 @@ function newPlayListCancel(){
 }
 
 function addPlayListCancel(){
-  document.getElementById("playlist-overlay").classList.remove("delete-overlay-on")
+  document.getElementById("playlist-overlay").classList.remove("overlay-on")
   selectVid = []
 }
 
@@ -428,7 +451,7 @@ function videoDelete(e){
   }
 
 
-  document.getElementById("delete-overlay").classList.add("delete-overlay-on")
+  document.getElementById("delete-overlay").classList.add("overlay-on")
   document.getElementById("delete-thumbnail").src = document.getElementById("video-" + vid).getElementsByTagName("img")[0].src
   
   document.getElementById("delete-thumbnail").onerror = function(){
@@ -477,18 +500,17 @@ function contributorCheck(){
 
 
 function deleteCancel(){
-  document.getElementById("delete-overlay").classList.remove("delete-overlay-on")
+  document.getElementById("delete-overlay").classList.remove("overlay-on")
   selectVid = []
 }
 
 function deleteRun(){
   const now_path = location.pathname.split("/").slice(-1)[0]
   let send_json
-  let xhr
   const deleteVidList = selectVid
   deleteVidList.forEach(function(delete_vid){
     send_json = {"vid":delete_vid}
-    xhr = new XMLHttpRequest()
+    const xhr = new XMLHttpRequest()
     if(now_path == "allvideolist"){
       xhr.open('POST', "./videodelete?service=" + params.get("service") + "&class=" + params.get("class") + "&ltik=" + params.get("ltik"), true)
     }
@@ -502,7 +524,6 @@ function deleteRun(){
       if(xhr.status == 200){
         document.getElementById("video-" + delete_vid).remove()
         delete video_dict[delete_vid]
-
         videofilter.updateOrigin = await toVideoList()
         video_list_draw(videofilter.VideoList())
       }
@@ -518,7 +539,7 @@ function deleteList(list){
   })
   var result = []
   list.forEach(function(target){
-    if(check_list[target].status == 3 || check_list[target].status == 0 ){
+    if(check_list[target].status == 4 || check_list[target].status == 0 ){
       result.push(target)
     }
   })
@@ -544,7 +565,7 @@ function ssoLinkOverlay(e){
   const elem = e.target || e.srcElement
   const vid = elem.id.split('-')[1]
 
-  document.getElementById("sso-overlay").classList.add("delete-overlay-on")
+  document.getElementById("sso-overlay").classList.add("overlay-on")
   document.getElementById("sso-url").value = SSO.url + "/ssowatch?service=" + params.get("service") + "&class=" + params.get("class") + "&video=" + vid
   
   document.getElementById("sso-cancel-btn").onclick = ssoLinkClose
@@ -556,7 +577,7 @@ function ssoLinkCopy(){
 }
 
 function ssoLinkClose(){
-  document.getElementById("sso-overlay").classList.remove("delete-overlay-on")
+  document.getElementById("sso-overlay").classList.remove("overlay-on")
 }
 
 function getSsoUrl(){
@@ -599,8 +620,8 @@ function getVideoList(){
 }
 
 function toVideoList(){
-  var video_array = Object.keys(video_dict).map(function(k){
-    var t_video = Object.assign( { "vid": k }, video_dict[k] )
+  const video_array = Object.keys(video_dict).map(function(k){
+    const t_video = Object.assign( { "vid": k }, video_dict[k] )
     if(video_dict[k].encode_error.length){
       t_video.status = 0
     }
@@ -610,8 +631,11 @@ function toVideoList(){
     else if(video_dict[k].resolution.length == 0 && video_dict[k].encode_tasks.length == 0){
       t_video.status = 2
     }
-    else{
+    else if("status" in video_dict[k] && video_dict[k].status.indexOf("copying") != -1){
       t_video.status = 3
+    }
+    else{
+      t_video.status = 4
     }
     try{
       const meta_data_obj = JSON.parse(video_dict[k].meta_data)
@@ -620,7 +644,7 @@ function toVideoList(){
       t_video.content_type = meta_data_obj.content_type || "video"
       if(t_video.content_type == "playlist"){
         t_video.playlist = meta_data_obj.playlist || []
-        t_video.status = 3
+        t_video.status = 4
       }
       t_video.duration = meta_data_obj.duration || 0
     }catch(e){

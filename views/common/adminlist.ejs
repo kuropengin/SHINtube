@@ -1,4 +1,5 @@
 <link rel='stylesheet' href='./stylesheets/adminlist.css'/>
+<link rel='stylesheet' href='./stylesheets/overlay.css'/>
 <script type="text/javascript" src="./javascripts/adminlist.js"></script>
 <div class="main-contents">
     <%- include('./alert') %>
@@ -46,11 +47,51 @@
             </div>
         </div>
     </div>
+    <div id="delete-service-class-overlay" class="overlay">
+        <div class="overlay-area">
+            <p class="overlay-title">警告</p>
+            <div class="overlay-info">
+                <div id="delete-service-class-alert"></div>
+                <div class="overlay-step">
+                    <div class="overlay-step-contents">
+                        <div class="overlay-input-title" onclick="inputFocus('delete-service-class-input')">削除フォルダ名の入力
+                            
+                        </div>
+                        <textarea id="delete-service-class-input" class="overlay-input-text" rows="1" name="title" maxlength="40" required=""></textarea>
+                        <div class="input-limit-show" onclick="inputFocus('delete-service-class-input')"></div> 
+                    </div>
+                </div>
+                <div id="delete-service-class-err" class="overlay-step-err-msg"></div>
+            </div>
+            <div id="delete-service-class-err" class="overlay-err-msg"></div>
+            <div class="overlay-btn-area">
+                <div id="delete-service-class-cancel-btn" class="overlay-btn">閉じる</div>
+                <div id="delete-service-class-run-btn" class="overlay-btn overlay-lock-btn">削除</div>
+            </div>
+        </div>
+    </div>
     <template id="template-contents">
-        <div class="content_div" ontouchstart="">
-            <div class="content_img"></div>
-            <div class="content_title"></div>
-            <a class="content_a"></a>
+        <div class="content_div">
+            <div class="content_sc" ontouchstart="">
+                <div class="content_img"></div>
+                <div class="content_title"></div>
+                <a class="content_a"></a>
+            </div>
+            <div class="content_menu_area">
+                <div class="content_menu_btn">
+                    <div class="content_menu_img"></div>
+                </div>
+                <div class="content_menu">
+                    <div class="content_menu_item content_menu_item_copy">
+                        <div class="content_menu_item_imag item_copy_img"></div>
+                        <div class="content_menu_item_title">複製</div>
+                    </div>
+                    <div class="content_menu_item content_menu_item_delete">
+                        <div class="content_menu_item_imag item_delete_img"></div>
+                        <div class="content_menu_item_title">削除</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </template>
 </div>

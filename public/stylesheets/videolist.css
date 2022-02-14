@@ -570,6 +570,10 @@
     background-image: url(../images/meta-edit.png);
 }
 
+.operation-div .copy-operation-btn{
+    background-image: url(../images/copy.png);
+}
+
 .operation-div .sso-operation-btn{
     background-image: url(../images/sso-link.png);
 }
@@ -591,26 +595,7 @@
     left: 0;
 }
 
-#delete-overlay,#playlist-overlay,#sso-overlay{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    z-index: 10;
-}
-
-.overlay{
-    visibility: hidden;
-    opacity: 0;
-    transition: ease .5s;
-    background: var(--overlay_back_color);
-}
 
 .delete-overlay-on{
     visibility: visible;

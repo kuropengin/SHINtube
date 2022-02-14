@@ -137,6 +137,9 @@ function valueInit(InitData){
   else if(InitData.resolution.length == 0 && InitData.encode_tasks.length == 0){
     encoding_flag = false
   }
+  else if("status" in InitData && InitData.status.indexOf("copying") != -1){
+    encoding_flag = false
+  }
   else{
     encoding_flag = true
   }
