@@ -53,14 +53,6 @@ lti.app.use(fileUpload({
 
 lti.onConnect((token, req, res) => {
   try{
-    if(!res.locals.token.iss.split("/")[3]){
-      return res.status(401).render('error', {"error":"010 : プラットフォームID取得エラー"})
-    }
-  }
-  catch(err){
-    return res.status(401).render('error', {"error":"001 : LTI認証エラー"})
-  }
-  try{
     if(!res.locals.context.lis.course_section_sourcedid){
       return res.status(401).render('error', {"error":"011 : 授業コード取得エラー"})
     }
@@ -130,7 +122,6 @@ lti.onDynamicRegistration(async (req, res, next) => {
 
 lti.whitelist(lti.appRoute(),
   {route: path.join('/', CONFIG.ROOT_PATH, '/ssowatch'), method: 'get'},
-  //{route: path.join('/', CONFIG.ROOT_PATH, '/ssovideo/'), method: 'get'},
   {route: new RegExp(/^\/ssovideo/), method: 'get'},
   {route: path.join('/', CONFIG.ROOT_PATH, '/error'), method: 'get'},
   {route: path.join('/', CONFIG.ROOT_PATH, '/about'), method: 'get'},
