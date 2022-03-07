@@ -1,5 +1,11 @@
 {
     "app_root_path" : "/",
     "app_port" : 3000,
-    "app_cors" : true
+    "app_cors" : true,
+    "app_log_path" : "" ,
+    "app_log_backups" : "" ,
+    "error_log_path" : "" ,
+    "error_log_backups" : "" ,
+    "learning_log_path" : "" ,
+    "learning_log_backups" : ""
 }

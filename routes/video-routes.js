@@ -4,6 +4,9 @@ const fs = require('fs')
 const request = require('request');
 const system = require('../tool/system')
 
+const appLogger = require('../tool/log').app
+const errorLogger = require('../tool/log').error
+
 // Requiring Ltijs
 const lti = require('ltijs').Provider
 
@@ -275,13 +278,16 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/createplaylist'),roleguard, async
     
     request(options, function (error, response, body) {
         if(response !== undefined && response.statusCode == 200){
+            appLogger.info('[SHINtube] ' + service + '-' + cid + ' playlist created')
             res.send(body)
         }
         else{
             try{
+                errorLogger.error('[create playlist error]' + body)
                 res.status(response.statusCode).send(body)
             }
             catch(e){
+                errorLogger.error('[create playlist error]Failed to communicate with the backend')
                 res.status(500).send("Failed to communicate with the backend.")
             }
         }
@@ -325,18 +331,22 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/updateplaylist'),roleguard, async
 
             request(_options, function (_error, _response, _body) {
                 if(_response.statusCode == 200){
+                    appLogger.info('[SHINtube] ' + service + '-' + cid + ' ' + req.body.vid + ' updated')
                     res.send({"vid":req.body.vid,"playlist":req.body.playlist})
                 }
                 else{
+                    errorLogger.error('[update playlist error]' + _body)
                     res.status(_response.statusCode).send(_body)
                 }
             })   
         }
         else{
             try{
+                errorLogger.error('[update playlist error]' + body)
                 res.status(response.statusCode).send(body)
             }
             catch(e){
+                errorLogger.error('[update playlist error]Failed to communicate with the backend')
                 res.status(500).send("Failed to communicate with the backend.")
             }
         }
@@ -370,13 +380,16 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/videodelete'),roleguard, async (r
     
     request(options, function (error, response, body) {
         if(response !== undefined && response.statusCode == 200){
+            appLogger.info('[SHINtube] ' + service + '-' + cid + ' ' + vid + ' deleted')
             res.send(body)
         }
         else{
             try{
+                errorLogger.error('[delete video error]' + body)
                 res.status(response.statusCode).send(body)
             }
             catch(e){
+                errorLogger.error('[delete video error]Failed to communicate with the backend')
                 res.status(500).send("Failed to communicate with the backend.")
             }
         }
@@ -390,7 +403,7 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/watch'), async (req, res) => {
 router.get(path.join('/', CONFIG.ROOT_PATH, '/ssowatch'), async (req, res) => {
     if(CONFIG.SSO_LINK){
         const config_sso_url = new URL(CONFIG.SSO_URL)
-        const permission_host = config_sso_url.host 
+        const permission_host = config_sso_url.host
         if(req.headers["host"] != permission_host){
             res.status(403).render('error', {"error":"009 : 認可ドメイン以外からのアクセス"})
         }
@@ -471,13 +484,16 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/upload'),roleguard, async (req, r
                 if (err) throw err;
             })
             if(response !== undefined && response.statusCode == 200){
+                appLogger.info('[SHINtube] ' + service + '-' + cid + ' video added')
                 res.send(body)
             }
             else{
                 try{
+                    errorLogger.error('[add video error]' + body)
                     res.status(response.statusCode).send(body)
                 }
                 catch(e){
+                    errorLogger.error('[add video error]Failed to communicate with the backend')
                     res.status(500).send("Failed to communicate with the backend.")
                 }
             }
@@ -566,13 +582,16 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/edit'),roleguard, async (req, res
             })
         }
         if(response !== undefined && response.statusCode == 200){
+            appLogger.info('[SHINtube] ' + service + '-' + cid + ' ' + req.body.vid + ' edited')
             res.send(body)
         }
         else{
             try{
+                errorLogger.error('[edit video error]' + body)
                 res.status(response.statusCode).send(body)
             }
             catch(e){
+                errorLogger.error('[edit video error]Failed to communicate with the backend')
                 res.status(500).send("Failed to communicate with the backend.")
             }
         }
@@ -612,7 +631,7 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/view-progress'), async (req, res) 
         }
     }
     catch (err) {
-        console.error(err.message)
+        errorLogger.error(err.message)
         return res.status(500).send({ err: err.message })
     }
 })
@@ -761,7 +780,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/view-progress'), async (req, res)
         return res.send(responseGrade)
     } 
     catch (err) {
-        console.error(err.message)
+        errorLogger.error(err.message)
         return res.status(500).send({ err: err.message })
     }
 })
@@ -806,7 +825,28 @@ const sso_m3u8_proxy = createProxyMiddleware({
         const m3u8_convert_url = ".m3u8?service=" + req.query["service"] + "&class=" + req.query["class"]
 
         return response.replace(/.ts/g, ts_convert_url).replace(/.m3u8/g, m3u8_convert_url)
-    })
+    }),
+    onError:function(err, req, res, target){
+      errorLogger.error("[proxy try error] " + err)
+    },
+    logProvider: function (provider) {
+      provider.log = function (message) {
+        appLogger.log(message)
+      }
+      provider.debug = function (message) {
+        appLogger.debug(message)
+      }
+      provider.info = function (message) {
+        appLogger.info(message)
+      }
+      provider.warn = function (message) {
+        errorLogger.warn(message)
+      }
+      provider.error = function (message) {
+        errorLogger.error(message)
+      }
+      return provider
+    }
 });
 
 const sso_normal_proxy = createProxyMiddleware({ 
@@ -822,6 +862,27 @@ const sso_normal_proxy = createProxyMiddleware({
         const vid = par.slice(-2)[0]
 
         return "/video/" + service + "/" + cid + "/" + vid + "/" + par.slice(-1)[0]
+    },
+    onError:function(err, req, res, target){
+      errorLogger.error("[proxy try error] " + err)
+    },
+    logProvider: function (provider) {
+      provider.log = function (message) {
+        appLogger.log(message)
+      }
+      provider.debug = function (message) {
+        appLogger.debug(message)
+      }
+      provider.info = function (message) {
+        appLogger.info(message)
+      }
+      provider.warn = function (message) {
+        errorLogger.warn(message)
+      }
+      provider.error = function (message) {
+        errorLogger.error(message)
+      }
+      return provider
     }
 });
 
@@ -863,7 +924,29 @@ const m3u8_proxy = createProxyMiddleware({
         }
 
         return response.replace(/.ts/g, ts_convert_url).replace(/.m3u8/g, m3u8_convert_url)
-    })
+    }),
+    onError:function(err, req, res, target){
+      errorLogger.error("[proxy try error] " + err)
+    },
+    logProvider: function (provider) {
+      provider.log = function (message) {
+        appLogger.log(message)
+      }
+      provider.debug = function (message) {
+        appLogger.debug(message)
+      }
+      provider.info = function (message) {
+        appLogger.info(message)
+      }
+      provider.warn = function (message) {
+        errorLogger.warn(message)
+      }
+      provider.error = function (message) {
+        errorLogger.error(message)
+      }
+      return provider
+    }
+
 });
   
 const normal_proxy = createProxyMiddleware({ 
@@ -891,6 +974,27 @@ const normal_proxy = createProxyMiddleware({
         } 
 
         return "/video/" + service + "/" + cid + "/" + par.slice(-2)[0] + "/" + par.slice(-1)[0]
+    },
+    onError:function(err, req, res, target){
+      errorLogger.error("[proxy try error] " + err)
+    },
+    logProvider: function (provider) {
+      provider.log = function (message) {
+        appLogger.log(message)
+      }
+      provider.debug = function (message) {
+        appLogger.debug(message)
+      }
+      provider.info = function (message) {
+        appLogger.info(message)
+      }
+      provider.warn = function (message) {
+        errorLogger.warn(message)
+      }
+      provider.error = function (message) {
+        errorLogger.error(message)
+      }
+      return provider
     }
 });
 
