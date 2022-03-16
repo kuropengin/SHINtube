@@ -611,7 +611,9 @@ function getVideoList(){
   
   request.onload = async function () {
     video_dict = JSON.parse(request.response)
-    
+    if(!video_dict.length){
+      newServiceClassAdd()
+    }
     videofilter.updateOrigin = await toVideoList()
     video_list_draw(videofilter.VideoList())
     document.getElementById("filter-word").addEventListener('input', redraw_video_list)
@@ -658,6 +660,12 @@ function toVideoList(){
   })
 
   return video_array
+}
+
+function newServiceClassAdd(){
+  const request = new XMLHttpRequest()
+  request.open('POST', './newserviceclass?ltik=' + params.get("ltik"), true)
+  request.send()
 }
 
 

@@ -113,9 +113,18 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/copy'),adminguard, async (req, re
     })
 })
 
-router.post(path.join('/', CONFIG.ROOT_PATH, '/newserviceclass'),adminguard, async (req, res) => {
+router.post(path.join('/', CONFIG.ROOT_PATH, '/newserviceclass'),roleguard, async (req, res) => {
+    const role = await roleCheck(req.res.locals.context.roles)
+    let create_service = req.query["service"] || ""
+    let create_class = req.query["class"] || ""
+
+    if((!create_service && !create_class) || role !=2 ){
+        create_service = req.res.locals.token.iss.split("/")[3]
+        create_class = req.res.locals.context.lis.course_section_sourcedid
+    }
+
     const options = {
-        url: CONFIG.BACK_DOMAIN + '/api/video/directory?service_name=' + encodeURI(req.query["service"]) + (("class" in req.query)? '&cid=' + encodeURI(req.query["class"]) : ""),
+        url: CONFIG.BACK_DOMAIN + '/api/video/directory?service_name=' + encodeURI(create_service) + ((create_class.length)? '&cid=' + encodeURI(create_class) : ""),
         method: 'POST'
     }
     request(options, function (error, response, body) {
