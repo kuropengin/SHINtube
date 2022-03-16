@@ -74,7 +74,7 @@ function video_list_draw(video_view_list){
       var M = Math.floor(_s % (24 * 60 * 60) % (60 * 60) / 60)
       var S = _s % (24 * 60 * 60) % (60 * 60) % 60
       if(H){
-        thumbnail_ps.innerHTML = H + ":" + M + ":" + S
+        thumbnail_ps.innerHTML = H + ":" + ("0" + M).slice(-2) + ":" + ("0" + S).slice(-2)
       }
       else{
         thumbnail_ps.innerHTML = M + ":" + ("0" + S).slice(-2)

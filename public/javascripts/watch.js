@@ -458,7 +458,7 @@ function playlistVideoInfo(vid){
                     var M = Math.floor(_s % (24 * 60 * 60) % (60 * 60) / 60)
                     var S = _s % (24 * 60 * 60) % (60 * 60) % 60
                     if(H){
-                        document.getElementById("playlist-ps-" + vid).innerHTML = H + ":" + M + ":" + S
+                        document.getElementById("playlist-ps-" + vid).innerHTML = H + ":" + ("0" + M).slice(-2) + ":" + ("0" + S).slice(-2)
                     }
                     else{
                         document.getElementById("playlist-ps-" + vid).innerHTML = M + ":" + ("0" + S).slice(-2)
