@@ -48,7 +48,7 @@ async function adminguard(req, res, next){
 function getMeta(service,cid,vid){
     return new Promise(resolve => { 
         let options = {
-            url: CONFIG.BACK_DOMAIN + '/video/' + encodeURI(service) + '/' + encodeURI(cid) + '/' + encodeURI(vid) + '/info.json' ,
+            url: CONFIG.BACK_DOMAIN + '/video/' + encodeURIComponent(service) + '/' + encodeURIComponent(cid) + '/' + encodeURIComponent(vid) + '/info.json' ,
             method: 'GET'
         }
         request(options, function (_error, _response, _body) {
@@ -91,11 +91,11 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/DeleteAlert'), async (req, res) =>
 
 router.post(path.join('/', CONFIG.ROOT_PATH, '/copy'),adminguard, async (req, res) => {
     const options = {
-        url: CONFIG.BACK_DOMAIN + '/api/video/copydirectory?src_service_name=' + encodeURI(req.query["src_service"]) + 
-        '&src_cid=' + encodeURI(req.query["src_cid"]) + 
-        (("src_vid" in req.query)? '&src_vid=' + encodeURI(req.query["src_vid"]) : "") + 
-        '&dst_service_name=' + encodeURI(req.query["dst_service"]) + 
-        '&dst_cid=' + encodeURI(req.query["dst_cid"]),
+        url: CONFIG.BACK_DOMAIN + '/api/video/copydirectory?src_service_name=' + encodeURIComponent(req.query["src_service"]) + 
+        '&src_cid=' + encodeURIComponent(req.query["src_cid"]) + 
+        (("src_vid" in req.query)? '&src_vid=' + encodeURIComponent(req.query["src_vid"]) : "") + 
+        '&dst_service_name=' + encodeURIComponent(req.query["dst_service"]) + 
+        '&dst_cid=' + encodeURIComponent(req.query["dst_cid"]),
         method: 'POST'
     }
     request(options, function (error, response, body) {
@@ -124,7 +124,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/newserviceclass'),roleguard, asyn
     }
 
     const options = {
-        url: CONFIG.BACK_DOMAIN + '/api/video/directory?service_name=' + encodeURI(create_service) + ((create_class.length)? '&cid=' + encodeURI(create_class) : ""),
+        url: CONFIG.BACK_DOMAIN + '/api/video/directory?service_name=' + encodeURIComponent(create_service) + ((create_class.length)? '&cid=' + encodeURIComponent(create_class) : ""),
         method: 'POST'
     }
     request(options, function (error, response, body) {
@@ -144,7 +144,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/newserviceclass'),roleguard, asyn
 
 router.post(path.join('/', CONFIG.ROOT_PATH, '/deleteserviceclass'),adminguard, async (req, res) => {
     const options = {
-        url: CONFIG.BACK_DOMAIN + '/api/video/directory?service_name=' + encodeURI(req.query["service"]) + (("class" in req.query)? '&cid=' + encodeURI(req.query["class"]) : ""),
+        url: CONFIG.BACK_DOMAIN + '/api/video/directory?service_name=' + encodeURIComponent(req.query["service"]) + (("class" in req.query)? '&cid=' + encodeURIComponent(req.query["class"]) : ""),
         method: 'DELETE'
     }
     request(options, function (error, response, body) {
@@ -197,7 +197,7 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/servicelist'),adminguard, async (r
 
 router.get(path.join('/', CONFIG.ROOT_PATH, '/classlist'),adminguard, async (req, res) => {
     const options = {
-        url: CONFIG.BACK_DOMAIN + '/api/video/classlist?service_name=' + encodeURI(req.query["service"]),
+        url: CONFIG.BACK_DOMAIN + '/api/video/classlist?service_name=' + encodeURIComponent(req.query["service"]),
         method: 'GET'
     }
     request(options, function (error, response, body) {
@@ -281,7 +281,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/createplaylist'),roleguard, async
     } 
     
     const options = {
-        url: CONFIG.BACK_DOMAIN + '/api/video/emptyfileupload?service_name=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
+        url: CONFIG.BACK_DOMAIN + '/api/video/emptyfileupload?service_name=' + encodeURIComponent(service) + '&cid=' + encodeURIComponent(cid) + '&title=' + encodeURIComponent(req.body.title) + '&explanation=' + encodeURIComponent(req.body.explanation) + '&meta_data=' + encodeURIComponent(JSON.stringify(metadata)),
         method: 'POST'
     }
     
@@ -323,7 +323,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/updateplaylist'),roleguard, async
     } 
 
     const options = {
-        url: CONFIG.BACK_DOMAIN + '/video/' + encodeURI(service) + '/' + encodeURI(cid) + '/' + encodeURI(req.body.vid) + '/info.json' ,
+        url: CONFIG.BACK_DOMAIN + '/video/' + encodeURIComponent(service) + '/' + encodeURIComponent(cid) + '/' + encodeURIComponent(req.body.vid) + '/info.json' ,
         method: 'GET'
     }
     request(options, function (error, response, body) {
@@ -334,7 +334,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/updateplaylist'),roleguard, async
             temp_meta_data["playlist"] = req.body.playlist
 
             const _options = {
-                url: CONFIG.BACK_DOMAIN + '/api/video/updateinfo?service_name=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(temp_meta_data)),
+                url: CONFIG.BACK_DOMAIN + '/api/video/updateinfo?service_name=' + encodeURIComponent(service) + '&cid=' + encodeURIComponent(cid) + '&vid=' + encodeURIComponent(req.body.vid) + '&title=' + encodeURIComponent(req.body.title) + '&explanation=' + encodeURIComponent(req.body.explanation) + '&meta_data=' + encodeURIComponent(JSON.stringify(temp_meta_data)),
                 method: 'POST'
             }
 
@@ -383,7 +383,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/videodelete'),roleguard, async (r
     } 
     
     const options = {
-        url: CONFIG.BACK_DOMAIN + '/api/video/delete?service_name=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(vid),
+        url: CONFIG.BACK_DOMAIN + '/api/video/delete?service_name=' + encodeURIComponent(service) + '&cid=' + encodeURIComponent(cid) + '&vid=' + encodeURIComponent(vid),
         method: 'DELETE'
     }
     
@@ -478,7 +478,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/upload'),roleguard, async (req, r
 
     if(req.files){
         const options = {
-            url: CONFIG.BACK_DOMAIN + '/api/video/upload?service_name=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
+            url: CONFIG.BACK_DOMAIN + '/api/video/upload?service_name=' + encodeURIComponent(service) + '&cid=' + encodeURIComponent(cid) + '&title=' + encodeURIComponent(req.body.title) + '&explanation=' + encodeURIComponent(req.body.explanation) + '&meta_data=' + encodeURIComponent(JSON.stringify(metadata)),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -553,7 +553,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/edit'),roleguard, async (req, res
             "duration" : req.body.duration
         }
         options = {
-            url: CONFIG.BACK_DOMAIN + '/api/video/updatevideo?service_name=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(metadata)),
+            url: CONFIG.BACK_DOMAIN + '/api/video/updatevideo?service_name=' + encodeURIComponent(service) + '&cid=' + encodeURIComponent(cid) + '&vid=' + encodeURIComponent(req.body.vid) + '&title=' + encodeURIComponent(req.body.title) + '&explanation=' + encodeURIComponent(req.body.explanation) + '&meta_data=' + encodeURIComponent(JSON.stringify(metadata)),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -567,7 +567,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/edit'),roleguard, async (req, res
         let req_meta_data = await getMeta(service,cid,req.body.vid)
         req_meta_data["duration"] = req.body.duration
         options = {
-            url: CONFIG.BACK_DOMAIN + '/api/video/updateinfo?service_name=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation) + '&meta_data=' + encodeURI(JSON.stringify(req_meta_data)),
+            url: CONFIG.BACK_DOMAIN + '/api/video/updateinfo?service_name=' + encodeURIComponent(service) + '&cid=' + encodeURIComponent(cid) + '&vid=' + encodeURIComponent(req.body.vid) + '&title=' + encodeURIComponent(req.body.title) + '&explanation=' + encodeURIComponent(req.body.explanation) + '&meta_data=' + encodeURIComponent(JSON.stringify(req_meta_data)),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -576,7 +576,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/edit'),roleguard, async (req, res
     }
     else{
         options = {
-            url: CONFIG.BACK_DOMAIN + '/api/video/updateinfo?service_name=' + encodeURI(service) + '&cid=' + encodeURI(cid) + '&vid=' + encodeURI(req.body.vid) + '&title=' + encodeURI(req.body.title) + '&explanation=' + encodeURI(req.body.explanation),
+            url: CONFIG.BACK_DOMAIN + '/api/video/updateinfo?service_name=' + encodeURIComponent(service) + '&cid=' + encodeURIComponent(cid) + '&vid=' + encodeURIComponent(req.body.vid) + '&title=' + encodeURIComponent(req.body.title) + '&explanation=' + encodeURIComponent(req.body.explanation),
             method: 'POST',
             headers: {
                 "Content-Type": "multipart/form-data"
