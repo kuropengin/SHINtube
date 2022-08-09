@@ -25,6 +25,57 @@ function roleCheck(roles){
     }
 }
 
+function getService(iss) {
+    let service = iss.split("/")[3]
+
+    try {
+        if (isNaN(service) || service.length == 0) {
+            service = "1000"
+        }
+    }
+    catch (err) {
+        service = "1000"
+    }
+    return service
+}
+
+async function getServiceAndCidFromReq(req) {
+    const role = await roleCheck(req.res.locals.context.roles)
+
+    let service = getService(req.res.locals.token.iss)
+    let cid = req.res.locals.context.lis.course_section_sourcedid
+
+    if ("service" in req.query && "class" in req.query && role == 2) {
+        service = req.query["service"]
+        cid = req.query["class"]
+    }
+
+    return [service, cid]
+}
+
+async function getServiceAndCid(req, res) {
+    let service = req.res.locals.token.iss.split("/")[3]
+    let cid = res.locals.context.lis.course_section_sourcedid
+
+    try {
+        if (isNaN(service) || service.length == 0) {
+            service = "1000"
+        }
+    }
+    catch (err) {
+        service = "1000"
+    }
+
+    const role = await roleCheck(req.res.locals.context.roles)
+
+    if ("service" in req.body && "class" in req.body && role == 2) {
+        service = req.body["service"]
+        cid = req.body["class"]
+    }
+
+    return [service, cid]
+}
+
 async function roleguard(req, res, next){
     const role = await roleCheck(res.locals.context.roles)
     if(role){
@@ -119,7 +170,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/newserviceclass'),roleguard, asyn
     let create_class = req.query["class"] || ""
 
     if((!create_service && !create_class) || role !=2 ){
-        create_service = req.res.locals.token.iss.split("/")[3]
+        create_service = getService(req.res.locals.token.iss)
         create_class = req.res.locals.context.lis.course_section_sourcedid
     }
 
@@ -227,23 +278,7 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/videolist'),roleguard, async (req,
 })
 
 router.get(path.join('/', CONFIG.ROOT_PATH, '/getvideolist'),roleguard, async (req, res) => {
-    let service = res.locals.token.iss.split("/")[3]
-    let cid = res.locals.context.lis.course_section_sourcedid
-    const role = await roleCheck(req.res.locals.context.roles)
-    
-    try{
-        if(isNaN(service) || service.length == 0){
-            service = "1000"
-        }
-    }
-    catch(err){
-        service = "1000"
-    }
-
-    if("service" in req.query && "class" in req.query && role == 2){
-        service = req.query["service"]
-        cid = req.query["class"] 
-    } 
+    let [service, cid] = await getServiceAndCid(req, res)
 
     const options = {
         url: CONFIG.BACK_DOMAIN + '/api/video/linklist?service_name=' + service + '&cid=' + cid,
@@ -256,9 +291,7 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/getvideolist'),roleguard, async (r
 })
 
 router.post(path.join('/', CONFIG.ROOT_PATH, '/createplaylist'),roleguard, async (req, res) => {
-    let service = res.locals.token.iss.split("/")[3]
-    let cid = res.locals.context.lis.course_section_sourcedid
-    const role = await roleCheck(req.res.locals.context.roles)
+    let [service, cid] = await getServiceAndCid(req, res)
 
     const metadata = {
         "contributor_name" : res.locals.token.userInfo.name,
@@ -266,19 +299,6 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/createplaylist'),roleguard, async
         "content_type":"playlist",
         "playlist": req.body.playlist
     }
-    try{
-        if(isNaN(service) || service.length == 0){
-            service = "1000"
-        }
-    }
-    catch(err){
-        service = "1000"
-    }
-
-    if("service" in req.query && "class" in req.query && role == 2){
-        service = req.query["service"]
-        cid = req.query["class"] 
-    } 
     
     const options = {
         url: CONFIG.BACK_DOMAIN + '/api/video/emptyfileupload?service_name=' + encodeURIComponent(service) + '&cid=' + encodeURIComponent(cid) + '&title=' + encodeURIComponent(req.body.title) + '&explanation=' + encodeURIComponent(req.body.explanation) + '&meta_data=' + encodeURIComponent(JSON.stringify(metadata)),
@@ -304,23 +324,7 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/createplaylist'),roleguard, async
 })
 
 router.post(path.join('/', CONFIG.ROOT_PATH, '/updateplaylist'),roleguard, async (req, res) => {
-    let service = res.locals.token.iss.split("/")[3]
-    let cid = res.locals.context.lis.course_section_sourcedid
-    const role = await roleCheck(req.res.locals.context.roles)
-
-    try{
-        if(isNaN(service) || service.length == 0){
-            service = "1000"
-        }
-    }
-    catch(err){
-        service = "1000"
-    }
-
-    if("service" in req.query && "class" in req.query && role == 2){
-        service = req.query["service"]
-        cid = req.query["class"] 
-    } 
+    let [service, cid] = await getServiceAndCid(req, res)
 
     const options = {
         url: CONFIG.BACK_DOMAIN + '/video/' + encodeURIComponent(service) + '/' + encodeURIComponent(cid) + '/' + encodeURIComponent(req.body.vid) + '/info.json' ,
@@ -363,24 +367,8 @@ router.post(path.join('/', CONFIG.ROOT_PATH, '/updateplaylist'),roleguard, async
 })
 
 router.post(path.join('/', CONFIG.ROOT_PATH, '/videodelete'),roleguard, async (req, res) => {
-    let service = res.locals.token.iss.split("/")[3]
-    let cid = res.locals.context.lis.course_section_sourcedid
+    let [service, cid] = await getServiceAndCid(req, res)
     const vid = req.body.vid
-    const role = await roleCheck(req.res.locals.context.roles)
-
-    try{
-        if(isNaN(service) || service.length == 0){
-            service = "1000"
-        }
-    }
-    catch(err){
-        service = "1000"
-    }
-
-    if("service" in req.query && "class" in req.query && role == 2){
-        service = req.query["service"]
-        cid = req.query["class"] 
-    } 
     
     const options = {
         url: CONFIG.BACK_DOMAIN + '/api/video/delete?service_name=' + encodeURIComponent(service) + '&cid=' + encodeURIComponent(cid) + '&vid=' + encodeURIComponent(vid),
@@ -452,23 +440,7 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/upload'),roleguard, async (req, re
 
 
 router.post(path.join('/', CONFIG.ROOT_PATH, '/upload'),roleguard, async (req, res) => {
-    let service = res.locals.token.iss.split("/")[3]
-    let cid = res.locals.context.lis.course_section_sourcedid
-    const role = await roleCheck(req.res.locals.context.roles)
-
-    try{
-        if(isNaN(service) || service.length == 0){
-            service = "1000"
-        }
-    }
-    catch(err){
-        service = "1000"
-    }
-
-    if("service" in req.body && "class" in req.body && role == 2){
-        service = req.body["service"]
-        cid = req.body["class"]
-    }
+    let [service, cid] = await getServiceAndCid(req, res)
 
     const metadata = {
         "contributor_name" : res.locals.token.userInfo.name,
@@ -525,25 +497,7 @@ router.get(path.join('/', CONFIG.ROOT_PATH, '/edit'),roleguard, async (req, res)
 
 
 router.post(path.join('/', CONFIG.ROOT_PATH, '/edit'),roleguard, async (req, res) => {
-    let service = res.locals.token.iss.split("/")[3]
-    let cid = res.locals.context.lis.course_section_sourcedid
-    const role = await roleCheck(req.res.locals.context.roles)
-
-    try{
-        if(isNaN(service) || service.length == 0){
-            service = "1000"
-        }
-    }
-    catch(err){
-        service = "1000"
-    }
-
-    if("service" in req.body && "class" in req.body && role == 2){
-        service = req.body["service"]
-        cid = req.body["class"]
-    }
-
-
+    let [service, cid] = await getServiceAndCid(req, res)
     let options
 
     if(req.files){
@@ -902,22 +856,7 @@ const m3u8_proxy = createProxyMiddleware({
     pathRewrite: async function (path, req) {
         const temp_url = req.url.split('?')[0]
         const par = temp_url.slice(1).split('/')
-        const role = await roleCheck(req.res.locals.context.roles)
-        
-        let service = req.res.locals.token.iss.split("/")[3]
-        let cid = req.res.locals.context.lis.course_section_sourcedid
-        try{
-            if(isNaN(service) || service.length == 0){
-                service = "1000"
-            }
-        }
-        catch(err){
-            service = "1000"
-        }
-        if("service" in req.query && "class" in req.query && role == 2){
-            service = req.query["service"]
-            cid = req.query["class"] 
-        } 
+        let [service, cid] = await getServiceAndCidFromReq(req)
         
         return "/video/" + service + "/" + cid + "/" + par.slice(-2)[0] + "/" + par.slice(-1)[0]
     },
@@ -964,23 +903,7 @@ const normal_proxy = createProxyMiddleware({
     pathRewrite: async function (path, req) {
         const temp_url = req.url.split('?')[0]
         const par = temp_url.slice(1).split('/')
-        const role = await roleCheck(req.res.locals.context.roles)
-
-        let service = req.res.locals.token.iss.split("/")[3]
-        let cid = req.res.locals.context.lis.course_section_sourcedid
-        try{
-            if(isNaN(service) || service.length == 0){
-                service = "1000"
-            }
-        }
-        catch(err){
-            service = "1000"
-        }
-
-        if("service" in req.query && "class" in req.query && role == 2){
-            service = req.query["service"]
-            cid = req.query["class"] 
-        } 
+        let [service, cid] = await getServiceAndCidFromReq(req)
 
         return "/video/" + service + "/" + cid + "/" + par.slice(-2)[0] + "/" + par.slice(-1)[0]
     },
