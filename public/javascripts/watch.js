@@ -74,14 +74,20 @@ async function postVideoProgress(vid){
 
     var mergedProgressList = []
     mergedProgressList.push(allProgressList[0])
-    
-    for(const _temp of allProgressList){
-        if(_temp[0] > mergedProgressList[mergedProgressList.length - 1][1]){
-            mergedProgressList.push(_temp)
+
+    for (const _temp of allProgressList) {
+        if (_temp[0] > mergedProgressList[mergedProgressList.length - 1][1]) {
+            // player の自動スキップを記録しないよう，3秒未満のスキップは無視する
+            if (_temp[0] - mergedProgressList[mergedProgressList.length - 1][1] < 3) {
+                mergedProgressList[mergedProgressList.length - 1][1] = _temp[1]
+            }
+            else {
+                mergedProgressList.push(_temp)
+            }
         }
-        else if(_temp[1] > mergedProgressList[mergedProgressList.length - 1][1]){
+        else if (_temp[1] > mergedProgressList[mergedProgressList.length - 1][1]) {
             mergedProgressList[mergedProgressList.length - 1][1] = _temp[1]
-        } 
+        }
     }
 
 
