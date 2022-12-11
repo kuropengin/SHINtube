@@ -113,11 +113,13 @@ function create_list(listdata){
 
         const _update = clone.querySelector('.video-update')
         const temp_update_date = new Date(listdata[element].updated_at)
-        _update.innerHTML = "更新日 : " + temp_update_date.getFullYear() + "/" + temp_update_date.getMonth() + "/" + temp_update_date.getDate()
+        const temp_update_month = temp_update_date.getMonth() + 1
+        _update.innerHTML = "更新日 : " + temp_update_date.getFullYear() + "/" + temp_update_month + "/" + temp_update_date.getDate()
 
         const _create = clone.querySelector('.video-create')
         const temp_create_date = new Date(listdata[element].created_at)
-        _create.innerHTML = "作成日 : " + temp_create_date.getFullYear() + "/" + temp_create_date.getMonth() + "/" + temp_create_date.getDate()
+        const temp_create_month = temp_create_date.getMonth() + 1
+        _create.innerHTML = "作成日 : " + temp_create_date.getFullYear() + "/" + temp_create_month + "/" + temp_create_date.getDate()
 
         const _contributor = clone.querySelector('.video-contributor')
         _contributor.innerHTML = "投稿者 : " + listdata[element].contributor_name
